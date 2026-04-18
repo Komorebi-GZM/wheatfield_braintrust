@@ -1,90 +1,76 @@
-# 麦田智囊 - Demo版使用说明
+# 麦田智囊 Demo
 
-## 项目介绍
-"麦田智囊"是基于LangChain与自进化RAG的乡村教育Agent系统，致力于为乡村教师提供专属的AI教研搭档。
+乡村教育Agent系统的交互式演示版本，基于Streamlit构建。
 
-## 核心功能
-1. **乡村专属极速备课**：10秒语音生成乡土化教案
-2. **老教师经验一键传承**：手写教案OCR识别→结构化→入库→可检索
+## 功能演示
 
-## 技术栈
-- 前端：Streamlit
-- 核心编排：LangChain 0.2.x（LCEL）
-- 大模型：DeepSeek-V2 API
-- RAG：Chroma + BGE-Large-zh
-- OCR：PaddleOCR
-- 语音：Whisper API
+### 1. 乡村专属极速备课
+- **输入**：学科、年级、课题、乡村特色情境
+- **输出**：详细的乡土化教案
+- **特点**：10秒生成，结合乡村实际案例
 
-## 安装步骤
+### 2. 老教师经验一键传承
+- **输入**：手写教案照片
+- **输出**：OCR识别结果 + 结构化教案
+- **特点**：EasyOCR识别，大模型结构化处理
 
-### 1. 安装依赖
+### 3. 课堂实时伴教（待开发）
+- 练习题生成
+- 经典题检索
+
+### 4. 具象化素材推荐（待开发）
+- 教学视频推荐
+- 3D模型/动画素材
+
+### 5. 教研纪要生成（待开发）
+- 会议记录转写
+- 结构化报告生成
+
+## 快速开始
+
+### 安装依赖
+
 ```bash
-# 进入项目目录
-cd /path/to/麦田智囊
-
-# 安装依赖
 pip install -r requirements.txt
 ```
 
-### 2. 配置环境变量
-1. 复制环境变量示例文件
+### 配置环境变量
+
 ```bash
-cp demo/.env.example demo/.env
+cp .env.example .env
+# 编辑.env，填入API密钥
 ```
 
-2. 编辑 `.env` 文件，填写API密钥
-```
-# API密钥配置
-OPENAI_API_KEY=your_openai_api_key
+### 启动演示
 
-# 其他配置
-MODEL_NAME=deepseek-v2
-```
-
-### 3. 运行应用
 ```bash
-# 进入demo目录
-cd demo
-
-# 运行Streamlit应用
-streamlit run app.py
+streamlit run demo/app.py
 ```
 
-### 4. 访问应用
-打开浏览器，访问 `http://localhost:8501`
+访问 http://localhost:8501 查看演示。
 
-## 使用指南
+## 技术栈
 
-### 乡村专属极速备课
-1. 在左侧选择"乡村专属极速备课"
-2. 选择学科、年级
-3. 输入课题
-4. 填写乡村特色情境（如农田、农作物、乡村生活等）
-5. 点击"开始备课"按钮
-6. 等待系统生成教案（约10秒）
+- **前端**：Streamlit
+- **编排**：LangChain LCEL
+- **大模型**：DeepSeek-V2 API
+- **OCR**：EasyOCR
+- **向量库**：Chroma
 
-### 老教师经验一键传承
-1. 在左侧选择"老教师经验一键传承"
-2. 上传手写教案照片（支持jpg、jpeg、png格式）
-3. 点击"开始识别与处理"按钮
-4. 等待系统处理（约5秒/张）
-5. 查看识别结果和结构化结果
+## 目录结构
 
-## 注意事项
-- 确保网络连接正常
-- 确保API密钥有效
-- 手写教案照片应清晰，避免光线过暗或过亮
-- 首次运行时，系统会自动下载PaddleOCR模型，可能需要一些时间
-
-## 项目结构
 ```
 demo/
-├── app.py              # 主应用文件
-├── agents/             # Agent模块
-│   ├── quick_lesson_prep.py  # 极速备课Agent
+├── app.py                    # Streamlit主应用
+├── agents/
+│   ├── quick_lesson_prep.py # 极速备课Agent
 │   └── wisdom_transfer.py    # 智慧传承Agent
-├── utils/              # 工具函数
-├── assets/             # 资源文件
-├── .env.example        # 环境变量示例
-└── README.md           # 使用说明
+├── .env.example              # 环境变量示例
+└── README.md                 # 本文件
 ```
+
+## 注意事项
+
+- Demo版本为简化版，仅包含核心功能演示
+- 完整版请参考项目根目录的 `maitian_agent/` 模块
+- OCR首次运行需要下载模型，请保持网络连接
