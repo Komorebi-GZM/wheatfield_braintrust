@@ -1,0 +1,13 @@
+# 核心依赖包
+streamlit
+langchain
+chromadb
+sentence-transformers
+paddlepaddle
+paddleocr
+python-dotenv
+openai
+
+# 额外依赖
+langchain-openai
+langchain-chroma
