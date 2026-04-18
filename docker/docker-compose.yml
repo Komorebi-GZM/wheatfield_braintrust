@@ -1,0 +1,19 @@
+# Docker Compose配置
+version: '3.8'
+
+services:
+  maitian-agent:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"
+      - "8501:8501"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_API_BASE=${OPENAI_API_BASE:-https://api.deepseek.com}
+      - MODEL_NAME=${MODEL_NAME:-deepseek-v2}
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    restart: unless-stopped
