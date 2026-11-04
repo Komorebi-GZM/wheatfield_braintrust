@@ -1,0 +1,45 @@
+# QLoRA training reference config (maps to scripts/train_qlora.sh / ms-swift)
+# Copy and edit; values are tuned for RTX 4060 8GB. See model design §5.
+
+model:
+  base: SeerRay-Lab/Xiaomi-OCR-0        # fallback: Qwen/Qwen2.5-VL-3B-Instruct
+  template: qwen2_5_vl                  # if unsupported, try qwen2_vl
+  trust_remote_code: true
+
+quantization:
+  method: bnb
+  bits: 4
+  quant_type: nf4
+  double_quant: true
+
+lora:
+  train_type: lora
+  rank: 8            # 8-16
+  alpha: 32          # 16-32
+  dropout: 0.05
+  target_modules: all-linear
+
+vision:
+  freeze_vit: true   # 先冻结视觉塔，省显存、防过拟合
+
+training:
+  torch_dtype: bfloat16
+  per_device_train_batch_size: 1
+  gradient_accumulation_steps: 16
+  gradient_checkpointing: true
+  learning_rate: 1.0e-4
+  lr_scheduler_type: cosine
+  warmup_ratio: 0.03
+  num_train_epochs: 4
+  max_length: 8192
+  max_pixels: 1024000     # ~1024^2 长边预算；OOM 时降到 768^2≈589824
+  dataloader_num_workers: 2
+  logging_steps: 10
+  save_steps: 100
+  save_total_limit: 2
+
+data:
+  train: data/splits/train_swift.jsonl
+  output_dir: outputs/qlora-v1
+
+# 时间预算：4060 8GB 约 15h+（视数据量与 max_pixels）。Mac M2 不训练，仅推理/评测。
