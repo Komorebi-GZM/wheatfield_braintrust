@@ -5,6 +5,15 @@ OCR工具
 from abc import ABC, abstractmethod
 from typing import List, Tuple, Optional
 import os
+import sys
+from pathlib import Path
+
+
+def _ensure_ocr_module_path() -> None:
+    """把仓库根目录加入 sys.path，使 `ocr_module.ocr.engine` 可被导入。"""
+    root = Path(__file__).resolve().parents[2]
+    if str(root) not in sys.path:
+        sys.path.insert(0, str(root))
 
 
 class BaseOCR(ABC):
@@ -134,6 +143,49 @@ class PaddleOCRProcessor(BaseOCR):
         return [self.recognize(path) for path in image_paths]
 
 
+class XiaomiStructuredOCR(BaseOCR):
+    """基于 ocr_module（Xiaomi-OCR-0 QLoRA）的结构化 OCR，直接输出 Markdown。
+
+    输出已含结构（标题/列表/表格/LaTeX 公式），故下游无需再做 LLM 结构化。
+    """
+    is_structured = True
+
+    def __init__(
+        self,
+        base_model: Optional[str] = None,
+        adapter_dir: Optional[str] = None,
+        load_in_4bit: bool = True,
+        max_new_tokens: int = 4096,
+    ):
+        self.base_model = base_model or "SeerRay-Lab/Xiaomi-OCR-0"
+        self.adapter_dir = adapter_dir
+        self.load_in_4bit = load_in_4bit
+        self.max_new_tokens = max_new_tokens
+        self._engine = None
+
+    @property
+    def engine(self):
+        if self._engine is None:
+            _ensure_ocr_module_path()
+            from ocr_module.ocr.engine import OCREngine  # 延迟导入，避免无 torch 时报错
+            self._engine = OCREngine(
+                base_model=self.base_model,
+                adapter_dir=self.adapter_dir,
+                load_in_4bit=self.load_in_4bit,
+                max_new_tokens=self.max_new_tokens,
+            )
+        return self._engine
+
+    def recognize(self, image_path: str, **kwargs) -> str:
+        return self.engine.recognize_page(image_path)["markdown"]
+
+    def recognize_with_boxes(self, image_path: str):
+        raise NotImplementedError("XiaomiStructuredOCR 不返回字符级边界框")
+
+    def recognize_batch(self, image_paths: List[str]) -> List[str]:
+        return [self.recognize(p) for p in image_paths]
+
+
 class OCRProcessor:
     """OCR处理器工厂"""
 
@@ -163,6 +215,13 @@ class OCRProcessor:
                 lang=kwargs.get("lang", "ch"),
                 enable_mkldnn=kwargs.get("enable_mkldnn", False),
                 cpu_threads=kwargs.get("cpu_threads", 10)
+            )
+        elif ocr_type in ("xiaomi", "xiaomi_structured"):
+            return XiaomiStructuredOCR(
+                base_model=kwargs.get("base_model"),
+                adapter_dir=kwargs.get("adapter_dir"),
+                load_in_4bit=kwargs.get("load_in_4bit", True),
+                max_new_tokens=kwargs.get("max_new_tokens", 4096),
             )
         else:
             raise ValueError(f"不支持的OCR类型: {ocr_type}")
