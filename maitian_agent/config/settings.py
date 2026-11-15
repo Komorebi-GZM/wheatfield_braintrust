@@ -40,7 +40,10 @@ class Settings(BaseSettings):
     embedding_backend: str = Field(default="local", description="嵌入后端 local|openai_compatible")
     embedding_model: str | None = Field(
         default=None,
-        description="嵌入模型名称；local 未配置时默认 bge-small-zh，openai_compatible 时回退 LLM_MODEL",
+        description=(
+            "嵌入模型名称；local 未配置时默认 bge-small-zh，"
+            "openai_compatible 时回退 LLM_MODEL"
+        ),
     )
     embedding_base_url: str | None = Field(
         default=None, description="嵌入基础 URL；openai_compatible 时未配置回退 LLM_BASE_URL"
@@ -65,7 +68,8 @@ class Settings(BaseSettings):
 
     # OCR配置
     ocr_backend: str = Field(
-        default="none", description="OCR 后端 none|easyocr|xiaomi（默认 none，不加载 torch/easyocr）"
+        default="none",
+        description="OCR 后端 none|easyocr|xiaomi（默认 none，不加载 torch/easyocr）",
     )
     ocr_type: str = Field(default="easyocr", description="OCR类型（兼容旧字段）")
     ocr_languages: list = Field(default=["ch_sim", "en"], description="OCR语言")

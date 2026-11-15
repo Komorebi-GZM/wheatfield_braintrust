@@ -100,7 +100,7 @@ class KnowledgeBase:
             raise ValueError(f"未知的知识库层级: {level}")
 
         docs_metadata = []
-        for i, metadata in enumerate(metadatas or [{} for _ in texts]):
+        for metadata in metadatas or [{} for _ in texts]:
             doc_metadata = metadata.copy()
             doc_metadata["level"] = level.value
             docs_metadata.append(doc_metadata)

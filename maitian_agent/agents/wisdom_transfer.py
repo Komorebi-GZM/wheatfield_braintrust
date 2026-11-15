@@ -84,7 +84,7 @@ class WisdomTransferAgent(BaseAgent):
             result = self.ocr.readtext(image_path, detail=1)
             return "\n".join(detection[1] for detection in result).strip()
         except Exception as e:
-            raise RuntimeError(f"OCR识别失败: {e!s}")
+            raise RuntimeError(f"OCR识别失败: {e!s}") from e
 
     def run(self, image_path: str, **kwargs) -> str:
         """执行手写教案识别与结构化
