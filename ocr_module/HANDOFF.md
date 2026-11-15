@@ -95,6 +95,7 @@ pip install -r requirements.txt
 - **test 成员**：000020、000028、000037、000044、000051；**val**：235932、235946、235955、000005、000012；**train**：其余 13 页。
 - 合成数据：本轮 `synthetic.count=0`；策略仍是"只能由 `scripts/prepare_dataset.py` 拼进训练集，val/test 只用真实页"。
 - 标注局限：`reviewed=true` **不是正确性证明**。`annotation_review_v2.md` 第 4 节列出仍存疑项（如 200854「标称/有效标距」中等置信、竖排小字页未逐字确认）。看不清处一律 `□`（5 页 32 处），评测对含 `□` 的页整页排除。
+- **存在第二份标注**：`data/annotations/real.jsonl`（23 行，远程分支上由标注 bot 生成，已在仓库中）。它**未**被任何 split 引用，**未**参与训练或评测；逐页抽验显示它在 200907、200914、200858 等处读错，并对 200843 误判"图片损坏"。因此不能当作真值，也不能把"远程版 `□` 多/本地版 `□` 少"解读成谁更忠实（详见 `annotation_review_v2.md` 第 6 节、`datasets/handwriting_notes/remote_annotation_review.md`）。
 
 ---
 
@@ -273,7 +274,7 @@ $PY -m pytest tests -q -p no:cacheprovider --basetemp=.pytest_tmp
 
 - 本仓库为 **PUBLIC**。`datasets/handwriting_notes/images/` 的 23 张手写原图（约 103 MB）**已在更早的提交 `d046366` 中进入该公开仓库**（非 Git LFS）。这是本次交付之前既存的事实，本轮没有再新增任何原图或 PDF。
 - 这些页面是个人课程笔记（含姓名/学号类信息未逐页核查）。**若要继续公开或转公开镜像，请 owner 明确确认**；如需撤回，需要重写历史（`git filter-repo`）并强推，属于破坏性操作，本次未做。
-- 标注文件 `annotation_template.jsonl` 是原图的转写结果，与原图同等敏感。
+- 标注文件 `annotation_template.jsonl` 是原图的转写结果，与原图同等敏感；`data/annotations/real.jsonl`（标注 bot 版本）同样已在公开仓库中，敏感度相同。
 - 未上传：模型权重（见第 7 节）、`outputs/eval_v3/crops/`（4.3 MB 裁切图，本地证据，可用于复核，未入库）、`outputs/modelscope_cache/`、`.venv/`、任何缓存。
 
 ---
