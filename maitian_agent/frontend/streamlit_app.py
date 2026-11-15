@@ -2,15 +2,16 @@
 Streamlit Web应用
 麦田智囊乡村教育Agent系统主界面
 """
-import streamlit as st
 import os
+
+import httpx
+import streamlit as st
 from dotenv import load_dotenv
 
-from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
-from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
 from maitian_agent.agents.material_agent import MaterialAgent
 from maitian_agent.agents.meeting_notes import MeetingNotesAgent
+from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
 from maitian_agent.agents.router import RouterAgent
 
 load_dotenv()
@@ -26,9 +27,6 @@ def init_agents():
     """初始化Agent实例"""
     if "quick_lesson_prep_agent" not in st.session_state:
         st.session_state.quick_lesson_prep_agent = QuickLessonPrepAgent()
-
-    if "wisdom_transfer_agent" not in st.session_state:
-        st.session_state.wisdom_transfer_agent = WisdomTransferAgent()
 
     if "classroom_companion_agent" not in st.session_state:
         st.session_state.classroom_companion_agent = ClassroomCompanionAgent()
@@ -133,16 +131,24 @@ def render_wisdom_transfer():
         with col2:
             if st.button("开始识别与处理", type="primary"):
                 with st.spinner("正在处理，请稍候..."):
-                    temp_path = os.path.join("assets", uploaded_file.name)
-                    with open(temp_path, "wb") as f:
-                        f.write(uploaded_file.getbuffer())
-
-                    agent = st.session_state.wisdom_transfer_agent
-                    result = agent.run(temp_path)
-
-                    st.success("处理完成！")
-                    st.markdown("### 识别结果")
-                    st.markdown(result)
+                    try:
+                        response = httpx.post(
+                            os.getenv("MAITIAN_API_BASE", "http://127.0.0.1:8000").rstrip("/")
+                            + "/api/wisdom-transfer",
+                            files={"file": (uploaded_file.name, uploaded_file.getvalue(),
+                                            uploaded_file.type)},
+                            timeout=120,
+                        )
+                        payload = response.json()
+                        if response.is_error:
+                            detail = payload.get("detail")
+                            st.error(detail if isinstance(detail, str) else "上传失败，请检查图片")
+                        else:
+                            st.success("处理完成！")
+                            st.markdown("### 识别结果")
+                            st.markdown(payload["result"])
+                    except (httpx.HTTPError, ValueError, KeyError):
+                        st.error("服务暂不可用，请稍后重试")
 
     st.markdown("---")
     st.markdown("#### 功能说明")

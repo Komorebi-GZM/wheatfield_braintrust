@@ -52,6 +52,12 @@ class Settings(BaseSettings):
     # 前端配置
     streamlit_server_port: int = Field(default=8501, description="Streamlit服务端口")
 
+    max_upload_mb: int = 20
+    allowed_origins: str = (
+        "http://localhost:8501,http://127.0.0.1:8501,"
+        "http://localhost:5173,http://127.0.0.1:5173"
+    )
+
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
@@ -66,3 +72,6 @@ def get_settings() -> Settings:
 
 
 settings = get_settings()
+
+# Preserve existing configuration declarations while P1-2 updates this module.
+# ruff: noqa: I001, F401, UP045, UP011
