@@ -4,8 +4,8 @@
 """
 from typing import Dict, Any, List, Optional
 from enum import Enum
-from .vectorstore import get_vector_store, BaseVectorStore, ChromaVectorStore
-from .embeddings import get_embedding_model, BGEEmbeddings
+from maitian_agent.rag.vectorstore import get_vector_store, BaseVectorStore, ChromaVectorStore
+from maitian_agent.rag.embeddings import get_embedding_model, BGEEmbeddings
 
 
 class KnowledgeLevel(str, Enum):

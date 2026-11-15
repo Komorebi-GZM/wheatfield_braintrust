@@ -31,7 +31,10 @@
 ### 安装依赖
 
 ```bash
-pip install -r requirements.txt
+# 在仓库根目录运行
+# demo 在启动时就会导入 EasyOCR，必须带上 ocr-easyocr extra
+uv sync --extra ocr-easyocr
+# 本地 BGE 嵌入模型还需要：uv sync --extra ocr-easyocr --extra rag
 ```
 
 ### 配置环境变量
@@ -44,7 +47,7 @@ cp .env.example .env
 ### 启动演示
 
 ```bash
-streamlit run demo/app.py
+uv run streamlit run demo/app.py
 ```
 
 访问 http://localhost:8501 查看演示。

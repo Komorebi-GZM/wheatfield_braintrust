@@ -32,7 +32,8 @@
 ### 安装依赖
 
 ```bash
-pip install -r requirements.txt
+uv sync
+uv run maitian-agent --help
 ```
 
 ### 配置环境变量
@@ -47,10 +48,10 @@ cp .env.example .env
 
 ```bash
 # 启动Web界面
-streamlit run maitian_agent/frontend/streamlit_app.py
+uv run streamlit run maitian_agent/frontend/streamlit_app.py
 
 # 或启动API服务
-uvicorn maitian_agent.api.routes:app --host 0.0.0.0 --port 8000
+uv run uvicorn maitian_agent.api.routes:app --host 0.0.0.0 --port 8000
 ```
 
 ## 项目结构
@@ -86,7 +87,7 @@ maitian_agent/
 
 ## 环境要求
 
-- Python 3.10+
+- Python 3.12+
 - OpenAI API Key 或兼容API
 
 ## 文档

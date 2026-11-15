@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "maitian-agent"
+version = "1.0.0"
+description = "麦田智囊 - 乡村教育Agent系统"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "click>=8.1",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.0.0",
+    "pydantic-settings>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "streamlit>=1.37",
+    "openai>=1.0.0",
+    "langchain>=0.2.0,<1.0",
+    "langchain-core>=0.2.0,<1.0",
+    "langchain-openai>=0.1.0,<1.0",
+    "langchain-community>=0.2.0,<1.0",
+    "langchain-chroma>=0.1.0,<1.0",
+    "chromadb>=0.4.0",
+    "pillow>=13.0.0",
+]
+
+[project.scripts]
+maitian-agent = "maitian_agent.cli:cli"
+
+[project.optional-dependencies]
+ocr-easyocr = ["easyocr>=1.7.0"]
+rag = ["sentence-transformers>=2.2.0"]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "ruff>=0.1.0",
+    "httpx>=0.25.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["maitian_agent"]

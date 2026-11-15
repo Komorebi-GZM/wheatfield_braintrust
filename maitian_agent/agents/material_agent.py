@@ -9,7 +9,7 @@ from langchain_openai import ChatOpenAI
 import os
 from dotenv import load_dotenv
 
-from .base import BaseAgent
+from maitian_agent.agents.base import BaseAgent
 
 load_dotenv()
 

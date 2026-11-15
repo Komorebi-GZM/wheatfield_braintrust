@@ -29,13 +29,20 @@ class BGEEmbeddings(Embeddings):
     def embeddings(self) -> HuggingFaceBgeEmbeddings:
         """获取嵌入模型实例"""
         if self._embeddings is None:
-            self._embeddings = HuggingFaceBgeEmbeddings(
-                model_name=self.model_name,
-                model_kwargs={"device": "cpu"},
-                encode_kwargs=self.encode_kwargs,
-                query_instruction=self.query_instruction,
-                passage_instruction=self.passage_instruction
-            )
+            try:
+                import sentence_transformers  # noqa: F401
+
+                self._embeddings = HuggingFaceBgeEmbeddings(
+                    model_name=self.model_name,
+                    model_kwargs={"device": "cpu"},
+                    encode_kwargs=self.encode_kwargs,
+                    query_instruction=self.query_instruction,
+                    passage_instruction=self.passage_instruction
+                )
+            except ImportError as exc:
+                raise ImportError(
+                    "BGE 嵌入模型需要 sentence-transformers，请安装 maitian-agent[rag]"
+                ) from exc
         return self._embeddings
 
     def embed_query(self, text: str) -> List[float]:
