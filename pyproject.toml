@@ -43,6 +43,13 @@ dev = [
     "httpx>=0.25.0",
 ]
 
+[tool.ruff]
+# Ruff 是 Python linter：显式传入的非 Python 文件（.env/.yml/.md 等）
+# 会被当作 Python 解析而报语法错误。这里统一排除非 Python 产物，
+# 并用 force-exclude 让命令行显式传入的文件也遵守排除规则。
+force-exclude = true
+extend-exclude = ["*.yml", "*.yaml", "*.example", ".env", ".env.*", "*.md"]
+
 [tool.ruff.lint]
 # 采用经典 E/F 规则集作为基线（新代码应保持干净）；
 # 遗留代码的未用导入/变量（F401/F841）留待 P1-6 lint 迁移统一清理，暂不阻断。

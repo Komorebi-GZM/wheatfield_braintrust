@@ -8,10 +8,25 @@
 """
 from __future__ import annotations
 
+from typing import cast
+
 from langchain_core.embeddings import Embeddings
 from pydantic import SecretStr
 
 from maitian_agent.config.settings import get_settings
+
+
+class EmbeddingNotConfiguredError(RuntimeError):
+    """嵌入凭证未配置时抛出；构造前就报错，绝不把 None 传给 SDK。"""
+
+    code = "EMBEDDING_NOT_CONFIGURED"
+
+    def __init__(self, message: str | None = None) -> None:
+        self.message = message or (
+            "未配置嵌入模型，请设置 EMBEDDING_BASE_URL、EMBEDDING_MODEL、EMBEDDING_API_KEY"
+            "（openai_compatible 时也可回退使用 LLM_BASE_URL、LLM_MODEL、LLM_API_KEY）"
+        )
+        super().__init__(self.message)
 
 
 class BGEEmbeddings(Embeddings):
@@ -35,7 +50,7 @@ class BGEEmbeddings(Embeddings):
         """获取嵌入模型实例（首次访问才 import 重依赖）。"""
         if self._embeddings is None:
             try:
-                import sentence_transformers  # noqa: F401
+                import sentence_transformers  # type: ignore[import-not-found]  # noqa: F401
                 from langchain_community.embeddings import HuggingFaceBgeEmbeddings
 
                 self._embeddings = HuggingFaceBgeEmbeddings(
@@ -96,15 +111,36 @@ def get_embeddings(
 
     if backend == "openai_compatible":
         # 懒加载 OpenAI 兼容嵌入，未走到该分支时不 import
+        model_name = model or settings.resolved_embedding_model
+        base_url = settings.resolved_embedding_base_url
+        api_key_str = settings.get_resolved_embedding_api_key()
+
+        # base_url / model / key 任一缺失都拒绝构造，绝不把 None 传给 SDK
+        # （否则 SDK 会回退到官方默认端点）
+        missing = [
+            name
+            for name, value in (
+                ("EMBEDDING_BASE_URL/LLM_BASE_URL", base_url),
+                ("EMBEDDING_MODEL/LLM_MODEL", model_name),
+                ("EMBEDDING_API_KEY/LLM_API_KEY", api_key_str),
+            )
+            if not value
+        ]
+        if missing:
+            raise EmbeddingNotConfiguredError(
+                "openai_compatible 嵌入配置不完整，缺少："
+                + "、".join(missing)
+                + "。请设置 EMBEDDING_* 或回退使用的 LLM_*。"
+            )
+
         from langchain_openai import OpenAIEmbeddings
 
-        model_name: str = model or settings.resolved_embedding_model or ""
-        api_key_str = settings.get_resolved_embedding_api_key()
-        api_key_secret: SecretStr | None = SecretStr(api_key_str) if api_key_str else None
+        # 经上面的缺失检查后，三者均非空；用 cast 明确类型，显式传入
+        # 以避免 SDK 从环境读取 OPENAI_*
         return OpenAIEmbeddings(
-            model=model_name,
-            api_key=api_key_secret,
-            base_url=settings.resolved_embedding_base_url,
+            model=cast(str, model_name),
+            api_key=SecretStr(cast(str, api_key_str)),
+            base_url=cast(str, base_url),
             **kwargs,
         )
 
