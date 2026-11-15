@@ -67,7 +67,7 @@ uv run uvicorn maitian_agent.api.routes:app --host 0.0.0.0 --port 8000
 
 ### Docker 一键启动
 
-在仓库根目录运行（Docker Compose 2.24+，没有 `.env` 也能启动）：
+在仓库根目录使用 `compose.yaml` 运行（Docker Compose 2.24+，没有 `.env` 也能启动）：
 
 ```bash
 docker compose up --build -d
@@ -81,8 +81,7 @@ docker compose down
 两者挂载 `./data:/app/data`，上传目录固定为 `/app/data/uploads`。
 一次性 `data-init` 服务创建子目录并将宿主数据目录所有权设为 UID/GID 1000，应用以非 root 运行。
 
-环境变量见 `.env.example`：支持 LLM、嵌入、ASR 预留配置、OCR、CORS 和上传大小。
-ASR 当前仍读取 `OPENAI_API_KEY`，`ASR_*` 仅预留，尚未接入。
+环境变量见 `.env.example`：支持 LLM、嵌入、ASR（`ASR_BASE_URL` / `ASR_MODEL` / `ASR_API_KEY`）、OCR、CORS 和上传大小。
 默认镜像不含 torch、EasyOCR 或本地嵌入依赖，`OCR_BACKEND=none`。
 需要时选择对应 extras（首次使用还可能下载模型）：
 
@@ -95,7 +94,7 @@ docker build --build-arg UV_EXTRAS="--extra rag --extra ocr-easyocr" -t wheatfie
 UV_EXTRAS="--extra rag --extra ocr-easyocr" docker compose up --build -d
 ```
 
-根目录 `Dockerfile` 使用锁定依赖，CI 的 `docker build -t maitian-agent:ci .` 会自动构建它。
+根目录 `Dockerfile` 与 `compose.yaml` 使用锁定依赖，CI 的 `docker build -t maitian-agent:ci .` 会自动构建根目录 Dockerfile。
 需要 Docker 组权限时可用 `sg docker -c "docker compose up --build -d"`。
 
 ## 项目结构
