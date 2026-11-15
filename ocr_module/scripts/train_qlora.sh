@@ -4,23 +4,24 @@
 # but `swift sft` will pull the base model the first time — run it only when ready.
 set -euo pipefail
 
-BASE_MODEL="${BASE_MODEL:-SeerRay-Lab/Xiaomi-OCR-0}"   # fallback: Qwen/Qwen2.5-VL-3B-Instruct
-TRAIN_DATA="${TRAIN_DATA:-data/splits/train_swift.jsonl}"
-VAL_DATA="${VAL_DATA:-data/splits/val.jsonl}"
+BASE_MODEL="${BASE_MODEL:-SeerRay-Lab/Xiaomi-OCR-0}"
+TRAIN_DATA="${TRAIN_DATA:-datasets/handwriting_notes/splits/train_swift.jsonl}"
+VAL_DATA="${VAL_DATA:-datasets/handwriting_notes/splits/val_swift.jsonl}"
 OUT_DIR="${OUT_DIR:-outputs/qlora-v1}"
-TEMPLATE="${TEMPLATE:-qwen2_5_vl}"                     # if base unsupported, try qwen2_vl
+TEMPLATE="${TEMPLATE:-qwen3_5}"
 MAX_PIXELS="${MAX_PIXELS:-1024000}"                    # ~1024^2 long side budget
 
-# NOTE: val.jsonl is reference-format; for a train-time eval set you can export
-# a swift-format val too (see prepare_dataset.py) and pass it instead.
+# Validation uses the Swift-format export of the fixed real-page split.
 
 swift sft \
   --model "${BASE_MODEL}" \
+  --model_type qwen3_5 \
   --template "${TEMPLATE}" \
-  --train_type lora \
+  --tuner_type lora \
   --quant_method bnb --quant_bits 4 \
   --torch_dtype bfloat16 \
   --dataset "${TRAIN_DATA}" \
+  --val_dataset "${VAL_DATA}" \
   --max_length 8192 \
   --max_pixels "${MAX_PIXELS}" \
   --per_device_train_batch_size 1 \
@@ -33,8 +34,9 @@ swift sft \
   --target_modules all-linear \
   --gradient_checkpointing true \
   --freeze_vit true \
-  --logging_steps 10 \
-  --save_steps 100 \
+  --logging_steps 1 \
+  --save_strategy epoch \
+  --eval_strategy epoch \
   --save_total_limit 2 \
   --output_dir "${OUT_DIR}" \
   --warmup_ratio 0.03 \

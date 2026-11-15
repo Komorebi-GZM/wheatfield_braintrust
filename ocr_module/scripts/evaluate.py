@@ -22,7 +22,7 @@ from typing import List, Dict, Tuple
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from ocr.postprocess import extract_formulas, validate_structure  # noqa: E402
+from ocr.postprocess import extract_formulas, normalize_output, validate_structure  # noqa: E402
 
 
 # --------------------------------------------------------------------------- #
@@ -131,35 +131,70 @@ def main():
 
     pred = _read(args.pred)
     ref = _read(args.ref)
+    missing = set(ref) - set(pred)
+    extra = set(pred) - set(ref)
+    if missing or extra:
+        raise ValueError(f'Prediction/reference image mismatch: missing={sorted(missing)}, extra={sorted(extra)}')
     os.makedirs(args.out, exist_ok=True)
 
     per_page = []
     text_cers, f_em, f_cer = [], [], []
     seq_ok = 0
+    ed_sum, ref_chars_sum = 0, 0
+    pages_hyp_without_formula = 0
     for img, ref_md in ref.items():
-        hyp_md = pred.get(img, "")
-        c = cer(plain_text(ref_md), plain_text(hyp_md))
-        fm = formula_metrics(ref_md, hyp_md)
-        sm = structure_metrics(ref_md, hyp_md)
+        hyp_md = pred[img]
+        if '□' in ref_md:
+            per_page.append({'image': img, 'text_cer': None, 'formula': None,
+                             'structure': None, 'excluded_reason': 'unknown_reference'})
+            continue
+        # Identical normalisation on both sides: strip one whole-output wrapper
+        # (```fence``` / <md></md>) and unify math delimiters to the annotation
+        # convention. Reference text carries no wrapper, so it is a no-op there.
+        ref_norm, ref_norm_info = normalize_output(ref_md)
+        hyp_norm, hyp_norm_info = normalize_output(hyp_md)
+        ref_plain, hyp_plain = plain_text(ref_norm), plain_text(hyp_norm)
+        ed = levenshtein(ref_plain, hyp_plain)
+        c = cer(ref_plain, hyp_plain)
+        fm = formula_metrics(ref_norm, hyp_norm)
+        sm = structure_metrics(ref_norm, hyp_norm)
         text_cers.append(c)
+        ed_sum += ed
+        ref_chars_sum += len(ref_plain)
         if fm["exact_match_rate"] is not None:
             f_em.append(fm["exact_match_rate"]); f_cer.append(fm["formula_cer"])
+        if fm["n_ref"] and not fm["n_hyp"]:
+            pages_hyp_without_formula += 1
         seq_ok += int(sm["heading_seq_match"])
-        per_page.append({"image": img, "text_cer": c, "formula": fm, "structure": sm})
+        per_page.append({"image": img, "text_cer": c, "formula": fm, "structure": sm,
+                         "ref_chars": len(ref_plain), "hyp_chars": len(hyp_plain),
+                         "edit_distance": ed,
+                         "hyp_normalization": hyp_norm_info,
+                         "ref_normalization": ref_norm_info})
         # save error page
-        if c > 0.15 or (fm["exact_match_rate"] or 1) < 0.8:
+        if c > 0.15 or (fm["exact_match_rate"] is not None and fm["exact_match_rate"] < 0.8):
             with open(os.path.join(args.out, f"err_{os.path.basename(img)}.md"), "w", encoding="utf-8") as ef:
-                ef.write("# REF\n" + ref_md + "\n\n# HYP\n" + hyp_md)
+                ef.write("# REF\n" + ref_norm + "\n\n# HYP\n" + hyp_norm)
 
     def avg(xs):
         return round(sum(xs) / len(xs), 4) if xs else None
 
     summary = {
         "n_pages": len(ref),
+        "n_scored_pages": len(text_cers),
+        "n_excluded_unknown_reference": len(ref) - len(text_cers),
         "text_cer": avg(text_cers),
+        "text_cer_macro_definition": "各可评分页 CER 的算术平均（每页等权）",
+        "text_cer_micro": (round(ed_sum / ref_chars_sum, 4) if ref_chars_sum else None),
+        "text_cer_micro_definition": "sum(编辑距离) / sum(参考字符数)，按字符长度加权；分母是可评分页参考纯文本字符总数",
+        "total_edit_distance": ed_sum,
+        "total_ref_chars": ref_chars_sum,
+        "cer_can_exceed_100pct": True,
+        "n_pages_ref_has_formula_but_hyp_none": pages_hyp_without_formula,
+        "formula_extractor_delimiters": ["$...$", "$$...$$"],
         "formula_exact_match_rate": avg(f_em),
         "formula_cer": avg(f_cer),
-        "structure_heading_seq_match_rate": round(seq_ok / len(ref), 4) if ref else None,
+        "structure_heading_seq_match_rate": round(seq_ok / len(text_cers), 4) if text_cers else None,
         "per_page": per_page,
     }
     with open(os.path.join(args.out, "metrics.json"), "w", encoding="utf-8") as f:

@@ -1,0 +1,261 @@
+{
+  "model_dir": "C:\\Users\\48769\\.cache\\huggingface\\hub\\models--SeerRay-Lab--Xiaomi-OCR-0\\snapshots\\bbd8cf8d21f256b3644b44cb860f3a7cecb93c30",
+  "max_pixels": 1024000,
+  "note": "supervised_tokens = 参考回答的 token 数（含结束符），决定生成上限的下界",
+  "max_supervised_tokens_non_test": 611,
+  "per_page": {
+    "IMG_20261104_200839.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        72,
+        54
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1144,
+      "supervised_tokens": 140
+    },
+    "IMG_20261104_200843.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        72,
+        54
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1355,
+      "supervised_tokens": 351
+    },
+    "IMG_20261104_200854.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        72,
+        54
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1379,
+      "supervised_tokens": 375
+    },
+    "IMG_20261104_200858.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1466,
+      "supervised_tokens": 462
+    },
+    "IMG_20261104_200903.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1615,
+      "supervised_tokens": 611
+    },
+    "IMG_20261104_200907.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1453,
+      "supervised_tokens": 449
+    },
+    "IMG_20261104_200911.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1501,
+      "supervised_tokens": 497
+    },
+    "IMG_20261104_200914.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1497,
+      "supervised_tokens": 493
+    },
+    "IMG_20261104_200917.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1505,
+      "supervised_tokens": 501
+    },
+    "IMG_20261104_235900.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        72,
+        54
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1411,
+      "supervised_tokens": 407
+    },
+    "IMG_20261104_235908.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1494,
+      "supervised_tokens": 490
+    },
+    "IMG_20261104_235916.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1376,
+      "supervised_tokens": 372
+    },
+    "IMG_20261104_235922.jpg": {
+      "split": "train",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1370,
+      "supervised_tokens": 366
+    },
+    "IMG_20261104_235932.jpg": {
+      "split": "val",
+      "grid": [
+        1,
+        72,
+        54
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1533,
+      "supervised_tokens": 529
+    },
+    "IMG_20261104_235946.jpg": {
+      "split": "val",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1474,
+      "supervised_tokens": 470
+    },
+    "IMG_20261104_235955.jpg": {
+      "split": "val",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1512,
+      "supervised_tokens": 508
+    },
+    "IMG_20261105_000005.jpg": {
+      "split": "val",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1380,
+      "supervised_tokens": 376
+    },
+    "IMG_20261105_000012.jpg": {
+      "split": "val",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1462,
+      "supervised_tokens": 458
+    },
+    "IMG_20261105_000020.jpg": {
+      "split": "test",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1118,
+      "supervised_tokens": 114
+    },
+    "IMG_20261105_000028.jpg": {
+      "split": "test",
+      "grid": [
+        1,
+        72,
+        54
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1520,
+      "supervised_tokens": 516
+    },
+    "IMG_20261105_000037.jpg": {
+      "split": "test",
+      "grid": [
+        1,
+        72,
+        54
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1489,
+      "supervised_tokens": 485
+    },
+    "IMG_20261105_000044.jpg": {
+      "split": "test",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1539,
+      "supervised_tokens": 535
+    },
+    "IMG_20261105_000051.jpg": {
+      "split": "test",
+      "grid": [
+        1,
+        54,
+        72
+      ],
+      "prompt_tokens": 1004,
+      "total_tokens": 1364,
+      "supervised_tokens": 360
+    }
+  }
+}

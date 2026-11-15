@@ -1,0 +1,222 @@
+{
+  "page": "IMG_20261104_235955.jpg",
+  "arms": {
+    "base": {
+      "label": "基座（无 adapter）",
+      "prediction_file": "outputs/smoke_v3/base_235955.jsonl",
+      "input": {
+        "image_path": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235955.jpg",
+        "image_sha256": "373f55638b7b77e665de451c88a359f51f949b328b1c1a8ede675dd3e15e601a",
+        "original_size_wh": [
+          4096,
+          3072
+        ],
+        "processed_size_wh": [
+          1152,
+          864
+        ],
+        "max_pixels": 1024000,
+        "image_grid_thw": [
+          [
+            1,
+            54,
+            72
+          ]
+        ],
+        "patch_size": 16,
+        "merge_size": 2,
+        "n_patches": 3888,
+        "n_visual_tokens": 972,
+        "prompt_tokens": 1008,
+        "n_image_pad_tokens": 972,
+        "prompt_sha256": "557b0658a32f16024d414d155f18ce41997f5e2d0f4c19e10564d4da470c9354",
+        "system_prompt_used": false
+      },
+      "utf8": {
+        "file_bytes": 10518,
+        "markdown_chars": 1791,
+        "decode_ok": true,
+        "replacement_chars": 0,
+        "readable_markdown": true,
+        "wrapper_stripped": null
+      },
+      "generation": {
+        "generated_tokens": 1024,
+        "max_new_tokens": 1024,
+        "finish_reason": "length",
+        "hit_length_cap": true,
+        "last_token_id": 735,
+        "eos_token_id": 248046,
+        "repetition": true,
+        "rep_rules_flagged": [
+          "unit_run",
+          "ngram"
+        ]
+      },
+      "perf": {
+        "elapsed_seconds": 54.195,
+        "peak_cuda_allocated_mib": 989.2,
+        "peak_cuda_reserved_mib": 1030.0,
+        "gpu_card_used_mib_before": [
+          1713,
+          8188
+        ],
+        "gpu_card_used_mib_after": [
+          1914,
+          8188
+        ],
+        "note": "nvidia-smi memory.used 为整卡占用（含其它进程），Windows WDDM 下不等于本进程独占显存"
+      },
+      "checks": {
+        "text": {
+          "ref_plain_chars": 532,
+          "hyp_plain_chars": 1024,
+          "text_cer": 1.9192,
+          "ref_head": "乘除运算无符号乘：`MULSRC`，SRC可以为寄存器或存储单元，不能是立即数及段寄存器。字节乘：。字乘：（高）、（低）。只影响CF、OF。",
+          "hyp_head": "<md>课程名称课程代码课程名称课程代码课程名称课程代码课程名称课程代码课程名称课程代码课程名称课程代码课程名称课程代码课程名称课程代码课程"
+        },
+        "headings": {
+          "ref_count": 2,
+          "hyp_count": 0,
+          "ref_levels": [
+            2,
+            2
+          ],
+          "hyp_levels": [],
+          "match": false
+        },
+        "lists": {
+          "ref_count": 10,
+          "hyp_count": 0,
+          "hyp_sample": []
+        },
+        "formulas": {
+          "ref_count": 8,
+          "hyp_count": 0,
+          "extractable": false,
+          "ref_sample": [
+            "AX\\leftarrow(AL)\\times(SRC)",
+            "DX"
+          ],
+          "hyp_sample": []
+        }
+      },
+      "markdown": "<md> | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 |",
+      "raw_output": "<md> | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程名称 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 | 课程代码 |"
+    },
+    "ft": {
+      "label": "checkpoint-26",
+      "prediction_file": "outputs/smoke_v3/ft_235955.jsonl",
+      "input": {
+        "image_path": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235955.jpg",
+        "image_sha256": "373f55638b7b77e665de451c88a359f51f949b328b1c1a8ede675dd3e15e601a",
+        "original_size_wh": [
+          4096,
+          3072
+        ],
+        "processed_size_wh": [
+          1152,
+          864
+        ],
+        "max_pixels": 1024000,
+        "image_grid_thw": [
+          [
+            1,
+            54,
+            72
+          ]
+        ],
+        "patch_size": 16,
+        "merge_size": 2,
+        "n_patches": 3888,
+        "n_visual_tokens": 972,
+        "prompt_tokens": 1008,
+        "n_image_pad_tokens": 972,
+        "prompt_sha256": "557b0658a32f16024d414d155f18ce41997f5e2d0f4c19e10564d4da470c9354",
+        "system_prompt_used": false
+      },
+      "utf8": {
+        "file_bytes": 8237,
+        "markdown_chars": 1486,
+        "decode_ok": true,
+        "replacement_chars": 0,
+        "readable_markdown": true,
+        "wrapper_stripped": null
+      },
+      "generation": {
+        "generated_tokens": 1024,
+        "max_new_tokens": 1024,
+        "finish_reason": "length",
+        "hit_length_cap": true,
+        "last_token_id": 3,
+        "eos_token_id": 248046,
+        "repetition": false,
+        "rep_rules_flagged": []
+      },
+      "perf": {
+        "elapsed_seconds": 96.728,
+        "peak_cuda_allocated_mib": 1009.4,
+        "peak_cuda_reserved_mib": 1050.0,
+        "gpu_card_used_mib_before": [
+          1757,
+          8188
+        ],
+        "gpu_card_used_mib_after": [
+          1936,
+          8188
+        ],
+        "note": "nvidia-smi memory.used 为整卡占用（含其它进程），Windows WDDM 下不等于本进程独占显存"
+      },
+      "checks": {
+        "text": {
+          "ref_plain_chars": 532,
+          "hyp_plain_chars": 162,
+          "text_cer": 0.9079,
+          "ref_head": "乘除运算无符号乘：`MULSRC`，SRC可以为寄存器或存储单元，不能是立即数及段寄存器。字节乘：。字乘：（高）、（低）。只影响CF、OF。",
+          "hyp_head": "山东大学输入输入：与为输入，或为输出。不可能是即输入或输出。转换：子集：，影响：输入：输出：转换：，（连续）子集：，影响：输出：转换：和为中"
+        },
+        "headings": {
+          "ref_count": 2,
+          "hyp_count": 6,
+          "ref_levels": [
+            2,
+            2
+          ],
+          "hyp_levels": [
+            2,
+            2,
+            2,
+            2,
+            2,
+            2
+          ],
+          "match": false
+        },
+        "lists": {
+          "ref_count": 10,
+          "hyp_count": 30,
+          "hyp_sample": [
+            "- 输入：$S_{PC} \\rightarrow$ 与 $S_{PC}$ 为输入，或 $S_{PC}$ 为输出。不可能是即输入或输出。",
+            "- 转换：$A_X \\leftarrow (A_X \\cap S_{PC})$",
+            "- 子集：$D_X(\\text{高})$，$A_X(\\text{低}) \\rightarrow R A X \\times (S_{PC})$"
+          ]
+        },
+        "formulas": {
+          "ref_count": 8,
+          "hyp_count": 102,
+          "extractable": true,
+          "ref_sample": [
+            "AX\\leftarrow(AL)\\times(SRC)",
+            "DX"
+          ],
+          "hyp_sample": [
+            "S_{PC} \\rightarrow",
+            "S_{PC}"
+          ]
+        }
+      },
+      "markdown": "## 山东大学\n\n## 1. 输入\n\n- 输入：$S_{PC} \\rightarrow$ 与 $S_{PC}$ 为输入，或 $S_{PC}$ 为输出。不可能是即输入或输出。\n- 转换：$A_X \\leftarrow (A_X \\cap S_{PC})$\n- 子集：$D_X(\\text{高})$，$A_X(\\text{低}) \\rightarrow R A X \\times (S_{PC})$\n- 影响：$O_F$\n- 输入：$I_{IMUL} \\setminus S_{IC}$\n- 输出：$D_{UV} \\setminus Q_S$\n- 转换：$(A_X \\cap O_F) \\rightarrow A_L(\\text{高})$，$A_H(\\text{低})$（连续）\n- 子集：$(D_X, A_X) \\cap (O_F) \\rightarrow A_X(\\text{高})$，$D_X(\\text{低})$\n- 影响：$O_F$\n- 输出：$I_{TP} \\setminus O_F$\n- 转换：$A_L(\\text{高})$ 和 $A_H(\\text{低})$ 为 $A_H$\n- $A_X$ 中低、$A_H$ 中高、$C$ 中低、$C$ 中高。\n\n## 2. 输出\n\n- $C_{BUU}$：\n- $C_{OUT}$：\n- $D_{HA}(\\text{高})$：把 $A_H$ 中低、$C$ 中低、$C$ 中高。\n- $D_{AS}(\\text{低})$：\n- $A_L(\\text{高})$：$> 9$ 或 $A_H(\\text{低})$，$+ 0.6$ 或 $A_H(\\text{高})$\n- $P_{AS}(\\text{高})$：$> 8$ 或 $C = 1$，$+ 0.6$ 或 $C$\n- $A_L(\\text{高})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n- $A_H(\\text{低})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n\n## 3. 处理\n\n- $D_{HA}(\\text{高})$、$D_{AS}(\\text{低})$：$> 9$ 或 $A_H(\\text{低})$，$+ 0.6$ 或 $A_H(\\text{高})$\n- $P_{AS}(\\text{高})$：$> 8$ 或 $C = 1$，$+ 0.6$ 或 $C$\n- $A_L(\\text{高})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n- $A_H(\\text{低})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n\n## 4. 处理\n\n- $D_{HA}(\\text{高})$、$D_{AS}(\\text{低})$：$> 9$ 或 $A_H(\\text{低})$，$+ 0.6$ 或 $A_H(\\text{高})$\n- $P_{AS}(\\text{高})$：$> 8$ 或 $C = 1$，$+ 0.6$ 或 $C$\n- $A_L(\\text{高})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n- $A_H(\\text{低})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n\n## 5. 处理\n\n- $D_{HA}(\\text{高})$、$D_{AS}(\\text{低})$：$> 9$ 或 $A_H(\\text{低})$，$+ 0.6$ 或 $A_H(\\text{高})$\n- $P_{AS}(\\text{高})$：$> 8$ 或 $C = 1$，$+ 0.6$ 或 $C$",
+      "raw_output": "## 山东大学\n\n## 1. 输入\n\n- 输入：$S_{PC} \\rightarrow$ 与 $S_{PC}$ 为输入，或 $S_{PC}$ 为输出。不可能是即输入或输出。\n- 转换：$A_X \\leftarrow (A_X \\cap S_{PC})$\n- 子集：$D_X(\\text{高})$，$A_X(\\text{低}) \\rightarrow R A X \\times (S_{PC})$\n- 影响：$O_F$\n- 输入：$I_{IMUL} \\setminus S_{IC}$\n- 输出：$D_{UV} \\setminus Q_S$\n- 转换：$(A_X \\cap O_F) \\rightarrow A_L(\\text{高})$，$A_H(\\text{低})$（连续）\n- 子集：$(D_X, A_X) \\cap (O_F) \\rightarrow A_X(\\text{高})$，$D_X(\\text{低})$\n- 影响：$O_F$\n- 输出：$I_{TP} \\setminus O_F$\n- 转换：$A_L(\\text{高})$ 和 $A_H(\\text{低})$ 为 $A_H$\n- $A_X$ 中低、$A_H$ 中高、$C$ 中低、$C$ 中高。\n\n## 2. 输出\n\n- $C_{BUU}$：\n- $C_{OUT}$：\n- $D_{HA}(\\text{高})$：把 $A_H$ 中低、$C$ 中低、$C$ 中高。\n- $D_{AS}(\\text{低})$：\n- $A_L(\\text{高})$：$> 9$ 或 $A_H(\\text{低})$，$+ 0.6$ 或 $A_H(\\text{高})$\n- $P_{AS}(\\text{高})$：$> 8$ 或 $C = 1$，$+ 0.6$ 或 $C$\n- $A_L(\\text{高})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n- $A_H(\\text{低})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n\n## 3. 处理\n\n- $D_{HA}(\\text{高})$、$D_{AS}(\\text{低})$：$> 9$ 或 $A_H(\\text{低})$，$+ 0.6$ 或 $A_H(\\text{高})$\n- $P_{AS}(\\text{高})$：$> 8$ 或 $C = 1$，$+ 0.6$ 或 $C$\n- $A_L(\\text{高})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n- $A_H(\\text{低})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n\n## 4. 处理\n\n- $D_{HA}(\\text{高})$、$D_{AS}(\\text{低})$：$> 9$ 或 $A_H(\\text{低})$，$+ 0.6$ 或 $A_H(\\text{高})$\n- $P_{AS}(\\text{高})$：$> 8$ 或 $C = 1$，$+ 0.6$ 或 $C$\n- $A_L(\\text{高})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n- $A_H(\\text{低})$：$> 9$，$C = 1$，$+ 0.6$ 或 $C$\n\n## 5. 处理\n\n- $D_{HA}(\\text{高})$、$D_{AS}(\\text{低})$：$> 9$ 或 $A_H(\\text{低})$，$+ 0.6$ 或 $A_H(\\text{高})$\n- $P_{AS}(\\text{高})$：$> 8$ 或 $C = 1$，$+ 0.6$ 或 $C$"
+    }
+  }
+}

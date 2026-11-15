@@ -1,0 +1,339 @@
+{
+  "split": "val",
+  "max_pixels": 1024000,
+  "max_new_tokens": 1024,
+  "adapter": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\outputs\\qlora-v1\\v2-20261115-114258\\checkpoint-4",
+  "n_pages": 5,
+  "results": [
+    {
+      "arm": "base",
+      "page": "IMG_20261104_235932.jpg",
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235932.jpg",
+      "ref_supervised_tokens": 529,
+      "grid": [
+        [
+          1,
+          72,
+          54
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008,
+      "max_new_tokens": 1024,
+      "generated_tokens": 486,
+      "finish": "eos",
+      "stopped_on_eos": true,
+      "hit_cap": false,
+      "rep_detected": false,
+      "rep_line_run": 1,
+      "rep_template_run": 0,
+      "rep_ngram_coverage": 0.1857,
+      "chars": 754,
+      "wrapper": "md_tag",
+      "sec": 28.6,
+      "gpu_mib": [
+        2200,
+        8188
+      ],
+      "peak_alloc_mib": 989.2
+    },
+    {
+      "arm": "base",
+      "page": "IMG_20261104_235946.jpg",
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235946.jpg",
+      "ref_supervised_tokens": 470,
+      "grid": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008,
+      "max_new_tokens": 1024,
+      "generated_tokens": 347,
+      "finish": "eos",
+      "stopped_on_eos": true,
+      "hit_cap": false,
+      "rep_detected": true,
+      "rep_line_run": 1,
+      "rep_template_run": 0,
+      "rep_ngram_coverage": 0.2558,
+      "chars": 430,
+      "wrapper": "md_tag",
+      "sec": 20.0,
+      "gpu_mib": [
+        2216,
+        8188
+      ],
+      "peak_alloc_mib": 988.5
+    },
+    {
+      "arm": "base",
+      "page": "IMG_20261104_235955.jpg",
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235955.jpg",
+      "ref_supervised_tokens": 508,
+      "grid": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008,
+      "max_new_tokens": 1024,
+      "generated_tokens": 1024,
+      "finish": "length",
+      "stopped_on_eos": false,
+      "hit_cap": true,
+      "rep_detected": true,
+      "rep_line_run": 1,
+      "rep_template_run": 1,
+      "rep_ngram_coverage": 1.0,
+      "chars": 1791,
+      "wrapper": null,
+      "sec": 56.8,
+      "gpu_mib": [
+        2200,
+        8188
+      ],
+      "peak_alloc_mib": 988.5
+    },
+    {
+      "arm": "base",
+      "page": "IMG_20261105_000005.jpg",
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000005.jpg",
+      "ref_supervised_tokens": 376,
+      "grid": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008,
+      "max_new_tokens": 1024,
+      "generated_tokens": 45,
+      "finish": "eos",
+      "stopped_on_eos": true,
+      "hit_cap": false,
+      "rep_detected": false,
+      "rep_line_run": 3,
+      "rep_template_run": 0,
+      "rep_ngram_coverage": 0.4348,
+      "chars": 69,
+      "wrapper": "md_tag",
+      "sec": 3.1,
+      "gpu_mib": [
+        2216,
+        8188
+      ],
+      "peak_alloc_mib": 988.5
+    },
+    {
+      "arm": "base",
+      "page": "IMG_20261105_000012.jpg",
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000012.jpg",
+      "ref_supervised_tokens": 458,
+      "grid": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008,
+      "max_new_tokens": 1024,
+      "generated_tokens": 421,
+      "finish": "eos",
+      "stopped_on_eos": true,
+      "hit_cap": false,
+      "rep_detected": false,
+      "rep_line_run": 1,
+      "rep_template_run": 0,
+      "rep_ngram_coverage": 0.0862,
+      "chars": 696,
+      "wrapper": "md_tag",
+      "sec": 22.5,
+      "gpu_mib": [
+        2220,
+        8188
+      ],
+      "peak_alloc_mib": 988.5
+    },
+    {
+      "arm": "ft",
+      "page": "IMG_20261104_235932.jpg",
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235932.jpg",
+      "ref_supervised_tokens": 529,
+      "grid": [
+        [
+          1,
+          72,
+          54
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008,
+      "max_new_tokens": 1024,
+      "generated_tokens": 505,
+      "finish": "eos",
+      "stopped_on_eos": true,
+      "hit_cap": false,
+      "rep_detected": false,
+      "rep_line_run": 1,
+      "rep_template_run": 1,
+      "rep_ngram_coverage": 0.0384,
+      "chars": 782,
+      "wrapper": "code_fence",
+      "sec": 51.2,
+      "gpu_mib": [
+        2607,
+        8188
+      ],
+      "peak_alloc_mib": 1009.2
+    },
+    {
+      "arm": "ft",
+      "page": "IMG_20261104_235946.jpg",
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235946.jpg",
+      "ref_supervised_tokens": 470,
+      "grid": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008,
+      "max_new_tokens": 1024,
+      "generated_tokens": 621,
+      "finish": "eos",
+      "stopped_on_eos": true,
+      "hit_cap": false,
+      "rep_detected": true,
+      "rep_line_run": 1,
+      "rep_template_run": 1,
+      "rep_ngram_coverage": 0.6208,
+      "chars": 741,
+      "wrapper": "code_fence",
+      "sec": 59.9,
+      "gpu_mib": [
+        2570,
+        8188
+      ],
+      "peak_alloc_mib": 1009.2
+    },
+    {
+      "arm": "ft",
+      "page": "IMG_20261104_235955.jpg",
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235955.jpg",
+      "ref_supervised_tokens": 508,
+      "grid": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008,
+      "max_new_tokens": 1024,
+      "generated_tokens": 1024,
+      "finish": "length",
+      "stopped_on_eos": false,
+      "hit_cap": true,
+      "rep_detected": true,
+      "rep_line_run": 7,
+      "rep_template_run": 7,
+      "rep_ngram_coverage": 0.2494,
+      "chars": 1804,
+      "wrapper": null,
+      "sec": 110.3,
+      "gpu_mib": [
+        2657,
+        8188
+      ],
+      "peak_alloc_mib": 1009.2
+    },
+    {
+      "arm": "ft",
+      "page": "IMG_20261105_000005.jpg",
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000005.jpg",
+      "ref_supervised_tokens": 376,
+      "grid": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008,
+      "max_new_tokens": 1024,
+      "generated_tokens": 1024,
+      "finish": "length",
+      "stopped_on_eos": false,
+      "hit_cap": true,
+      "rep_detected": true,
+      "rep_line_run": 105,
+      "rep_template_run": 105,
+      "rep_ngram_coverage": 0.6808,
+      "chars": 1557,
+      "wrapper": null,
+      "sec": 111.2,
+      "gpu_mib": [
+        2749,
+        8188
+      ],
+      "peak_alloc_mib": 1009.2
+    },
+    {
+      "arm": "ft",
+      "page": "IMG_20261105_000012.jpg",
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000012.jpg",
+      "ref_supervised_tokens": 458,
+      "grid": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008,
+      "max_new_tokens": 1024,
+      "generated_tokens": 485,
+      "finish": "eos",
+      "stopped_on_eos": true,
+      "hit_cap": false,
+      "rep_detected": true,
+      "rep_line_run": 1,
+      "rep_template_run": 1,
+      "rep_ngram_coverage": 0.2682,
+      "chars": 676,
+      "wrapper": null,
+      "sec": 62.4,
+      "gpu_mib": [
+        2742,
+        8188
+      ],
+      "peak_alloc_mib": 1009.2
+    }
+  ]
+}

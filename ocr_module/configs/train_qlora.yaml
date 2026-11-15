@@ -2,8 +2,9 @@
 # Copy and edit; values are tuned for RTX 4060 8GB. See model design §5.
 
 model:
-  base: SeerRay-Lab/Xiaomi-OCR-0        # fallback: Qwen/Qwen2.5-VL-3B-Instruct
-  template: qwen2_5_vl                  # if unsupported, try qwen2_vl
+  base: SeerRay-Lab/Xiaomi-OCR-0
+  model_type: qwen3_5
+  template: qwen3_5
   trust_remote_code: true
 
 quantization:
@@ -13,7 +14,7 @@ quantization:
   double_quant: true
 
 lora:
-  train_type: lora
+  tuner_type: lora
   rank: 8            # 8-16
   alpha: 32          # 16-32
   dropout: 0.05
@@ -34,12 +35,14 @@ training:
   max_length: 8192
   max_pixels: 1024000     # ~1024^2 长边预算；OOM 时降到 768^2≈589824
   dataloader_num_workers: 2
-  logging_steps: 10
-  save_steps: 100
+  logging_steps: 1
+  save_strategy: epoch
+  eval_strategy: epoch
   save_total_limit: 2
 
 data:
-  train: data/splits/train_swift.jsonl
+  train: datasets/handwriting_notes/splits/train_swift.jsonl
+  validation: datasets/handwriting_notes/splits/val_swift.jsonl
   output_dir: outputs/qlora-v1
 
 # 时间预算：4060 8GB 约 15h+（视数据量与 max_pixels）。Mac M2 不训练，仅推理/评测。

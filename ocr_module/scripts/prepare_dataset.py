@@ -79,12 +79,27 @@ def main():
 
     real = _read_jsonl(args.real_ann)
     synth = _read_jsonl(args.synth_manifest)
+    if any(item.get("label_version") != 2 for item in synth):
+        raise ValueError("Regenerate synthetic data: old labels may not match images")
+    if not real or any(not str(item.get("markdown", "")).strip() for item in real):
+        raise ValueError("Real annotations must be non-empty before splitting")
+    if any(item.get("reviewed") is not True for item in real):
+        raise ValueError("Each real annotation must be reviewed against its image before splitting")
+    if len(real) <= args.val_pages + args.test_pages or min(args.val_pages, args.test_pages) <= 0:
+        raise ValueError("Need non-empty real train, validation and test sets")
+    if len({item["image"] for item in real}) != len(real):
+        raise ValueError("Duplicate real image paths")
     real.sort(key=lambda x: str(x.get("image")))
     os.makedirs(args.out_dir, exist_ok=True)
 
     # Rebase image paths to absolute relative to their own base dirs.
     _rebase(real, args.real_dir)
     _rebase(synth, os.path.dirname(args.synth_manifest) or ".")
+    if set(x["image"] for x in real) & set(x["image"] for x in synth):
+        raise ValueError("Real and synthetic images overlap")
+    for item in real + synth:
+        if not os.path.isfile(item["image"]):
+            raise FileNotFoundError(item["image"])
 
     n_test = min(args.test_pages, max(0, len(real) - 1))
     n_val = min(args.val_pages, max(0, len(real) - n_test))
@@ -104,6 +119,10 @@ def main():
 
     with open(os.path.join(args.out_dir, "train_swift.jsonl"), "w", encoding="utf-8") as f:
         for it in train:
+            f.write(json.dumps(_to_swift(it), ensure_ascii=False) + "\n")
+
+    with open(os.path.join(args.out_dir, "val_swift.jsonl"), "w", encoding="utf-8") as f:
+        for it in val:
             f.write(json.dumps(_to_swift(it), ensure_ascii=False) + "\n")
 
     with open(os.path.join(args.out_dir, "train_sharegpt.json"), "w", encoding="utf-8") as f:

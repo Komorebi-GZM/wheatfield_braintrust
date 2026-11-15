@@ -65,7 +65,9 @@ def _sample_section(rng: random.Random) -> Dict:
     sub = rng.choice(["定义与原理", "公式推导", "例题分析", "易错点"])
     bullets = rng.sample(_BULLETS, k=rng.randint(1, 3))
     formulas = rng.sample(_FORMULAS, k=rng.randint(1, 3))
-    include_table = rng.random() < 0.15  # tables are rare
+    # Table rendering does not yet render mathematical cells as mathematical
+    # notation. Do not generate labels for tables that may be absent or wrong.
+    include_table = False
     return {"title": title, "sub": sub, "bullets": bullets,
             "formulas": formulas, "table": _TABLE_ROWS if include_table else None}
 
@@ -121,12 +123,9 @@ def _render_formula(latex: str, width: int) -> Image.Image:
             buf.seek(0)
             im = Image.open(buf).convert("RGB")
             return im
-        except Exception:
-            pass
-    img = Image.new("RGB", (width, 60), "white")
-    d = ImageDraw.Draw(img)
-    d.text((10, 10), latex, fill="black", font=_load_font(None, 22))
-    return img
+        except Exception as exc:
+            raise RuntimeError(f"Cannot render formula: {latex}") from exc
+    raise RuntimeError("matplotlib is required to render formulas faithfully")
 
 
 def _paper_bg(w: int, h: int, rng: random.Random) -> Image.Image:
@@ -207,7 +206,7 @@ def main():
             img = render_page(sec, rng, args.font)
             rel = f"images/synth_{i:05d}.png"
             img.save(os.path.join(args.out, rel))
-            mf.write(json.dumps({"image": rel, "markdown": md}, ensure_ascii=False) + "\n")
+            mf.write(json.dumps({"image": rel, "markdown": md, "label_version": 2}, ensure_ascii=False) + "\n")
     print(f"[build_synth] wrote {args.count} pages -> {args.out} (manifest: {manifest_path})")
     if not _HAS_MPL:
         print("[build_synth] matplotlib 不可用：公式以纯文本近似渲染；建议安装 matplotlib 以提高逼真度")

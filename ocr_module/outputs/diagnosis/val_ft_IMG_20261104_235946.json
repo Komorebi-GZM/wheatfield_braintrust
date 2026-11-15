@@ -1,0 +1,152 @@
+{
+  "case": "val_ft_IMG_20261104_235946",
+  "arm": "ft",
+  "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235946.jpg",
+  "markdown": "# 小东大学\n\n## 课程结构\n\n### ① 目标操作，源入\n- MOV\n- ② 目标操作\n- MOV\n- ③ 源入操作\n- MOV\n- ④ 源入操作\n- MOV\n- ⑤ 源入操作\n- MOV\n- ⑥ 源入操作\n- MOV\n- ⑦ 源入操作\n- MOV\n- ⑧ 源入操作\n- MOV\n- ⑨ 源入操作\n- MOV\n- ⑩ 源入操作\n- MOV\n- ⑪ 源入操作\n- MOV\n- ⑫ 源入操作\n- MOV\n- ⑬ 源入操作\n- MOV\n- ⑭ 源入操作\n- MOV\n- ⑮ 源入操作\n- MOV\n- ⑯ 源入操作\n- MOV\n- ⑰ 源入操作\n- MOV\n- ⑱ 源入操作\n- MOV\n- ⑲ 源入操作\n- MOV\n- ⑳ 源入操作\n- MOV\n- ㉑ 源入操作\n- MOV\n- ㉒ 源入操作\n- MOV\n- ㉓ 源入操作\n- MOV\n- ㉔ 源入操作\n- MOV\n- ㉕ 源入操作\n- MOV\n- ㉖ 源入操作\n- MOV\n- ㉗ 源入操作\n- MOV\n- ㉘ 源入操作\n- MOV\n- ㉙ 源入操作\n- MOV\n- ㉚ 源入操作\n- MOV\n- ㉛ 源入操作\n- MOV\n- ㉜ 源入操作\n- MOV\n- ㉝ 源入操作\n- MOV\n- ㉞ 源入操作\n- MOV\n- 㟞 源入操作\n- MOV\n- 㟟 源入操作\n- MOV\n- 㟁 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV",
+  "raw_output": "```markdown\n# 小东大学\n\n## 课程结构\n\n### ① 目标操作，源入\n- MOV\n- ② 目标操作\n- MOV\n- ③ 源入操作\n- MOV\n- ④ 源入操作\n- MOV\n- ⑤ 源入操作\n- MOV\n- ⑥ 源入操作\n- MOV\n- ⑦ 源入操作\n- MOV\n- ⑧ 源入操作\n- MOV\n- ⑨ 源入操作\n- MOV\n- ⑩ 源入操作\n- MOV\n- ⑪ 源入操作\n- MOV\n- ⑫ 源入操作\n- MOV\n- ⑬ 源入操作\n- MOV\n- ⑭ 源入操作\n- MOV\n- ⑮ 源入操作\n- MOV\n- ⑯ 源入操作\n- MOV\n- ⑰ 源入操作\n- MOV\n- ⑱ 源入操作\n- MOV\n- ⑲ 源入操作\n- MOV\n- ⑳ 源入操作\n- MOV\n- ㉑ 源入操作\n- MOV\n- ㉒ 源入操作\n- MOV\n- ㉓ 源入操作\n- MOV\n- ㉔ 源入操作\n- MOV\n- ㉕ 源入操作\n- MOV\n- ㉖ 源入操作\n- MOV\n- ㉗ 源入操作\n- MOV\n- ㉘ 源入操作\n- MOV\n- ㉙ 源入操作\n- MOV\n- ㉚ 源入操作\n- MOV\n- ㉛ 源入操作\n- MOV\n- ㉜ 源入操作\n- MOV\n- ㉝ 源入操作\n- MOV\n- ㉞ 源入操作\n- MOV\n- 㟞 源入操作\n- MOV\n- 㟟 源入操作\n- MOV\n- 㟁 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n- 㟛 源入操作\n- MOV\n```",
+  "run": {
+    "protocol_version": "v2",
+    "engine": "ocr.engine/OCREngine",
+    "base_model": "SeerRay-Lab/Xiaomi-OCR-0",
+    "load_in_4bit": true,
+    "adapter": {
+      "adapter_dir": "outputs/qlora-v1/v2-20261115-114258/checkpoint-4",
+      "adapter_config_sha256": "4119d0c886f69f8e15575535eade792e3d3cc520912e61d7c484543c3e111430",
+      "adapter_weights_sha256": "8121f7abfdaf2b997e2e3e0eb66d2f644a4e40fac5439dd38f869c19055fbcbb",
+      "r": 8,
+      "lora_alpha": 32.0,
+      "lora_dropout": 0.05,
+      "target_modules": "^(model\\.language_model(?=\\.).*\\.(in_proj_qkv|gate_proj|k_proj|down_proj|out_proj|in_proj_a|q_proj|v_proj|in_proj_z|in_proj_b|up_proj|o_proj))$",
+      "base_model_name_or_path": "C:\\Users\\48769\\.cache\\huggingface\\hub\\models--SeerRay-Lab--Xiaomi-OCR-0\\snapshots\\bbd8cf8d21f256b3644b44cb860f3a7cecb93c30",
+      "n_tensors_on_disk": 372,
+      "n_lora_tensors_live": 372,
+      "n_matched": 372,
+      "missing_in_model": 0,
+      "missing_examples": [],
+      "extra_in_model": 0,
+      "value_mismatched": 0,
+      "value_mismatch_examples": [],
+      "max_abs_diff": 0.0,
+      "peft_loader_missing_keys": 474,
+      "peft_loader_missing_lora_keys": 0,
+      "peft_loader_missing_note": "missing_keys 里绝大多数是未提供的 4bit 基座权重，只把 lora_ 前缀的缺失视为失败",
+      "peft_loader_unexpected_keys": 0,
+      "n_lora_modules": 372,
+      "lora_modules_outside_language_model": 0,
+      "lora_B_nonzero": 186,
+      "lora_B_all_zero": 0,
+      "lora_params_disk": 5411328,
+      "lora_params_live": 5411328,
+      "trainable_params": 0,
+      "model_training_mode": false,
+      "inference_uses_no_grad": true,
+      "weights_verified": true
+    },
+    "image_path": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235946.jpg",
+    "prompt": {
+      "system_prompt_used": false,
+      "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+      "prompt_sha256": "557b0658a32f16024d414d155f18ce41997f5e2d0f4c19e10564d4da470c9354",
+      "prompt_tokens": 1008,
+      "n_image_pad_tokens": 972
+    },
+    "image": {
+      "sha256": "6eca5c2662822f1d7e99605d74b696c0bd17288429e6e23d077242619a5e0879",
+      "original_size_wh": [
+        4096,
+        3072
+      ],
+      "max_pixels": 1024000,
+      "patch_size": 16,
+      "merge_size": 2,
+      "image_grid_thw": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "processed_size_wh": [
+        1152,
+        864
+      ]
+    },
+    "generation": {
+      "max_new_tokens": 1024,
+      "do_sample": false,
+      "generated_tokens": 621,
+      "eos_token_id": 248046,
+      "last_token_id": 248046,
+      "stopped_on_eos": true,
+      "hit_length_cap": false,
+      "finish_reason": "eos"
+    },
+    "repetition": {
+      "line_run": {
+        "max_consecutive": 1,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "# 小东大学"
+      },
+      "unit_run": {
+        "max_consecutive": 11,
+        "threshold": 5,
+        "flagged": true,
+        "sample": " 源入操作\n- MOV\n- 㟛"
+      },
+      "template_line_run": {
+        "max_consecutive": 1,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "# 小东大学",
+        "raw_sample": "# 小东大学",
+        "rule": "连续 >=5 行仅数字不同（数字替换为 # 后相同），表格行不参与"
+      },
+      "ngram": {
+        "n": 10,
+        "top_count": 46,
+        "coverage": 0.6208,
+        "thresholds": [
+          20,
+          0.25
+        ],
+        "flagged": true,
+        "sample": "操作\n- MOV\n-"
+      },
+      "detected": true
+    },
+    "postprocess": {
+      "raw_chars": 757,
+      "wrapper_stripped": "code_fence",
+      "display_math_converted": 0,
+      "inline_math_converted": 0,
+      "normalized_chars": 741,
+      "markdown_chars": 741,
+      "changed": true
+    },
+    "perf": {
+      "elapsed_seconds": 59.949,
+      "peak_cuda_allocated_bytes": 1058178048,
+      "peak_cuda_reserved_bytes": 1103101952,
+      "gpu_memory_used_before_mib": [
+        2607,
+        8188
+      ],
+      "gpu_memory_used_after_mib": [
+        2570,
+        8188
+      ],
+      "gpu_memory_note": "nvidia-smi memory.used 为整卡占用（含其它进程），Windows WDDM 下不等于本进程独占显存"
+    },
+    "structure_ok": true,
+    "latex_issues": [],
+    "stats": {
+      "headings": 3,
+      "list_items": 95,
+      "tables": 0,
+      "formulas": 0
+    }
+  }
+}

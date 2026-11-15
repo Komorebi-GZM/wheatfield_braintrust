@@ -1,8 +1,24 @@
 data/
-outputs/
+# outputs: 只把体积小的文字类产物纳入版本管理（预测/指标/报告/证据 JSON），
+# 权重、缓存、裁切图片仍排除。negation 必须写在 outputs/* 之下才生效。
+outputs/*
+!outputs/annotation_fixes_v2.json
+!outputs/diagnosis/
+!outputs/eval_v3/
+!outputs/protocol/
+!outputs/smoke_v3/
+outputs/eval_v3/crops/
+outputs/baseline/
+outputs/finetuned/
+outputs/modelscope_cache/
+outputs/qlora-v1/
+outputs/qlora-v2/
+outputs/splits_backup_v1/
 __pycache__/
 *.pyc
 .venv/
+.pytest_cache/
+.pytest_tmp/
 *.safetensors
 *.bin
 *.pt

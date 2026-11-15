@@ -22,11 +22,17 @@ def main():
     ap.add_argument("--adapter", default=None)
     ap.add_argument("--no-4bit", action="store_true")
     ap.add_argument("--show-markdown", action="store_true")
+    ap.add_argument("--output", help="Write the complete result as UTF-8 JSON")
     args = ap.parse_args()
 
     eng = OCREngine(base_model=args.base, adapter_dir=args.adapter,
                     load_in_4bit=not args.no_4bit)
     res = eng.recognize_page(args.image)
+    res["run"] = eng.last_run
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as f:
+            json.dump(res, f, ensure_ascii=False, indent=2)
+            f.write("\n")
     if args.show_markdown:
         print(res.pop("markdown"))
     print(json.dumps(res, ensure_ascii=False, indent=2))

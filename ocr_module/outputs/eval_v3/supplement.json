@@ -1,0 +1,114 @@
+{
+  "definition": {
+    "no_math": "与冻结评估器一致：plain_text() 删除 $...$ / $$...$$ 整段",
+    "with_math": "同上但保留公式体、仅去掉定界符；分母为参考侧的字符数",
+    "normalization": "两侧均调用 ocr.postprocess.normalize_output",
+    "exclusion": "参考含 □ 的页整页排除（与主指标同一规则）"
+  },
+  "arms": {
+    "base": {
+      "n_scored": 3,
+      "macro_cer_no_math": 1.4872,
+      "macro_cer_with_math": 1.1217,
+      "micro_cer_no_math": 1.4386,
+      "micro_cer_with_math": 1.1125,
+      "total_ref_chars_no_math": 896,
+      "total_ref_chars_with_math": 1271,
+      "per_page": [
+        {
+          "page": "IMG_20261105_000020.jpg",
+          "excluded": "unknown_reference"
+        },
+        {
+          "page": "IMG_20261105_000028.jpg",
+          "excluded": "unknown_reference"
+        },
+        {
+          "page": "IMG_20261105_000037.jpg",
+          "cer_no_math": 1.7154929577464788,
+          "cer_with_math": 1.3453389830508475,
+          "ref_chars_no_math": 355,
+          "hyp_chars_no_math": 781,
+          "ref_chars_with_math": 472,
+          "hyp_chars_with_math": 781,
+          "edit_no_math": 609,
+          "edit_with_math": 635
+        },
+        {
+          "page": "IMG_20261105_000044.jpg",
+          "cer_no_math": 0.8358662613981763,
+          "cer_with_math": 0.8227848101265823,
+          "ref_chars_no_math": 329,
+          "hyp_chars_no_math": 224,
+          "ref_chars_with_math": 474,
+          "hyp_chars_with_math": 224,
+          "edit_no_math": 275,
+          "edit_with_math": 390
+        },
+        {
+          "page": "IMG_20261105_000051.jpg",
+          "cer_no_math": 1.9103773584905661,
+          "cer_with_math": 1.196923076923077,
+          "ref_chars_no_math": 212,
+          "hyp_chars_no_math": 433,
+          "ref_chars_with_math": 325,
+          "hyp_chars_with_math": 433,
+          "edit_no_math": 405,
+          "edit_with_math": 389
+        }
+      ]
+    },
+    "finetuned": {
+      "n_scored": 3,
+      "macro_cer_no_math": 0.7725,
+      "macro_cer_with_math": 1.7952,
+      "micro_cer_no_math": 0.7433,
+      "micro_cer_with_math": 1.9119,
+      "total_ref_chars_no_math": 896,
+      "total_ref_chars_with_math": 1271,
+      "per_page": [
+        {
+          "page": "IMG_20261105_000020.jpg",
+          "excluded": "unknown_reference"
+        },
+        {
+          "page": "IMG_20261105_000028.jpg",
+          "excluded": "unknown_reference"
+        },
+        {
+          "page": "IMG_20261105_000037.jpg",
+          "cer_no_math": 0.4732394366197183,
+          "cer_with_math": 0.6101694915254238,
+          "ref_chars_no_math": 355,
+          "hyp_chars_no_math": 245,
+          "ref_chars_with_math": 472,
+          "hyp_chars_with_math": 300,
+          "edit_no_math": 168,
+          "edit_with_math": 288
+        },
+        {
+          "page": "IMG_20261105_000044.jpg",
+          "cer_no_math": 0.9148936170212766,
+          "cer_with_math": 3.959915611814346,
+          "ref_chars_no_math": 329,
+          "hyp_chars_no_math": 77,
+          "ref_chars_with_math": 474,
+          "hyp_chars_with_math": 1986,
+          "edit_no_math": 301,
+          "edit_with_math": 1877
+        },
+        {
+          "page": "IMG_20261105_000051.jpg",
+          "cer_no_math": 0.9292452830188679,
+          "cer_with_math": 0.8153846153846154,
+          "ref_chars_no_math": 212,
+          "hyp_chars_no_math": 35,
+          "ref_chars_with_math": 325,
+          "hyp_chars_with_math": 298,
+          "edit_no_math": 197,
+          "edit_with_math": 265
+        }
+      ]
+    }
+  }
+}

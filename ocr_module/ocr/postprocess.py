@@ -20,6 +20,91 @@ except Exception:  # pragma: no cover
 
 
 # --------------------------------------------------------------------------- #
+# Outer code-fence removal
+# --------------------------------------------------------------------------- #
+# A single fence that opens at position 0 and closes at the very end of the text.
+# Anything else (fence in the middle, unbalanced fences, trailing prose) is left
+# untouched, so inner code blocks such as ```asm ... ``` survive.
+_OUTER_FENCE_RE = re.compile(r"^\s*```[A-Za-z0-9_+.-]*[ \t]*\r?\n(.*?)\r?\n```[ \t]*\s*$", re.DOTALL)
+
+
+def strip_outer_fence(markdown: str) -> Tuple[str, bool]:
+    """Strip exactly one fence that wraps the whole output; keep inner blocks.
+
+    Returns (text, stripped).
+    """
+    m = _OUTER_FENCE_RE.match(markdown)
+    if not m:
+        return markdown, False
+    inner = m.group(1)
+    if inner.count("```") % 2 != 0:
+        # unbalanced inner fences -> the outer fence is probably load-bearing
+        return markdown, False
+    return inner, True
+
+
+# The base model emits a bare `<md> ... </md>` wrapper instead of a code fence,
+# so both wrapper styles have to be removed before any comparison.
+_MD_TAG_RE = re.compile(r"^\s*<md>\s*(.*?)\s*</md>\s*$", re.DOTALL)
+
+
+def strip_md_tag(markdown: str) -> Tuple[str, bool]:
+    """Strip a whole-output `<md>...</md>` wrapper. Unclosed -> untouched."""
+    m = _MD_TAG_RE.match(markdown)
+    if not m:
+        return markdown, False
+    return m.group(1), True
+
+
+# The models' native LaTeX delimiters are `\\[ ... \\]` / `\\( ... \\)`, while the
+# frozen annotations use `$$ ... $$` / `$ ... $`. Normalising the delimiters (and
+# nothing else) is required for the formula metrics to see any formula at all and
+# for the text CER to exclude math on both sides.
+_MATH_DISPLAY_RE = re.compile(r"\\\[(.+?)\\\]", re.DOTALL)
+_MATH_INLINE_RE = re.compile(r"\\\((.+?)\\\)", re.DOTALL)
+
+
+def normalize_math_delimiters(markdown: str) -> Tuple[str, Dict[str, int]]:
+    """Rewrite `\\[..\\]`->`$$..$$` and `\\(..\\)`->`$..$`; counts each rewrite."""
+    md, n_disp = _MATH_DISPLAY_RE.subn(lambda m: "$$" + m.group(1).strip() + "$$", markdown)
+    md, n_inl = _MATH_INLINE_RE.subn(lambda m: "$" + m.group(1).strip() + "$", md)
+    return md, {"display_converted": n_disp, "inline_converted": n_inl}
+
+
+_WRAPPER_ORDER = ("code_fence", "md_tag")
+
+
+def normalize_output(markdown: str) -> Tuple[str, Dict]:
+    """Deterministic output normalisation applied identically to pred and ref.
+
+    Steps (only these, in this order):
+      1. strip one whole-output wrapper: ```fence``` or <md>...</md>;
+      2. normalise math delimiters to the annotation convention.
+    The raw generation is always kept separately by the caller, so nothing is lost.
+    """
+    info: Dict = {"wrapper_stripped": None, "raw_chars": len(markdown)}
+    text = markdown
+    # try up to two wrappers (e.g. fence outside, nothing inside) but stop at first hit
+    for _ in range(2):
+        text2, hit_fence = strip_outer_fence(text)
+        if hit_fence:
+            text = text2
+            info["wrapper_stripped"] = "code_fence"
+            continue
+        text2, hit_tag = strip_md_tag(text)
+        if hit_tag:
+            text = text2
+            info["wrapper_stripped"] = "md_tag"
+            continue
+        break
+    text, math_info = normalize_math_delimiters(text)
+    info.update(math_info)
+    info["normalized_chars"] = len(text)
+    info["changed"] = text != markdown
+    return text, info
+
+
+# --------------------------------------------------------------------------- #
 # Formula extraction / validation
 # --------------------------------------------------------------------------- #
 _FORMULA_RE = re.compile(r"\$\$(.+?)\$\$|\$(.+?)\$", re.DOTALL)

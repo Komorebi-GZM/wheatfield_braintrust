@@ -1,0 +1,28 @@
+{
+  "markdown": "```markdown\n# 传感器\n传感器是能够感受被测量并按照一定的规律转换成可用输出信号的器件或装置，通常由敏感元件和转换元件组成。\n\n## 1-2\n一般由敏感元件、转换元件、信号调理电路组成。\n\n敏感元件：直接感受被测量，并输出与被测量成确定关系的某一物理量。\n\n转换元件：将敏感元件的输出物理量信号转换为传输或测量的电信号。\n\n信号调理电路：处理收集到的微弱信号，供使之适配后经的数据采集、控制或显示。\n\n## 1-5\n主要为无线化，微型化、集成化、网络化 and智能化。\n```",
+  "structure_ok": true,
+  "latex_issues": [],
+  "tables": 0,
+  "formulas": 0,
+  "model": "Xiaomi-OCR-0",
+  "run": {
+    "elapsed_seconds": 52.8378163999987,
+    "original_size_wh": [
+      3072,
+      4096
+    ],
+    "image_grid_thw": [
+      [
+        1,
+        256,
+        192
+      ]
+    ],
+    "processed_size_wh": [
+      3072,
+      4096
+    ],
+    "peak_cuda_allocated_bytes": 14097239552,
+    "peak_cuda_reserved_bytes": 15076425728
+  }
+}
