@@ -31,6 +31,7 @@ maitian-agent = "maitian_agent.cli:cli"
 
 [project.optional-dependencies]
 ocr-easyocr = ["easyocr>=1.7.0"]
+rag = ["sentence-transformers>=2.2.0"]
 
 [dependency-groups]
 dev = [

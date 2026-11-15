@@ -13,6 +13,7 @@ import os
 from dotenv import load_dotenv
 
 from maitian_agent.agents.base import BaseAgent
+from maitian_agent.tools.ocr import EasyOCRProcessor
 
 if TYPE_CHECKING:
     from easyocr import Reader
@@ -40,9 +41,7 @@ class WisdomTransferAgent(BaseAgent):
             self.llm = llm
 
         if ocr_reader is None:
-            from easyocr import Reader
-
-            self.ocr = Reader(['ch_sim', 'en'], gpu=False)
+            self.ocr = EasyOCRProcessor(languages=["ch_sim", "en"], gpu=False)
         else:
             self.ocr = ocr_reader
 
@@ -85,7 +84,8 @@ class WisdomTransferAgent(BaseAgent):
             识别出的文本
         """
         try:
-            result = self.ocr.readtext(image_path, detail=1)
+            reader = self.ocr.reader if isinstance(self.ocr, EasyOCRProcessor) else self.ocr
+            result = reader.readtext(image_path, detail=1)
             ocr_text = ""
             for detection in result:
                 ocr_text += detection[1] + "\n"
