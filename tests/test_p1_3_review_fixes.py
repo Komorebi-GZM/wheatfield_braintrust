@@ -1,4 +1,5 @@
 """Review follow-ups: EasyOCR init lock and UI error wrapping."""
+
 import sys
 import threading
 import time

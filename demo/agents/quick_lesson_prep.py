@@ -1,4 +1,5 @@
 """Demo 极速备课 Agent —— 使用厂商无关模型工厂，支持注入，不在构造时联网。"""
+
 from __future__ import annotations
 
 from langchain_core.language_models import BaseChatModel
@@ -46,10 +47,7 @@ class QuickLessonPrepAgent:
     def run(self, subject, grade, topic, rural_context):
         """执行备课流程"""
         messages = self.lesson_plan_template.format_messages(
-            subject=subject,
-            grade=grade,
-            topic=topic,
-            rural_context=rural_context
+            subject=subject, grade=grade, topic=topic, rural_context=rural_context
         )
         result = self.llm.invoke(messages)
         return result.content

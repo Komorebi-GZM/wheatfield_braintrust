@@ -2,6 +2,7 @@
 Agent基类
 定义所有Agent的公共接口和方法
 """
+
 from __future__ import annotations
 
 import logging
@@ -64,18 +65,9 @@ class BaseAgent(ABC):
 
     def _format_output(self, result: Any, metadata: dict | None = None) -> dict[str, Any]:
         """格式化输出"""
-        return {
-            "success": True,
-            "result": result,
-            "agent": self.name,
-            "metadata": metadata or {}
-        }
+        return {"success": True, "result": result, "agent": self.name, "metadata": metadata or {}}
 
     def _handle_error(self, error: Exception) -> dict[str, Any]:
         """处理错误"""
         logger.error(f"{self.name}执行错误: {error!s}")
-        return {
-            "success": False,
-            "error": str(error),
-            "agent": self.name
-        }
+        return {"success": False, "error": str(error), "agent": self.name}

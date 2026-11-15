@@ -1,4 +1,5 @@
 """Validate image uploads before passing a private server path to OCR."""
+
 import logging
 import time
 import warnings
