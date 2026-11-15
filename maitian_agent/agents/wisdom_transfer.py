@@ -3,15 +3,19 @@
 手写教案OCR识别→结构化→入库→风格学习
 性能要求: ≤5秒/张
 """
-from typing import Dict, Any, Optional, List
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Dict, Any, Optional, List
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI
-from easyocr import Reader
 import os
 from dotenv import load_dotenv
 
-from .base import BaseAgent
+from maitian_agent.agents.base import BaseAgent
+
+if TYPE_CHECKING:
+    from easyocr import Reader
 
 load_dotenv()
 
@@ -36,6 +40,8 @@ class WisdomTransferAgent(BaseAgent):
             self.llm = llm
 
         if ocr_reader is None:
+            from easyocr import Reader
+
             self.ocr = Reader(['ch_sim', 'en'], gpu=False)
         else:
             self.ocr = ocr_reader

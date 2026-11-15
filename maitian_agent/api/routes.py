@@ -8,12 +8,12 @@ from pydantic import BaseModel, Field
 from typing import Optional, List, Dict, Any
 import os
 
-from agents.quick_lesson_prep import QuickLessonPrepAgent
-from agents.wisdom_transfer import WisdomTransferAgent
-from agents.classroom_companion import ClassroomCompanionAgent
-from agents.material_agent import MaterialAgent
-from agents.meeting_notes import MeetingNotesAgent
-from agents.router import RouterAgent
+from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
+from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
+from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
+from maitian_agent.agents.material_agent import MaterialAgent
+from maitian_agent.agents.meeting_notes import MeetingNotesAgent
+from maitian_agent.agents.router import RouterAgent
 
 app = FastAPI(
     title="麦田智囊API",

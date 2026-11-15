@@ -6,6 +6,6 @@
 __version__ = "1.0.0"
 __author__ = "麦田智囊团队"
 
-from config.settings import Settings
+from maitian_agent.config.settings import Settings
 
 settings = Settings()

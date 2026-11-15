@@ -6,9 +6,9 @@ import click
 import os
 from dotenv import load_dotenv
 
-from agents.quick_lesson_prep import QuickLessonPrepAgent
-from agents.wisdom_transfer import WisdomTransferAgent
-from agents.router import RouterAgent
+from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
+from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
+from maitian_agent.agents.router import RouterAgent
 
 load_dotenv()
 
@@ -66,7 +66,7 @@ def route(input):
 @cli.command()
 def agents_list():
     """列出所有可用Agent"""
-    from agents import __all__ as agent_names
+    from maitian_agent.agents import __all__ as agent_names
     click.echo("\n可用Agent列表：")
     for name in agent_names:
         click.echo(f"  - {name}")
