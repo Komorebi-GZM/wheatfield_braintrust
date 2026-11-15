@@ -2,13 +2,14 @@
 麦田智囊 CLI工具
 命令行接口
 """
-import click
 import os
+
+import click
 from dotenv import load_dotenv
 
 from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
-from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 from maitian_agent.agents.router import RouterAgent
+from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 
 load_dotenv()
 

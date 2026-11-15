@@ -1,8 +1,9 @@
-import streamlit as st
 import os
-from dotenv import load_dotenv
+
+import streamlit as st
 from agents.quick_lesson_prep import QuickLessonPrepAgent
 from agents.wisdom_transfer import WisdomTransferAgent
+from dotenv import load_dotenv
 
 load_dotenv()
 

@@ -1,12 +1,12 @@
 """
 文件处理工具
 """
-from typing import List, Optional, Dict, Any
 import os
 import shutil
-from pathlib import Path
 import uuid
 from datetime import datetime
+from pathlib import Path
+from typing import Any
 
 
 class FileProcessor:
@@ -15,7 +15,7 @@ class FileProcessor:
     def __init__(
         self,
         upload_dir: str = "./data/uploads",
-        allowed_extensions: List[str] = None
+        allowed_extensions: list[str] = None
     ):
         self.upload_dir = upload_dir
         self.allowed_extensions = allowed_extensions or [
@@ -23,7 +23,7 @@ class FileProcessor:
         ]
         os.makedirs(upload_dir, exist_ok=True)
 
-    def save_upload(self, file, custom_filename: Optional[str] = None) -> str:
+    def save_upload(self, file, custom_filename: str | None = None) -> str:
         """保存上传的文件
 
         Args:
@@ -64,7 +64,7 @@ class FileProcessor:
             f.write(content)
         return file_path
 
-    def get_file_info(self, file_path: str) -> Dict[str, Any]:
+    def get_file_info(self, file_path: str) -> dict[str, Any]:
         """获取文件信息
 
         Args:
@@ -102,9 +102,9 @@ class FileProcessor:
 
     def list_files(
         self,
-        extension: Optional[str] = None,
+        extension: str | None = None,
         sort_by: str = "modified"
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """列出文件
 
         Args:

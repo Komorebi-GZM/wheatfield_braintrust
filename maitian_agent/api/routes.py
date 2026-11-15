@@ -2,18 +2,17 @@
 FastAPI应用
 REST API封装
 """
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
-import os
+from pydantic import BaseModel
 
-from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
-from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
 from maitian_agent.agents.material_agent import MaterialAgent
 from maitian_agent.agents.meeting_notes import MeetingNotesAgent
+from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
 from maitian_agent.agents.router import RouterAgent
+from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 
 app = FastAPI(
     title="麦田智囊API",
@@ -50,7 +49,7 @@ class LessonPrepRequest(BaseModel):
     subject: str
     grade: str
     topic: str
-    rural_context: Optional[str] = ""
+    rural_context: str | None = ""
 
 
 class WisdomTransferRequest(BaseModel):
@@ -61,17 +60,17 @@ class QuizRequest(BaseModel):
     subject: str
     grade: str
     topic: str
-    knowledge_points: Optional[str] = ""
-    question_count: Optional[int] = 5
-    question_types: Optional[str] = "选择题、填空题"
+    knowledge_points: str | None = ""
+    question_count: int | None = 5
+    question_types: str | None = "选择题、填空题"
 
 
 class MaterialRequest(BaseModel):
     subject: str
     grade: str
     topic: str
-    knowledge_points: Optional[str] = ""
-    rural_context: Optional[str] = ""
+    knowledge_points: str | None = ""
+    rural_context: str | None = ""
 
 
 class MeetingNotesRequest(BaseModel):

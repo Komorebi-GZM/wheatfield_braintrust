@@ -1,0 +1,51 @@
+name: CI
+
+# 在每次 push 和 pull_request 上运行，覆盖向 dev/upgrade-b 提交的 PR。
+# 不需要任何 GitHub Secret。
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint-test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+          enable-cache: true
+
+      - name: Sync dependencies (including dev group)
+        run: uv sync --frozen
+
+      - name: Ruff lint
+        run: uv run ruff check .
+
+      - name: Run tests (skip live integration tests)
+        run: uv run pytest -q -m "not live"
+
+      - name: Import smoke test
+        run: uv run python -c "import maitian_agent.api.routes"
+
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 根目录目前没有 Dockerfile：该 step 会被跳过，job 仍然成功（绿色）。
+      # P1-5 之后一旦根目录出现 Dockerfile，此步骤将自动执行 docker build。
+      # 注：hashFiles 在 checkout 之后的 step 级 if 中可靠可用（job 级 if 在 checkout 前往往不可用）。
+      # 仅检测仓库根目录的 Dockerfile，不使用 docker/Dockerfile 作为条件。
+      - name: Build Docker image
+        if: hashFiles('Dockerfile') != ''
+        run: docker build -t maitian-agent:ci .
