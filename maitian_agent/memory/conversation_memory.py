@@ -3,7 +3,7 @@
 短期记忆实现
 """
 from typing import List, Dict, Any, Optional
-from langchain_core.memory import BaseMemory
+from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
 from langchain.memory import ConversationBufferWindowMemory
 from langchain.memory.chat_message_histories import RedisChatMessageHistory, MongoDBChatMessageHistory
@@ -33,7 +33,7 @@ class ConversationMemory:
         if memory_type == "buffer":
             self.memory = ConversationBufferWindowMemory(
                 k=conversation_window,
-                chat_memory=self._load_chat_history(),
+                chat_memory=InMemoryChatMessageHistory(messages=self._load_chat_history()),
                 return_messages=True
             )
         else:

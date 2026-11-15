@@ -74,17 +74,14 @@ class QuickLessonPrepAgent(BaseAgent):
         Returns:
             生成的教案内容
         """
-        try:
-            chain = self.build_chain()
-            result = chain.invoke({
-                "subject": subject,
-                "grade": grade,
-                "topic": topic,
-                "rural_context": rural_context or "结合乡村实际教学"
-            })
-            return result
-        except Exception as e:
-            return f"生成教案时出错：{e!s}"
+        chain = self.build_chain()
+        result = chain.invoke({
+            "subject": subject,
+            "grade": grade,
+            "topic": topic,
+            "rural_context": rural_context or "结合乡村实际教学"
+        })
+        return result
 
     def run_with_voice(self, audio_path: str, **kwargs) -> str:
         """通过语音输入执行备课（待集成Whisper）

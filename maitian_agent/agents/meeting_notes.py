@@ -91,12 +91,9 @@ class MeetingNotesAgent(BaseAgent):
         Returns:
             结构化报告
         """
-        try:
-            chain = self.build_chain()
-            result = chain.invoke({"meeting_transcript": meeting_transcript})
-            return result
-        except Exception as e:
-            return f"处理教研纪要时出错：{e!s}"
+        chain = self.build_chain()
+        result = chain.invoke({"meeting_transcript": meeting_transcript})
+        return result
 
     def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:
         """执行教研纪要生成"""

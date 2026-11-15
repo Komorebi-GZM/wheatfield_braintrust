@@ -60,16 +60,13 @@ class WisdomTransferAgent:
 
     def run(self, image_path):
         """执行手写教案识别与结构化"""
-        try:
-            result = self.ocr.readtext(image_path, detail=1)
+        result = self.ocr.readtext(image_path, detail=1)
 
-            ocr_text = ""
-            for detection in result:
-                ocr_text += detection[1] + "\n"
+        ocr_text = ""
+        for detection in result:
+            ocr_text += detection[1] + "\n"
 
-            messages = self.structure_template.format_messages(ocr_text=ocr_text)
-            structured_result = self.llm.invoke(messages)
+        messages = self.structure_template.format_messages(ocr_text=ocr_text)
+        structured_result = self.llm.invoke(messages)
 
-            return f"### OCR识别结果\n{ocr_text}\n\n### 结构化结果\n{structured_result.content}"
-        except Exception as e:
-            return f"处理手写教案时出错：{e!s}"
+        return f"### OCR识别结果\n{ocr_text}\n\n### 结构化结果\n{structured_result.content}"

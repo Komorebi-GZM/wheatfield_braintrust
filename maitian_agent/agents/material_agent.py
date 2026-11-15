@@ -74,18 +74,15 @@ class MaterialAgent(BaseAgent):
         Returns:
             素材推荐结果
         """
-        try:
-            chain = self.build_chain()
-            result = chain.invoke({
-                "subject": subject,
-                "grade": grade,
-                "topic": topic,
-                "knowledge_points": knowledge_points or "本课主要内容",
-                "rural_context": rural_context or "乡村实际情境"
-            })
-            return result
-        except Exception as e:
-            return f"推荐素材时出错：{e!s}"
+        chain = self.build_chain()
+        result = chain.invoke({
+            "subject": subject,
+            "grade": grade,
+            "topic": topic,
+            "knowledge_points": knowledge_points or "本课主要内容",
+            "rural_context": rural_context or "乡村实际情境"
+        })
+        return result
 
     def search_material_library(
         self,

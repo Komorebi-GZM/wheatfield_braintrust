@@ -8,6 +8,7 @@ from contextlib import asynccontextmanager
 from fastapi import APIRouter, FastAPI, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+from starlette.concurrency import run_in_threadpool
 
 from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
 from maitian_agent.agents.material_agent import MaterialAgent
@@ -99,7 +100,7 @@ async def health_check():
 
 
 @router.post("/api/lesson-prep")
-async def lesson_prep(request: LessonPrepRequest):
+def lesson_prep(request: LessonPrepRequest):
     """极速备课"""
     _require_llm()
     try:
@@ -125,7 +126,7 @@ async def wisdom_transfer(request: Request, file: UploadFile):
     _require_llm()
     try:
         image_path = await save_image_upload(file, request.app.state.settings)
-        result = agents["wisdom_transfer"].run(image_path=image_path)
+        result = await run_in_threadpool(agents["wisdom_transfer"].run, image_path=image_path)
         # The legacy Agent wraps failures in strings; never expose those details.
         if isinstance(result, str) and result.startswith("处理手写教案时出错"):
             logger.error("智慧传承处理失败: %s", result)
@@ -141,7 +142,7 @@ async def wisdom_transfer(request: Request, file: UploadFile):
 
 
 @router.post("/api/quiz")
-async def generate_quiz(request: QuizRequest):
+def generate_quiz(request: QuizRequest):
     """生成练习题"""
     _require_llm()
     try:
@@ -164,7 +165,7 @@ async def generate_quiz(request: QuizRequest):
 
 
 @router.post("/api/material")
-async def recommend_material(request: MaterialRequest):
+def recommend_material(request: MaterialRequest):
     """素材推荐"""
     _require_llm()
     try:
@@ -186,7 +187,7 @@ async def recommend_material(request: MaterialRequest):
 
 
 @router.post("/api/meeting-notes")
-async def process_meeting_notes(request: MeetingNotesRequest):
+def process_meeting_notes(request: MeetingNotesRequest):
     """教研纪要"""
     _require_llm()
     try:
@@ -204,7 +205,7 @@ async def process_meeting_notes(request: MeetingNotesRequest):
 
 
 @router.post("/api/route")
-async def route_intent(request: RouteRequest):
+def route_intent(request: RouteRequest):
     """意图路由"""
     _require_llm()
     try:

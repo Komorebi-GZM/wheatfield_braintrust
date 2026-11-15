@@ -19,6 +19,9 @@ def api(monkeypatch, tmp_path):
     monkeypatch.setenv("UPLOAD_DIR", str(tmp_path / "uploads"))
     monkeypatch.setenv("MAX_UPLOAD_MB", "1")
     monkeypatch.setenv("ALLOWED_ORIGINS", "http://trusted.test")
+    monkeypatch.setenv("LLM_BASE_URL", "http://fake.invalid/v1")
+    monkeypatch.setenv("LLM_MODEL", "fake")
+    monkeypatch.setenv("LLM_API_KEY", "placeholder")
     get_settings.cache_clear()
     reader = Mock()
     reader.readtext.return_value = [(None, "教案", 0.99)]

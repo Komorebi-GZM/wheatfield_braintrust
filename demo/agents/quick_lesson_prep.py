@@ -45,14 +45,11 @@ class QuickLessonPrepAgent:
 
     def run(self, subject, grade, topic, rural_context):
         """执行备课流程"""
-        try:
-            messages = self.lesson_plan_template.format_messages(
-                subject=subject,
-                grade=grade,
-                topic=topic,
-                rural_context=rural_context
-            )
-            result = self.llm.invoke(messages)
-            return result.content
-        except Exception as e:
-            return f"生成教案时出错：{e!s}"
+        messages = self.lesson_plan_template.format_messages(
+            subject=subject,
+            grade=grade,
+            topic=topic,
+            rural_context=rural_context
+        )
+        result = self.llm.invoke(messages)
+        return result.content

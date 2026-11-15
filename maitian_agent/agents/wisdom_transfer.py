@@ -96,17 +96,14 @@ class WisdomTransferAgent(BaseAgent):
         Returns:
             结构化处理后的教案内容
         """
-        try:
-            ocr_text = self.recognize_handwriting(image_path)
-            if not ocr_text:
-                return "未能识别出文字，请确保图片清晰"
+        ocr_text = self.recognize_handwriting(image_path)
+        if not ocr_text:
+            return "未能识别出文字，请确保图片清晰"
 
-            chain = self.build_chain()
-            structured_result = chain.invoke({"ocr_text": ocr_text})
+        chain = self.build_chain()
+        structured_result = chain.invoke({"ocr_text": ocr_text})
 
-            return f"### OCR识别结果\n{ocr_text}\n\n### 结构化结果\n{structured_result}"
-        except Exception as e:
-            return f"处理手写教案时出错：{e!s}"
+        return f"### OCR识别结果\n{ocr_text}\n\n### 结构化结果\n{structured_result}"
 
     def run_batch(self, image_paths: list[str], **kwargs) -> list[dict[str, Any]]:
         """批量处理多张手写教案
@@ -119,12 +116,20 @@ class WisdomTransferAgent(BaseAgent):
         """
         results = []
         for image_path in image_paths:
-            result = self.run(image_path)
-            results.append({
-                "image_path": image_path,
-                "result": result,
-                "success": not result.startswith("处理手写教案时出错")
-            })
+            try:
+                result = self.run(image_path)
+            except Exception:
+                results.append({
+                    "image_path": image_path,
+                    "result": "处理失败，请稍后重试",
+                    "success": False,
+                })
+            else:
+                results.append({
+                    "image_path": image_path,
+                    "result": result,
+                    "success": True,
+                })
         return results
 
     def save_to_knowledge_base(self, structured_content: str, metadata: dict[str, Any]) -> bool:

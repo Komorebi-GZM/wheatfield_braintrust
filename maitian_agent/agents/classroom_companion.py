@@ -90,19 +90,16 @@ class ClassroomCompanionAgent(BaseAgent):
         Returns:
             生成的练习题
         """
-        try:
-            chain = self.build_chain("quiz")
-            result = chain.invoke({
-                "subject": subject,
-                "grade": grade,
-                "topic": topic,
-                "knowledge_points": knowledge_points or "本课主要内容",
-                "question_count": question_count,
-                "question_types": question_types
-            })
-            return result
-        except Exception as e:
-            return f"生成练习题时出错：{e!s}"
+        chain = self.build_chain("quiz")
+        result = chain.invoke({
+            "subject": subject,
+            "grade": grade,
+            "topic": topic,
+            "knowledge_points": knowledge_points or "本课主要内容",
+            "question_count": question_count,
+            "question_types": question_types
+        })
+        return result
 
     def retrieve_classic_questions(
         self,
@@ -123,17 +120,14 @@ class ClassroomCompanionAgent(BaseAgent):
         Returns:
             检索到的经典题目
         """
-        try:
-            chain = self.build_chain("retrieval")
-            result = chain.invoke({
-                "subject": subject,
-                "grade": grade,
-                "topic": topic,
-                "knowledge_points": knowledge_points or "本课主要内容"
-            })
-            return result
-        except Exception as e:
-            return f"检索经典题目时出错：{e!s}"
+        chain = self.build_chain("retrieval")
+        result = chain.invoke({
+            "subject": subject,
+            "grade": grade,
+            "topic": topic,
+            "knowledge_points": knowledge_points or "本课主要内容"
+        })
+        return result
 
     def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:
         """执行伴教功能"""

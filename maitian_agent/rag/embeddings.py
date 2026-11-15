@@ -43,7 +43,7 @@ class BGEEmbeddings(Embeddings):
                     model_kwargs={"device": "cpu"},
                     encode_kwargs=self.encode_kwargs,
                     query_instruction=self.query_instruction,
-                    passage_instruction=self.passage_instruction,
+                    embed_instruction=self.passage_instruction,
                 )
             except ImportError as exc:  # 未安装可选 extra
                 raise ImportError(
