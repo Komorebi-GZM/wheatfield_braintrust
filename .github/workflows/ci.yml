@@ -29,6 +29,9 @@ jobs:
       - name: Ruff lint
         run: uv run ruff check .
 
+      - name: Ruff format
+        run: uv run ruff format --check .
+
       - name: Run tests (skip live integration tests)
         run: uv run pytest -q -m "not live"
 
