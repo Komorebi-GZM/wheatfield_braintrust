@@ -22,11 +22,11 @@ htmlcov/
 **/.env
 **/.env.*
 !**/.env.example
-*.pem
-*.key
-credentials*.json
-secrets/
-models/
+**/*.pem
+**/*.key
+**/credentials*.json
+**/secrets/
+**/models/
 **/*.pt
 **/*.pth
 **/*.onnx

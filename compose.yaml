@@ -46,7 +46,7 @@ services:
   api:
     <<: *app
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     depends_on:
       data-init:
         condition: service_completed_successfully
@@ -55,7 +55,7 @@ services:
     <<: *app
     command: ["streamlit", "run", "maitian_agent/frontend/streamlit_app.py", "--server.address", "0.0.0.0", "--server.port", "8501", "--server.headless", "true"]
     ports:
-      - "8501:8501"
+      - "127.0.0.1:8501:8501"
     environment:
       <<: *environment
       MAITIAN_API_BASE: http://api:8000

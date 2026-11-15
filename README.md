@@ -75,7 +75,8 @@ docker compose up --build -d
 docker compose down
 ```
 
-访问 API http://localhost:8000/health 和 Streamlit http://localhost:8501 。
+访问 API http://127.0.0.1:8000/health 和 Streamlit http://127.0.0.1:8501 。
+默认端口只绑定本机 `127.0.0.1`（容器内服务仍监听 `0.0.0.0`）。若要对外暴露，必须自己去掉 `127.0.0.1` 绑定，并且加上认证（例如放在反向代理之后并启用鉴权）。不要只改端口映射就直接暴露到公网。
 无 Key 时健康检查仍返回 200；生成能力需要补齐 `LLM_*` 配置。
 两个服务共用镜像，前端通过 `MAITIAN_API_BASE=http://api:8000` 访问 API。
 两者挂载 `./data:/app/data`，上传目录固定为 `/app/data/uploads`。
