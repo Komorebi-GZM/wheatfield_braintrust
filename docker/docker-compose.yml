@@ -10,9 +10,15 @@ services:
       - "8000:8000"
       - "8501:8501"
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OPENAI_API_BASE=${OPENAI_API_BASE:-https://api.deepseek.com}
-      - MODEL_NAME=${MODEL_NAME:-deepseek-v2}
+      - LLM_BASE_URL=${LLM_BASE_URL:-}
+      - LLM_MODEL=${LLM_MODEL:-}
+      - LLM_API_KEY=${LLM_API_KEY:-}
+      - LLM_TEMPERATURE=${LLM_TEMPERATURE:-0.7}
+      - LLM_TIMEOUT_SECONDS=${LLM_TIMEOUT_SECONDS:-60}
+      - LLM_MAX_RETRIES=${LLM_MAX_RETRIES:-2}
+      - EMBEDDING_BACKEND=${EMBEDDING_BACKEND:-local}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-BAAI/bge-small-zh-v1.5}
+      - OCR_BACKEND=${OCR_BACKEND:-none}
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs

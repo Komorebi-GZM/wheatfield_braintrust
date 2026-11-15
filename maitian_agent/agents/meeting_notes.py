@@ -3,36 +3,26 @@
 录音转写→结构化教研报告→成果入库
 性能要求: 转写≥95%准确率
 """
-from typing import Dict, Any, Optional
-from langchain_core.prompts import ChatPromptTemplate
+from __future__ import annotations
+
+from typing import Any
+
+from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
-import os
-from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
-
-load_dotenv()
 
 
 class MeetingNotesAgent(BaseAgent):
     """教研纪要Agent"""
 
-    def __init__(self, llm: Optional[ChatOpenAI] = None):
+    def __init__(self, llm: BaseChatModel | None = None):
         super().__init__(
+            llm=llm,
             name="MeetingNotesAgent",
             description="教研纪要生成，录音转写与结构化报告"
         )
-        if llm is None:
-            api_key = os.getenv("OPENAI_API_KEY")
-            model_name = os.getenv("MODEL_NAME", "deepseek-v2")
-            self.llm = ChatOpenAI(
-                model=model_name,
-                api_key=api_key,
-                temperature=0.3
-            )
-        else:
-            self.llm = llm
 
         self.structure_template = ChatPromptTemplate.from_template(
             """你是一位专业的教研秘书，请将以下教研会议记录整理成结构化报告：
@@ -106,9 +96,9 @@ class MeetingNotesAgent(BaseAgent):
             result = chain.invoke({"meeting_transcript": meeting_transcript})
             return result
         except Exception as e:
-            return f"处理教研纪要时出错：{str(e)}"
+            return f"处理教研纪要时出错：{e!s}"
 
-    def run(self, input_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+    def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:
         """执行教研纪要生成"""
         if "audio_path" in input_data:
             transcript = self.transcribe_audio(input_data["audio_path"])

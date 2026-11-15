@@ -41,5 +41,11 @@ dev = [
     "httpx>=0.25.0",
 ]
 
+[tool.ruff.lint]
+# 采用经典 E/F 规则集作为基线（新代码应保持干净）；
+# 遗留代码的未用导入/变量（F401/F841）留待 P1-6 lint 迁移统一清理，暂不阻断。
+select = ["E4", "E7", "E9", "F"]
+ignore = ["F401", "F841"]
+
 [tool.hatch.build.targets.wheel]
 packages = ["maitian_agent"]

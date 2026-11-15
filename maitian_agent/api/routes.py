@@ -2,18 +2,19 @@
 FastAPI应用
 REST API封装
 """
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
-from typing import Optional, List, Dict, Any
-import os
+from pydantic import BaseModel
 
-from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
-from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
 from maitian_agent.agents.material_agent import MaterialAgent
 from maitian_agent.agents.meeting_notes import MeetingNotesAgent
+from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
 from maitian_agent.agents.router import RouterAgent
+from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
+from maitian_agent.config.settings import get_settings
+from maitian_agent.llm import LLMNotConfiguredError
 
 app = FastAPI(
     title="麦田智囊API",
@@ -32,9 +33,21 @@ app.add_middleware(
 agents = {}
 
 
+def _require_llm() -> None:
+    """生成类端点前置校验：未配置大模型时返回明确失败码 LLM_NOT_CONFIGURED。"""
+    if not get_settings().llm_configured:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "LLM_NOT_CONFIGURED",
+                "message": "未配置大模型，请设置 LLM_BASE_URL、LLM_MODEL、LLM_API_KEY",
+            },
+        )
+
+
 @app.on_event("startup")
 async def startup_event():
-    """初始化Agent"""
+    """初始化Agent（构造时不加载 LLM / OCR，未配置也不会失败）"""
     global agents
     agents = {
         "quick_lesson_prep": QuickLessonPrepAgent(),
@@ -50,7 +63,7 @@ class LessonPrepRequest(BaseModel):
     subject: str
     grade: str
     topic: str
-    rural_context: Optional[str] = ""
+    rural_context: str | None = ""
 
 
 class WisdomTransferRequest(BaseModel):
@@ -61,17 +74,17 @@ class QuizRequest(BaseModel):
     subject: str
     grade: str
     topic: str
-    knowledge_points: Optional[str] = ""
-    question_count: Optional[int] = 5
-    question_types: Optional[str] = "选择题、填空题"
+    knowledge_points: str | None = ""
+    question_count: int | None = 5
+    question_types: str | None = "选择题、填空题"
 
 
 class MaterialRequest(BaseModel):
     subject: str
     grade: str
     topic: str
-    knowledge_points: Optional[str] = ""
-    rural_context: Optional[str] = ""
+    knowledge_points: str | None = ""
+    rural_context: str | None = ""
 
 
 class MeetingNotesRequest(BaseModel):
@@ -90,13 +103,18 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """健康检查"""
-    return {"status": "healthy", "agents": list(agents.keys())}
+    """健康检查（不调用 LLM；无配置时仍返回 200，llm_configured=false）"""
+    return {
+        "status": "healthy",
+        "agents": list(agents.keys()),
+        "llm_configured": get_settings().llm_configured,
+    }
 
 
 @app.post("/api/lesson-prep")
 async def lesson_prep(request: LessonPrepRequest):
     """极速备课"""
+    _require_llm()
     try:
         result = agents["quick_lesson_prep"].run(
             subject=request.subject,
@@ -105,6 +123,8 @@ async def lesson_prep(request: LessonPrepRequest):
             rural_context=request.rural_context
         )
         return {"success": True, "result": result}
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -112,9 +132,12 @@ async def lesson_prep(request: LessonPrepRequest):
 @app.post("/api/wisdom-transfer")
 async def wisdom_transfer(request: WisdomTransferRequest):
     """智慧传承"""
+    _require_llm()
     try:
         result = agents["wisdom_transfer"].run(image_path=request.image_path)
         return {"success": True, "result": result}
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -122,6 +145,7 @@ async def wisdom_transfer(request: WisdomTransferRequest):
 @app.post("/api/quiz")
 async def generate_quiz(request: QuizRequest):
     """生成练习题"""
+    _require_llm()
     try:
         result = agents["classroom_companion"].generate_quiz(
             subject=request.subject,
@@ -132,6 +156,8 @@ async def generate_quiz(request: QuizRequest):
             question_types=request.question_types
         )
         return {"success": True, "result": result}
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -139,6 +165,7 @@ async def generate_quiz(request: QuizRequest):
 @app.post("/api/material")
 async def recommend_material(request: MaterialRequest):
     """素材推荐"""
+    _require_llm()
     try:
         result = agents["material"].recommend_materials(
             subject=request.subject,
@@ -148,6 +175,8 @@ async def recommend_material(request: MaterialRequest):
             rural_context=request.rural_context
         )
         return {"success": True, "result": result}
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -155,11 +184,14 @@ async def recommend_material(request: MaterialRequest):
 @app.post("/api/meeting-notes")
 async def process_meeting_notes(request: MeetingNotesRequest):
     """教研纪要"""
+    _require_llm()
     try:
         result = agents["meeting_notes"].process_meeting_notes(
             meeting_transcript=request.transcript
         )
         return {"success": True, "result": result}
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
@@ -167,9 +199,12 @@ async def process_meeting_notes(request: MeetingNotesRequest):
 @app.post("/api/route")
 async def route_intent(request: RouteRequest):
     """意图路由"""
+    _require_llm()
     try:
         result = agents["router"].run({"user_input": request.user_input})
         return result
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

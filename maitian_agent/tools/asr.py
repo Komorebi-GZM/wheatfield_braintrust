@@ -2,9 +2,8 @@
 语音识别工具
 基于Whisper API
 """
-from abc import ABC, abstractmethod
-from typing import Optional
 import os
+from abc import ABC, abstractmethod
 
 
 class BaseASR(ABC):
@@ -13,7 +12,6 @@ class BaseASR(ABC):
     @abstractmethod
     def transcribe(self, audio_path: str) -> str:
         """转写音频"""
-        pass
 
 
 class WhisperASR(BaseASR):
@@ -25,8 +23,8 @@ class WhisperASR(BaseASR):
     def __init__(
         self,
         model: str = "base",
-        api_key: Optional[str] = None,
-        api_base: str = "https://api.openai.com/v1",
+        api_key: str | None = None,
+        api_base: str | None = None,
         language: str = "zh"
     ):
         self.model = model
@@ -37,13 +35,13 @@ class WhisperASR(BaseASR):
 
     @property
     def client(self):
-        """获取OpenAI客户端"""
+        """获取OpenAI客户端（base_url 未配置时不写死任何厂商地址）"""
         if self._client is None:
             from openai import OpenAI
-            self._client = OpenAI(
-                api_key=self.api_key,
-                base_url=self.api_base
-            )
+            if self.api_base:
+                self._client = OpenAI(api_key=self.api_key, base_url=self.api_base)
+            else:
+                self._client = OpenAI(api_key=self.api_key)
         return self._client
 
     def transcribe(self, audio_path: str) -> str:
@@ -64,7 +62,7 @@ class WhisperASR(BaseASR):
                 )
             return transcript.text
         except Exception as e:
-            raise RuntimeError(f"音频转写失败: {str(e)}")
+            raise RuntimeError(f"音频转写失败: {e!s}")
 
     def transcribe_with_srt(self, audio_path: str) -> str:
         """转写音频并生成SRT字幕
@@ -85,7 +83,7 @@ class WhisperASR(BaseASR):
                 )
             return transcript
         except Exception as e:
-            raise RuntimeError(f"字幕生成失败: {str(e)}")
+            raise RuntimeError(f"字幕生成失败: {e!s}")
 
 
 class LocalWhisperASR(BaseASR):

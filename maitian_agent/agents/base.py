@@ -2,50 +2,67 @@
 Agent基类
 定义所有Agent的公共接口和方法
 """
+from __future__ import annotations
+
+import logging
 from abc import ABC, abstractmethod
-from typing import Any, Dict, Optional
+from typing import Any
+
 from langchain_core.language_models import BaseChatModel
 from langchain_core.memory import BaseMemory
-from langchain_core.callbacks import CallbackManagerForChainRun
-import logging
+
+from maitian_agent.llm import get_chat_model
 
 logger = logging.getLogger(__name__)
 
 
 class BaseAgent(ABC):
-    """Agent基类"""
+    """Agent基类
+
+    构造时不调用 ``get_chat_model()``：未传入 llm 时保留为 None，
+    首次真正使用（``self.llm``）时才从工厂懒加载，避免无 Key 时启动崩溃。
+    """
 
     def __init__(
         self,
-        llm: Optional[BaseChatModel] = None,
-        memory: Optional[BaseMemory] = None,
+        llm: BaseChatModel | None = None,
+        memory: BaseMemory | None = None,
         name: str = "BaseAgent",
         description: str = "基础Agent",
     ):
-        self.llm = llm
+        self._llm = llm
         self.memory = memory
         self.name = name
         self.description = description
         self._chain = None
         logger.info(f"初始化Agent: {name}")
 
+    @property
+    def llm(self) -> BaseChatModel:
+        """懒加载对话模型：注入优先，否则首次使用时从工厂获取。"""
+        if self._llm is None:
+            self._llm = get_chat_model()
+        return self._llm
+
+    @llm.setter
+    def llm(self, value: BaseChatModel | None) -> None:
+        self._llm = value
+
     @abstractmethod
     def build_chain(self) -> Any:
         """构建Agent链"""
-        pass
 
     @abstractmethod
-    def run(self, input_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+    def run(self, *args: Any, **kwargs: Any) -> Any:
         """执行Agent"""
-        pass
 
-    def _validate_input(self, input_data: Dict[str, Any], required_keys: list) -> None:
+    def _validate_input(self, input_data: dict[str, Any], required_keys: list) -> None:
         """验证输入数据"""
         missing_keys = [key for key in required_keys if key not in input_data]
         if missing_keys:
             raise ValueError(f"缺少必需参数: {', '.join(missing_keys)}")
 
-    def _format_output(self, result: Any, metadata: Optional[Dict] = None) -> Dict[str, Any]:
+    def _format_output(self, result: Any, metadata: dict | None = None) -> dict[str, Any]:
         """格式化输出"""
         return {
             "success": True,
@@ -54,9 +71,9 @@ class BaseAgent(ABC):
             "metadata": metadata or {}
         }
 
-    def _handle_error(self, error: Exception) -> Dict[str, Any]:
+    def _handle_error(self, error: Exception) -> dict[str, Any]:
         """处理错误"""
-        logger.error(f"{self.name}执行错误: {str(error)}")
+        logger.error(f"{self.name}执行错误: {error!s}")
         return {
             "success": False,
             "error": str(error),

@@ -2,16 +2,18 @@
 Streamlit Web应用
 麦田智囊乡村教育Agent系统主界面
 """
-import streamlit as st
 import os
+
+import streamlit as st
 from dotenv import load_dotenv
 
-from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
-from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
 from maitian_agent.agents.material_agent import MaterialAgent
 from maitian_agent.agents.meeting_notes import MeetingNotesAgent
+from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
 from maitian_agent.agents.router import RouterAgent
+from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
+from maitian_agent.config.settings import get_settings
 
 load_dotenv()
 
@@ -134,8 +136,12 @@ def render_wisdom_transfer():
             if st.button("开始识别与处理", type="primary"):
                 with st.spinner("正在处理，请稍候..."):
                     temp_path = os.path.join("assets", uploaded_file.name)
-                    with open(temp_path, "wb") as f:
-                        f.write(uploaded_file.getbuffer())
+                    try:
+                        with open(temp_path, "wb") as f:
+                            f.write(uploaded_file.getbuffer())
+                    except OSError as exc:
+                        st.error(f"保存上传文件失败：{exc}")
+                        st.stop()
 
                     agent = st.session_state.wisdom_transfer_agent
                     result = agent.run(temp_path)
@@ -324,7 +330,8 @@ def render_sidebar():
     st.sidebar.markdown("---")
     st.sidebar.markdown("## 环境信息")
     st.sidebar.markdown(f"- 项目版本：{os.getenv('VERSION', '1.0.0')}")
-    st.sidebar.markdown(f"- 模型：{os.getenv('MODEL_NAME', 'deepseek-v2')}")
+    llm_model = get_settings().llm_model or "未配置"
+    st.sidebar.markdown(f"- 模型：{llm_model}")
 
 
 def main():
