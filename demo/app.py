@@ -3,8 +3,9 @@ import os
 import httpx
 import streamlit as st
 from agents.quick_lesson_prep import QuickLessonPrepAgent
-from maitian_agent.agent_call import invoke_agent
 from dotenv import load_dotenv
+
+from maitian_agent.agent_call import invoke_agent
 
 load_dotenv()
 

@@ -5,12 +5,12 @@ import sys
 import threading
 import time
 from io import BytesIO
-from unittest.mock import Mock
 from types import ModuleType
+from unittest.mock import Mock
 
 import httpx
-from fastapi.testclient import TestClient
 import pytest
+from fastapi.testclient import TestClient
 from langchain_core.language_models.fake_chat_models import FakeListChatModel
 from PIL import Image
 from pydantic import PrivateAttr

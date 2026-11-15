@@ -2,14 +2,14 @@
 对话记忆管理
 短期记忆实现
 """
-from typing import List, Dict, Any, Optional
-from langchain_core.chat_history import InMemoryChatMessageHistory
-from langchain_core.messages import BaseMessage, HumanMessage, AIMessage
-from langchain.memory import ConversationBufferWindowMemory
-from langchain.memory.chat_message_histories import RedisChatMessageHistory, MongoDBChatMessageHistory
-import os
 import json
+import os
 from datetime import datetime
+from typing import Any
+
+from langchain.memory import ConversationBufferWindowMemory
+from langchain_core.chat_history import InMemoryChatMessageHistory
+from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
 
 class ConversationMemory:
@@ -53,14 +53,14 @@ class ConversationMemory:
 
         if os.path.exists(history_file):
             try:
-                with open(history_file, 'r', encoding='utf-8') as f:
+                with open(history_file, encoding='utf-8') as f:
                     messages = json.load(f)
                     return self._messages_to_objects(messages)
             except Exception:
                 pass
         return []
 
-    def _messages_to_objects(self, messages: List[Dict]) -> List[BaseMessage]:
+    def _messages_to_objects(self, messages: list[dict]) -> list[BaseMessage]:
         """将字典转换为消息对象"""
         result = []
         for msg in messages:
@@ -70,7 +70,7 @@ class ConversationMemory:
                 result.append(AIMessage(content=msg.get("content", "")))
         return result
 
-    def _objects_to_dict(self, messages: List[BaseMessage]) -> List[Dict]:
+    def _objects_to_dict(self, messages: list[BaseMessage]) -> list[dict]:
         """将消息对象转换为字典"""
         result = []
         for msg in messages:
@@ -80,7 +80,7 @@ class ConversationMemory:
             result.append(msg_dict)
         return result
 
-    def save_context(self, input_data: Dict[str, Any], output_data: Dict[str, Any]) -> None:
+    def save_context(self, input_data: dict[str, Any], output_data: dict[str, Any]) -> None:
         """保存对话上下文
 
         Args:
@@ -108,7 +108,7 @@ class ConversationMemory:
         with open(history_file, 'w', encoding='utf-8') as f:
             json.dump(messages, f, ensure_ascii=False, indent=2)
 
-    def load_memory_variables(self) -> Dict[str, Any]:
+    def load_memory_variables(self) -> dict[str, Any]:
         """加载记忆变量"""
         return self.memory.load_memory_variables({})
 
@@ -117,7 +117,7 @@ class ConversationMemory:
         self.memory.clear()
         self._persist_history()
 
-    def get_conversation_history(self) -> List[Dict[str, str]]:
+    def get_conversation_history(self) -> list[dict[str, str]]:
         """获取对话历史
 
         Returns:

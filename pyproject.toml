@@ -43,18 +43,41 @@ dev = [
     "httpx>=0.25.0",
 ]
 
+[tool.hatch.build.targets.wheel]
+packages = ["maitian_agent"]
+
 [tool.ruff]
-# Ruff 是 Python linter：显式传入的非 Python 文件（.env/.yml/.md 等）
-# 会被当作 Python 解析而报语法错误。这里统一排除非 Python 产物，
-# 并用 force-exclude 让命令行显式传入的文件也遵守排除规则。
+target-version = "py312"
+line-length = 100
+# P1-2/P1-5：排除非 Python 文件，避免被当作 Python 解析
 force-exclude = true
 extend-exclude = ["*.yml", "*.yaml", "*.example", ".env", ".env.*", "*.md"]
 
 [tool.ruff.lint]
-# 采用经典 E/F 规则集作为基线（新代码应保持干净）；
-# 遗留代码的未用导入/变量（F401/F841）留待 P1-6 lint 迁移统一清理，暂不阻断。
-select = ["E4", "E7", "E9", "F"]
-ignore = ["F401", "F841"]
+# 合理的规则集：pycodestyle 错误、pyflakes、import 排序、bugbear、pyupgrade
+select = ["E", "F", "I", "B", "UP"]
 
-[tool.hatch.build.targets.wheel]
-packages = ["maitian_agent"]
+[tool.ruff.lint.per-file-ignores]
+# --- P1-2 正在其他工作树并行修改的文件：本工作树不改动它们，仅按文件忽略 ---
+"maitian_agent/config/settings.py" = ["E501", "F401", "I001", "UP006", "UP035", "UP045", "UP011", "B904", "F841"]
+"maitian_agent/llm.py" = ["E501", "F401", "I001", "UP006", "UP035", "UP045", "UP011", "B904", "F841"]
+"maitian_agent/agents/*.py" = ["E501", "F401", "I001", "UP006", "UP035", "UP045", "B904", "F841"]
+"maitian_agent/rag/embeddings.py" = ["E501", "I001", "UP006", "UP035", "UP045"]
+"demo/agents/*.py" = ["E501", "F401", "I001", "UP006", "UP035", "UP045", "B904", "F841"]
+# --- 遗留非 P1-2 文件中的少量非机械性告警：保持行为不变，逐文件忽略 ---
+# Streamlit 演示：控件赋值有副作用（不可安全删除），且含较长中文文案
+"demo/app.py" = ["E501", "F841"]
+# 既有可变默认参数，改为 None 会带来行为差异
+"maitian_agent/tools/ocr.py" = ["B006"]
+# str,Enum 语义 / 未使用的循环变量与局部变量，非机械安全修复
+"maitian_agent/rag/knowledge_base.py" = ["B007", "UP042", "F841"]
+# 既有 except 中 raise 的异常链式风格，保持现状
+"maitian_agent/api/routes.py" = ["B904"]
+"maitian_agent/tools/asr.py" = ["B904"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+    "live: 需要真实模型/API Key 的集成测试；默认用 -m 'not live' 跳过",
+]
+addopts = "-m 'not live'"

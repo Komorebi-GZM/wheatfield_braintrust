@@ -57,7 +57,10 @@ def test_valid_upload(api, extension):
 
     reader.readtext.side_effect = read
     for _ in range(2):
-        response = client.post("/api/wisdom-transfer", files={"file": (f"original.{extension}", image_bytes(extension), f"image/{extension}")})
+        response = client.post(
+            "/api/wisdom-transfer",
+            files={"file": (f"original.{extension}", image_bytes(extension), f"image/{extension}")},
+        )
         assert response.status_code == 200
         assert "结构化教案" in response.json()["result"]
     paths = [Path(call.args[0]) for call in reader.readtext.call_args_list]
@@ -86,7 +89,9 @@ def test_invalid_upload(api, name, content, mime, status):
 
 def test_server_path_removed(api):
     client, reader, _ = api
-    assert client.post("/api/wisdom-transfer", json={"image_path": "/etc/passwd"}).status_code == 422
+    assert client.post(
+        "/api/wisdom-transfer", json={"image_path": "/etc/passwd"}
+    ).status_code == 422
     reader.readtext.assert_not_called()
 
 
@@ -123,8 +128,10 @@ def test_cors_reloads_settings(api, monkeypatch):
     monkeypatch.setenv("ALLOWED_ORIGINS", "http://new.test")
     get_settings.cache_clear()
     client = TestClient(routes.create_app())
-    assert client.get("/health", headers={"Origin": "http://new.test"}).headers["access-control-allow-origin"] == "http://new.test"
-    assert "access-control-allow-origin" not in client.get("/health", headers={"Origin": "http://trusted.test"}).headers
+    allowed = client.get("/health", headers={"Origin": "http://new.test"})
+    assert allowed.headers["access-control-allow-origin"] == "http://new.test"
+    blocked = client.get("/health", headers={"Origin": "http://trusted.test"})
+    assert "access-control-allow-origin" not in blocked.headers
     client.close()
 
 
@@ -142,7 +149,9 @@ def test_error_hidden(api, monkeypatch):
 def test_legacy_agent_error_hidden(api):
     client, reader, _ = api
     reader.readtext.side_effect = RuntimeError("SECRET_TRACE_xyz")
-    response = client.post("/api/wisdom-transfer", files={"file": ("lesson.png", png(), "image/png")})
+    response = client.post(
+        "/api/wisdom-transfer", files={"file": ("lesson.png", png(), "image/png")}
+    )
     assert response.status_code == 500
     assert "SECRET_TRACE_xyz" not in response.text
 
@@ -154,8 +163,10 @@ def test_default_local_origins(monkeypatch, tmp_path):
     try:
         client = TestClient(routes.create_app())
         for origin in ["http://localhost:8501", "http://127.0.0.1:8501", "http://localhost:5173"]:
-            assert client.get("/health", headers={"Origin": origin}).headers["access-control-allow-origin"] == origin
-        assert "access-control-allow-origin" not in client.get("/health", headers={"Origin": "https://untrusted.test"}).headers
+            header = client.get("/health", headers={"Origin": origin}).headers
+            assert header["access-control-allow-origin"] == origin
+        blocked = client.get("/health", headers={"Origin": "https://untrusted.test"})
+        assert "access-control-allow-origin" not in blocked.headers
         client.close()
     finally:
         get_settings.cache_clear()
@@ -198,10 +209,18 @@ def test_upload_body_limit_before_save(api, monkeypatch, declared, root_path):
         sent.append(message)
 
     asyncio.run(client.app({
-        "type": "http", "asgi": {"version": "3.0"}, "http_version": "1.1",
-        "method": "POST", "scheme": "http", "path": root_path + "/api/wisdom-transfer", "root_path": root_path,
-        "raw_path": (root_path + "/api/wisdom-transfer").encode(), "query_string": b"", "headers": headers,
-        "client": ("test", 123), "server": ("test", 80),
+        "type": "http",
+        "asgi": {"version": "3.0"},
+        "http_version": "1.1",
+        "method": "POST",
+        "scheme": "http",
+        "path": root_path + "/api/wisdom-transfer",
+        "root_path": root_path,
+        "raw_path": (root_path + "/api/wisdom-transfer").encode(),
+        "query_string": b"",
+        "headers": headers,
+        "client": ("test", 123),
+        "server": ("test", 80),
     }, receive, send))
     assert sent[0]["status"] == 413
     assert sum(message["type"] == "http.response.start" for message in sent) == 1
@@ -217,7 +236,10 @@ def test_large_pixel_image_rejected(api):
     client, reader, directory = api
     buffer = BytesIO()
     Image.new("1", (10000, 10000)).save(buffer, format="PNG")
-    response = client.post("/api/wisdom-transfer", files={"file": ("bomb.png", buffer.getvalue(), "image/png")})
+    response = client.post(
+        "/api/wisdom-transfer",
+        files={"file": ("bomb.png", buffer.getvalue(), "image/png")},
+    )
     assert response.status_code == 413
     reader.readtext.assert_not_called()
     assert not directory.exists() or not list(directory.iterdir())
@@ -260,7 +282,10 @@ def test_pixel_limit_checked_before_decode(api, monkeypatch):
     Image.new("1", (3000, 3000)).save(buffer, format="PNG")
     load = Mock(side_effect=AssertionError("must reject before decoding"))
     monkeypatch.setattr(Image.Image, "load", load)
-    response = client.post("/api/wisdom-transfer", files={"file": ("x.png", buffer.getvalue(), "image/png")})
+    response = client.post(
+        "/api/wisdom-transfer",
+        files={"file": ("x.png", buffer.getvalue(), "image/png")},
+    )
     assert response.status_code == 413
     load.assert_not_called()
     reader.readtext.assert_not_called()
@@ -280,7 +305,10 @@ def test_agent_exception_upload_deleted(api, monkeypatch, extension):
     failing = Mock()
     failing.run.side_effect = RuntimeError("agent failed")
     monkeypatch.setitem(routes.agents, "wisdom_transfer", failing)
-    response = client.post("/api/wisdom-transfer", files={"file": (f"x.{extension}", image_bytes(extension), f"image/{extension}")})
+    response = client.post(
+        "/api/wisdom-transfer",
+        files={"file": (f"x.{extension}", image_bytes(extension), f"image/{extension}")},
+    )
     assert response.status_code == 500
     assert not list(directory.iterdir())
 

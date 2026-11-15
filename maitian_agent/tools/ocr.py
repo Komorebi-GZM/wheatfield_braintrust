@@ -2,10 +2,8 @@
 OCR工具
 支持EasyOCR和PaddleOCR
 """
-from abc import ABC, abstractmethod
-from typing import List, Tuple, Optional
-import os
 import threading
+from abc import ABC, abstractmethod
 
 
 class BaseOCR(ABC):
@@ -17,7 +15,7 @@ class BaseOCR(ABC):
         pass
 
     @abstractmethod
-    def recognize_batch(self, image_paths: List[str]) -> List[str]:
+    def recognize_batch(self, image_paths: list[str]) -> list[str]:
         """批量识别"""
         pass
 
@@ -27,9 +25,9 @@ class EasyOCRProcessor(BaseOCR):
 
     def __init__(
         self,
-        languages: List[str] = ["ch_sim", "en"],
+        languages: list[str] = ["ch_sim", "en"],
         gpu: bool = False,
-        model_storage_directory: Optional[str] = None
+        model_storage_directory: str | None = None
     ):
         self.languages = languages
         self.gpu = gpu
@@ -86,7 +84,7 @@ class EasyOCRProcessor(BaseOCR):
                 text_lines.append(detection[1])
             return "\n".join(text_lines)
 
-    def recognize_with_boxes(self, image_path: str) -> List[Tuple[List, str, float]]:
+    def recognize_with_boxes(self, image_path: str) -> list[tuple[list, str, float]]:
         """识别文字并返回位置信息
 
         Args:
@@ -98,7 +96,7 @@ class EasyOCRProcessor(BaseOCR):
         result = self._readtext(image_path, detail=1)
         return [(item[0], item[1], item[2]) for item in result]
 
-    def recognize_batch(self, image_paths: List[str]) -> List[str]:
+    def recognize_batch(self, image_paths: list[str]) -> list[str]:
         """批量识别
 
         Args:
@@ -151,7 +149,7 @@ class PaddleOCRProcessor(BaseOCR):
             text_lines.append(line[1][0])
         return "\n".join(text_lines)
 
-    def recognize_batch(self, image_paths: List[str]) -> List[str]:
+    def recognize_batch(self, image_paths: list[str]) -> list[str]:
         """批量识别"""
         return [self.recognize(path) for path in image_paths]
 

@@ -31,7 +31,10 @@ class UploadLimitMiddleware:
             return
 
         limit = self.settings.max_upload_mb * 1024 * 1024 + MULTIPART_ALLOWANCE_BYTES
-        response = JSONResponse({"detail": "上传内容过大，请上传大小限制以内的图片"}, status_code=413)
+        response = JSONResponse(
+            {"detail": "上传内容过大，请上传大小限制以内的图片"},
+            status_code=413,
+        )
         for name, value in scope.get("headers", []):
             if name.lower() == b"content-length":
                 try:

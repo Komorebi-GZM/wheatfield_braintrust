@@ -8,13 +8,12 @@ import httpx
 import streamlit as st
 from dotenv import load_dotenv
 
+from maitian_agent.agent_call import invoke_agent
 from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
 from maitian_agent.agents.material_agent import MaterialAgent
 from maitian_agent.agents.meeting_notes import MeetingNotesAgent
 from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
 from maitian_agent.agents.router import RouterAgent
-from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
-from maitian_agent.agent_call import invoke_agent
 from maitian_agent.config.settings import get_settings
 
 load_dotenv()

@@ -3,16 +3,12 @@ from __future__ import annotations
 
 import logging
 from collections.abc import Callable
-from typing import TypeVar
 
 logger = logging.getLogger(__name__)
 
 GENERIC_AGENT_ERROR = "服务处理失败，请稍后重试"
 
-T = TypeVar("T")
-
-
-def invoke_agent(
+def invoke_agent[T](
     fn: Callable[..., T],
     *args,
     error_handler: Callable[[str], object],
