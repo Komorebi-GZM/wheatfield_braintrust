@@ -19,8 +19,11 @@ from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 from maitian_agent.api.upload_limit import UploadLimitMiddleware
 from maitian_agent.config.settings import get_settings
 from maitian_agent.llm import LLMNotConfiguredError
-from maitian_agent.tools.file import FileProcessor
-from maitian_agent.tools.upload import cleanup_stale_uploads, save_image_upload
+from maitian_agent.tools.upload import (
+    cleanup_stale_uploads,
+    delete_saved_upload,
+    save_image_upload,
+)
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -146,7 +149,7 @@ async def wisdom_transfer(request: Request, file: UploadFile):
     finally:
         if image_path is not None:
             try:
-                FileProcessor(request.app.state.settings.upload_dir).delete_file(image_path)
+                delete_saved_upload(image_path, request.app.state.settings.upload_dir)
             except Exception:
                 logger.exception("删除本次上传文件失败")
 
