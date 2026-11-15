@@ -78,12 +78,11 @@ class WisdomTransferAgent(BaseAgent):
             识别出的文本
         """
         try:
-            reader = self.ocr.reader if isinstance(self.ocr, EasyOCRProcessor) else self.ocr
-            result = reader.readtext(image_path, detail=1)
-            ocr_text = ""
-            for detection in result:
-                ocr_text += detection[1] + "\n"
-            return ocr_text.strip()
+            # EasyOCRProcessor 走带锁的 recognize，避免并发重复构造/调用 Reader
+            if isinstance(self.ocr, EasyOCRProcessor):
+                return self.ocr.recognize(image_path, detail=1).strip()
+            result = self.ocr.readtext(image_path, detail=1)
+            return "\n".join(detection[1] for detection in result).strip()
         except Exception as e:
             raise RuntimeError(f"OCR识别失败: {e!s}")
 

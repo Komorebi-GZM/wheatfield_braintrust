@@ -1,7 +1,10 @@
 """Offline regression tests for upload, path, CORS and error boundaries."""
+import asyncio
+import os
+import time
 from io import BytesIO
 from pathlib import Path
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 from fastapi.testclient import TestClient
@@ -42,6 +45,11 @@ def png():
 
 def test_valid_upload(api):
     client, reader, directory = api
+    def read(path, **kwargs):
+        assert Path(path).read_bytes() == png()
+        return [(None, "教案", 0.99)]
+
+    reader.readtext.side_effect = read
     for _ in range(2):
         response = client.post("/api/wisdom-transfer", files={"file": ("original.png", png(), "image/png")})
         assert response.status_code == 200
@@ -52,7 +60,7 @@ def test_valid_upload(api):
         assert path.parent == directory.resolve()
         assert path.name != "original.png"
         assert len(path.stem) == 32
-        assert path.read_bytes() == png()
+        assert not path.exists()
 
 
 @pytest.mark.parametrize(("name", "content", "mime", "status"), [
@@ -157,3 +165,112 @@ def test_valid_file_writes(tmp_path):
     assert saved.name != upload.name
     assert saved.read_bytes() == b"second"
     assert processor.delete_file(str(saved))
+
+
+@pytest.mark.parametrize("declared", [None, "99999999", "1"])
+def test_upload_body_limit_before_save(api, monkeypatch, declared):
+    client, reader, _ = api
+    save = AsyncMock()
+    monkeypatch.setattr(routes, "save_image_upload", save)
+    headers = [(b"content-type", b"multipart/form-data; boundary=test")]
+    if declared is not None:
+        headers.append((b"content-length", declared.encode()))
+    chunks = iter([
+        b'--test\r\nContent-Disposition: form-data; name="file"; filename="x.png"\r\n\r\n',
+        *([b"x" * 65536] * 24), b"\r\n--test--\r\n",
+    ])
+    sent, received = [], []
+
+    async def receive():
+        chunk = next(chunks)
+        received.append(len(chunk))
+        return {"type": "http.request", "body": chunk, "more_body": chunk != b"\r\n--test--\r\n"}
+
+    async def send(message):
+        sent.append(message)
+
+    asyncio.run(client.app({
+        "type": "http", "asgi": {"version": "3.0"}, "http_version": "1.1",
+        "method": "POST", "scheme": "http", "path": "/api/wisdom-transfer",
+        "raw_path": b"/api/wisdom-transfer", "query_string": b"", "headers": headers,
+        "client": ("test", 123), "server": ("test", 80),
+    }, receive, send))
+    assert sent[0]["status"] == 413
+    assert sum(message["type"] == "http.response.start" for message in sent) == 1
+    if declared == "99999999":
+        assert received == []
+    else:
+        assert sum(received) < 24 * 65536
+    save.assert_not_called()
+    reader.readtext.assert_not_called()
+
+
+def test_large_pixel_image_rejected(api):
+    client, reader, directory = api
+    buffer = BytesIO()
+    Image.new("1", (10000, 10000)).save(buffer, format="PNG")
+    response = client.post("/api/wisdom-transfer", files={"file": ("bomb.png", buffer.getvalue(), "image/png")})
+    assert response.status_code == 413
+    reader.readtext.assert_not_called()
+    assert not directory.exists() or not list(directory.iterdir())
+
+
+def test_failed_upload_deleted(api, monkeypatch):
+    client, reader, directory = api
+    reader.readtext.side_effect = RuntimeError("OCR failed")
+    response = client.post("/api/wisdom-transfer", files={"file": ("x.png", png(), "image/png")})
+    assert response.status_code == 500
+    assert not Path(reader.readtext.call_args.args[0]).exists()
+    assert not list(directory.iterdir())
+
+
+def test_startup_cleans_stale_uploads(api, monkeypatch):
+    _, _, directory = api
+    directory.mkdir()
+    stale, fresh = directory / "stale.png", directory / "fresh.png"
+    stale.write_bytes(png())
+    fresh.write_bytes(png())
+    os.utime(stale, (time.time() - 48 * 3600,) * 2)
+    monkeypatch.setattr(routes, "startup_event", AsyncMock())
+    with TestClient(routes.create_app()) as client:
+        assert client.get("/health").status_code == 200
+        assert not stale.exists()
+        assert fresh.exists()
+
+
+def test_exact_file_limit_allows_multipart_overhead(api):
+    client, reader, _ = api
+    content = png().ljust(1024 * 1024, b"\0")
+    response = client.post("/api/wisdom-transfer", files={"file": ("x.png", content, "image/png")})
+    assert response.status_code == 200
+    assert not Path(reader.readtext.call_args.args[0]).exists()
+
+
+def test_pixel_limit_checked_before_decode(api, monkeypatch):
+    client, reader, _ = api
+    buffer = BytesIO()
+    Image.new("1", (3000, 3000)).save(buffer, format="PNG")
+    load = Mock(side_effect=AssertionError("must reject before decoding"))
+    monkeypatch.setattr(Image.Image, "load", load)
+    response = client.post("/api/wisdom-transfer", files={"file": ("x.png", buffer.getvalue(), "image/png")})
+    assert response.status_code == 413
+    load.assert_not_called()
+    reader.readtext.assert_not_called()
+
+
+def test_delete_failure_preserves_result(api, monkeypatch, caplog):
+    client, _, _ = api
+    monkeypatch.setattr(FileProcessor, "delete_file", Mock(side_effect=OSError("disk error")))
+    response = client.post("/api/wisdom-transfer", files={"file": ("x.png", png(), "image/png")})
+    assert response.status_code == 200
+    assert "删除本次上传文件失败" in caplog.text
+
+
+def test_agent_exception_upload_deleted(api, monkeypatch):
+    client, _, directory = api
+    failing = Mock()
+    failing.run.side_effect = RuntimeError("agent failed")
+    monkeypatch.setitem(routes.agents, "wisdom_transfer", failing)
+    response = client.post("/api/wisdom-transfer", files={"file": ("x.png", png(), "image/png")})
+    assert response.status_code == 500
+    assert not list(directory.iterdir())

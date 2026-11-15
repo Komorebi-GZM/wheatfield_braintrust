@@ -8,6 +8,7 @@ from typing import Any
 from maitian_agent.rag.embeddings import BGEEmbeddings, get_embeddings
 from maitian_agent.rag.vectorstore import (
     BaseVectorStore,
+    ChromaVectorStore,
     get_vector_store,
 )
 
@@ -41,14 +42,18 @@ class KnowledgeBase:
         self._init_collections()
 
     def _init_collections(self):
-        """初始化知识库集合"""
+        """初始化知识库集合（打开时即校验向量维度，避免拖到首次 search 才爆）"""
         for level in KnowledgeLevel:
-            self.collections[level] = get_vector_store(
+            store = get_vector_store(
                 store_type="chroma",
                 collection_name=f"knowledge_{level.value}",
                 persist_directory=self.persist_directory,
                 embedding_function=self.embedding
             )
+            self.collections[level] = store
+            # 触发 Chroma 打开路径：读取已存维度并与当前 embedding 比对
+            if isinstance(store, ChromaVectorStore):
+                _ = store.vectorstore
 
     def add_document(
         self,
