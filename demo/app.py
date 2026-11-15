@@ -3,6 +3,7 @@ import os
 import httpx
 import streamlit as st
 from agents.quick_lesson_prep import QuickLessonPrepAgent
+from maitian_agent.agent_call import invoke_agent
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -56,10 +57,18 @@ def render_quick_lesson_prep():
         else:
             with st.spinner("正在生成教案，请稍候..."):
                 agent = QuickLessonPrepAgent()
-                result = agent.run(subject=subject, grade=grade, topic=topic, rural_context=rural_context)
-                st.success("教案生成完成！")
-                st.markdown("### 生成的教案")
-                st.markdown(result)
+                result = invoke_agent(
+                    agent.run,
+                    error_handler=st.error,
+                    subject=subject,
+                    grade=grade,
+                    topic=topic,
+                    rural_context=rural_context,
+                )
+                if result is not None:
+                    st.success("教案生成完成！")
+                    st.markdown("### 生成的教案")
+                    st.markdown(result)
 
     st.markdown("---")
     st.markdown("#### 📝 功能说明")

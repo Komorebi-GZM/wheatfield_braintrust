@@ -14,6 +14,7 @@ from maitian_agent.agents.meeting_notes import MeetingNotesAgent
 from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
 from maitian_agent.agents.router import RouterAgent
 from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
+from maitian_agent.agent_call import invoke_agent
 from maitian_agent.config.settings import get_settings
 
 load_dotenv()
@@ -94,16 +95,18 @@ def render_quick_lesson_prep():
         else:
             with st.spinner("正在生成教案，请稍候..."):
                 agent = st.session_state.quick_lesson_prep_agent
-                result = agent.run(
+                result = invoke_agent(
+                    agent.run,
+                    error_handler=st.error,
                     subject=subject,
                     grade=grade,
                     topic=topic,
-                    rural_context=rural_context
+                    rural_context=rural_context,
                 )
-
-                st.success("教案生成完成！")
-                st.markdown("### 生成的教案")
-                st.markdown(result)
+                if result is not None:
+                    st.success("教案生成完成！")
+                    st.markdown("### 生成的教案")
+                    st.markdown(result)
 
     st.markdown("---")
     st.markdown("#### 备课助手功能说明")
@@ -197,18 +200,20 @@ def render_classroom_companion():
             else:
                 with st.spinner("正在生成练习题..."):
                     agent = st.session_state.classroom_companion_agent
-                    result = agent.generate_quiz(
+                    result = invoke_agent(
+                        agent.generate_quiz,
+                        error_handler=st.error,
                         subject=subject,
                         grade=grade,
                         topic=topic,
                         knowledge_points=knowledge_points,
                         question_count=question_count,
-                        question_types="、".join(question_types)
+                        question_types="、".join(question_types),
                     )
-
-                    st.success("练习题生成完成！")
-                    st.markdown("### 生成的练习题")
-                    st.markdown(result)
+                    if result is not None:
+                        st.success("练习题生成完成！")
+                        st.markdown("### 生成的练习题")
+                        st.markdown(result)
 
     else:
         if st.button("检索经典题", type="primary"):
@@ -217,16 +222,18 @@ def render_classroom_companion():
             else:
                 with st.spinner("正在检索经典题..."):
                     agent = st.session_state.classroom_companion_agent
-                    result = agent.retrieve_classic_questions(
+                    result = invoke_agent(
+                        agent.retrieve_classic_questions,
+                        error_handler=st.error,
                         subject=subject,
                         grade=grade,
                         topic=topic,
-                        knowledge_points=knowledge_points
+                        knowledge_points=knowledge_points,
                     )
-
-                    st.success("检索完成！")
-                    st.markdown("### 经典题检索结果")
-                    st.markdown(result)
+                    if result is not None:
+                        st.success("检索完成！")
+                        st.markdown("### 经典题检索结果")
+                        st.markdown(result)
 
 
 def render_material_recommend():
@@ -252,17 +259,19 @@ def render_material_recommend():
         else:
             with st.spinner("正在推荐素材..."):
                 agent = st.session_state.material_agent
-                result = agent.recommend_materials(
+                result = invoke_agent(
+                    agent.recommend_materials,
+                    error_handler=st.error,
                     subject=subject,
                     grade=grade,
                     topic=topic,
                     knowledge_points=knowledge_points,
-                    rural_context=rural_context
+                    rural_context=rural_context,
                 )
-
-                st.success("素材推荐完成！")
-                st.markdown("### 推荐素材")
-                st.markdown(result)
+                if result is not None:
+                    st.success("素材推荐完成！")
+                    st.markdown("### 推荐素材")
+                    st.markdown(result)
 
     st.markdown("---")
     st.markdown("#### 功能说明")
@@ -299,11 +308,15 @@ def render_meeting_notes():
             else:
                 with st.spinner("正在处理，请稍候..."):
                     agent = st.session_state.meeting_notes_agent
-                    result = agent.process_meeting_notes(meeting_transcript)
-
-                    st.success("报告生成完成！")
-                    st.markdown("### 教研纪要")
-                    st.markdown(result)
+                    result = invoke_agent(
+                        agent.process_meeting_notes,
+                        meeting_transcript,
+                        error_handler=st.error,
+                    )
+                    if result is not None:
+                        st.success("报告生成完成！")
+                        st.markdown("### 教研纪要")
+                        st.markdown(result)
     else:
         st.info("音频转写功能待集成Whisper API")
 
