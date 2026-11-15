@@ -32,9 +32,9 @@
 
 ```bash
 # 在仓库根目录运行
-uv sync
-# 手写识别功能需要：uv sync --extra ocr-easyocr
-# 本地 BGE 嵌入模型需要：uv sync --extra rag
+# demo 在启动时就会导入 EasyOCR，必须带上 ocr-easyocr extra
+uv sync --extra ocr-easyocr
+# 本地 BGE 嵌入模型还需要：uv sync --extra ocr-easyocr --extra rag
 ```
 
 ### 配置环境变量
