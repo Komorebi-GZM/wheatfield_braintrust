@@ -1,0 +1,152 @@
+{
+  "case": "val_ft_IMG_20261104_235932",
+  "arm": "ft",
+  "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235932.jpg",
+  "markdown": "# 山东大学\n\n## Q1.寻址方式：\n\n(1) 之即数寻址：只用于源操作数，一般用于寄存器赋值；之即数无法作为目标；有符号均可，可取范围内\n    (MOV AX, CX)\n\n(2) 寄存器寻址：CPU内执行，无连续周期，使注RAT源操作数和目的操作数\n    (MOV AH, ES: D200H);\n\n(3) 直接寻址(解放地址)：选择用地址，即时；使地址一般在DS中，其它使用按起起前级指址\n    (MOV, AH, I>100H)\n\n(4) 寄存器间指寻址：使用J BX, SI, DI时，操作数默认DS中；BP转，用SS\n    已知 (DS) = 200H, DI = 200H，指令=MOV AX, [DI]\n    ⇒ MOV AX, [2000H] 物理地址 = 16X (DS) + (DI)\n\n(5) 寄存器相移址：寄存器与位移量之和；寄存器 (BX, BP, SI, DI...)，位移量 (8或16位=进制数)\n    BX, SI, DI → DS; BP → SS；物理地址 = 16X(DS) + (SI) + 8(或16)位移量\n    MOV BX, [DA][SI] (或MOV, BX, [DA]+SI)\n    ⇒ (16X(DS) + (SI) + 16位偏移量(200H))\n\n(6) 基址变址：EA = (BX) or (BP) + (SI) or (DI)，物理地址 = 16X(DS) + (BX) + (SI)\n    MOV BX[AL], [BX][[SI]] 或 MOV[AL, [BX+SI]] ⇒ EA(旋转) = (BX) + (SI)\n    ⇒ 14X(DS) + EA\n\n(7) 相对基址变址，在(6)上加一个8或16偏移量。\n\n(8) 隐含寻址：MUL BL ⇒ (AL) × (BL)",
+  "raw_output": "```markdown\n# 山东大学\n\n## Q1.寻址方式：\n\n(1) 之即数寻址：只用于源操作数，一般用于寄存器赋值；之即数无法作为目标；有符号均可，可取范围内\n    (MOV AX, CX)\n\n(2) 寄存器寻址：CPU内执行，无连续周期，使注RAT源操作数和目的操作数\n    (MOV AH, ES: D200H);\n\n(3) 直接寻址(解放地址)：选择用地址，即时；使地址一般在DS中，其它使用按起起前级指址\n    (MOV, AH, I>100H)\n\n(4) 寄存器间指寻址：使用J BX, SI, DI时，操作数默认DS中；BP转，用SS\n    已知 (DS) = 200H, DI = 200H，指令=MOV AX, [DI]\n    ⇒ MOV AX, [2000H] 物理地址 = 16X (DS) + (DI)\n\n(5) 寄存器相移址：寄存器与位移量之和；寄存器 (BX, BP, SI, DI...)，位移量 (8或16位=进制数)\n    BX, SI, DI → DS; BP → SS；物理地址 = 16X(DS) + (SI) + 8(或16)位移量\n    MOV BX, [DA][SI] (或MOV, BX, [DA]+SI)\n    ⇒ (16X(DS) + (SI) + 16位偏移量(200H))\n\n(6) 基址变址：EA = (BX) or (BP) + (SI) or (DI)，物理地址 = 16X(DS) + (BX) + (SI)\n    MOV BX[AL], [BX][[SI]] 或 MOV[AL, [BX+SI]] ⇒ EA(旋转) = (BX) + (SI)\n    ⇒ 14X(DS) + EA\n\n(7) 相对基址变址，在(6)上加一个8或16偏移量。\n\n(8) 隐含寻址：MUL BL ⇒ (AL) × (BL)\n```",
+  "run": {
+    "protocol_version": "v2",
+    "engine": "ocr.engine/OCREngine",
+    "base_model": "SeerRay-Lab/Xiaomi-OCR-0",
+    "load_in_4bit": true,
+    "adapter": {
+      "adapter_dir": "outputs/qlora-v1/v2-20261115-114258/checkpoint-4",
+      "adapter_config_sha256": "4119d0c886f69f8e15575535eade792e3d3cc520912e61d7c484543c3e111430",
+      "adapter_weights_sha256": "8121f7abfdaf2b997e2e3e0eb66d2f644a4e40fac5439dd38f869c19055fbcbb",
+      "r": 8,
+      "lora_alpha": 32.0,
+      "lora_dropout": 0.05,
+      "target_modules": "^(model\\.language_model(?=\\.).*\\.(in_proj_qkv|gate_proj|k_proj|down_proj|out_proj|in_proj_a|q_proj|v_proj|in_proj_z|in_proj_b|up_proj|o_proj))$",
+      "base_model_name_or_path": "C:\\Users\\48769\\.cache\\huggingface\\hub\\models--SeerRay-Lab--Xiaomi-OCR-0\\snapshots\\bbd8cf8d21f256b3644b44cb860f3a7cecb93c30",
+      "n_tensors_on_disk": 372,
+      "n_lora_tensors_live": 372,
+      "n_matched": 372,
+      "missing_in_model": 0,
+      "missing_examples": [],
+      "extra_in_model": 0,
+      "value_mismatched": 0,
+      "value_mismatch_examples": [],
+      "max_abs_diff": 0.0,
+      "peft_loader_missing_keys": 474,
+      "peft_loader_missing_lora_keys": 0,
+      "peft_loader_missing_note": "missing_keys 里绝大多数是未提供的 4bit 基座权重，只把 lora_ 前缀的缺失视为失败",
+      "peft_loader_unexpected_keys": 0,
+      "n_lora_modules": 372,
+      "lora_modules_outside_language_model": 0,
+      "lora_B_nonzero": 186,
+      "lora_B_all_zero": 0,
+      "lora_params_disk": 5411328,
+      "lora_params_live": 5411328,
+      "trainable_params": 0,
+      "model_training_mode": false,
+      "inference_uses_no_grad": true,
+      "weights_verified": true
+    },
+    "image_path": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235932.jpg",
+    "prompt": {
+      "system_prompt_used": false,
+      "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+      "prompt_sha256": "557b0658a32f16024d414d155f18ce41997f5e2d0f4c19e10564d4da470c9354",
+      "prompt_tokens": 1008,
+      "n_image_pad_tokens": 972
+    },
+    "image": {
+      "sha256": "04981766f2270a8c275ccd3b2c19d4b2a1b6fe4fcda741a310d1252c9b8caf04",
+      "original_size_wh": [
+        3072,
+        4096
+      ],
+      "max_pixels": 1024000,
+      "patch_size": 16,
+      "merge_size": 2,
+      "image_grid_thw": [
+        [
+          1,
+          72,
+          54
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "processed_size_wh": [
+        864,
+        1152
+      ]
+    },
+    "generation": {
+      "max_new_tokens": 1024,
+      "do_sample": false,
+      "generated_tokens": 505,
+      "eos_token_id": 248046,
+      "last_token_id": 248046,
+      "stopped_on_eos": true,
+      "hit_length_cap": false,
+      "finish_reason": "eos"
+    },
+    "repetition": {
+      "line_run": {
+        "max_consecutive": 1,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "# 山东大学"
+      },
+      "unit_run": {
+        "max_consecutive": 0,
+        "threshold": 5,
+        "flagged": false,
+        "sample": ""
+      },
+      "template_line_run": {
+        "max_consecutive": 1,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "# 山东大学",
+        "raw_sample": "# 山东大学",
+        "rule": "连续 >=5 行仅数字不同（数字替换为 # 后相同），表格行不参与"
+      },
+      "ngram": {
+        "n": 10,
+        "top_count": 3,
+        "coverage": 0.0384,
+        "thresholds": [
+          20,
+          0.25
+        ],
+        "flagged": false,
+        "sample": "物理地址 = 16X"
+      },
+      "detected": false
+    },
+    "postprocess": {
+      "raw_chars": 798,
+      "wrapper_stripped": "code_fence",
+      "display_math_converted": 0,
+      "inline_math_converted": 0,
+      "normalized_chars": 782,
+      "markdown_chars": 782,
+      "changed": true
+    },
+    "perf": {
+      "elapsed_seconds": 51.232,
+      "peak_cuda_allocated_bytes": 1058178048,
+      "peak_cuda_reserved_bytes": 1103101952,
+      "gpu_memory_used_before_mib": [
+        2204,
+        8188
+      ],
+      "gpu_memory_used_after_mib": [
+        2607,
+        8188
+      ],
+      "gpu_memory_note": "nvidia-smi memory.used 为整卡占用（含其它进程），Windows WDDM 下不等于本进程独占显存"
+    },
+    "structure_ok": true,
+    "latex_issues": [],
+    "stats": {
+      "headings": 2,
+      "list_items": 0,
+      "tables": 0,
+      "formulas": 0
+    }
+  }
+}

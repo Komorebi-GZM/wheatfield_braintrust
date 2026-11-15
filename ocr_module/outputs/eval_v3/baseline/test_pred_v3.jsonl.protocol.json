@@ -1,0 +1,29 @@
+{
+  "created_at": "2026-11-15T13:56:26",
+  "fingerprint": {
+    "protocol_version": "v2",
+    "postprocess_version": "v2-normalize",
+    "base_model": "SeerRay-Lab/Xiaomi-OCR-0",
+    "adapter_dir": null,
+    "adapter_weights_sha256": null,
+    "adapter_weights_verified": null,
+    "max_pixels": 1024000,
+    "max_new_tokens": 1024,
+    "use_system_prompt": false,
+    "load_in_4bit": true,
+    "instruction_sha256": "c8316fd00d96283f479f8bd9a7626b4e3b5f1e9222ba09fe951823d8851683f6",
+    "manifest": "datasets/handwriting_notes/splits/test.jsonl",
+    "manifest_sha256": "67a5df075e8575e3d1e9005633783076a67c2ce681b0fed3025319e3f1563f0a",
+    "data_version_annotation_sha256": "34f262c270b2bf955a9d039b7d80f355c13e20bd87b8e7709c97201d19d17732"
+  },
+  "engine": {
+    "protocol_version": "v2",
+    "base_model": "SeerRay-Lab/Xiaomi-OCR-0",
+    "adapter": null,
+    "max_new_tokens": 1024,
+    "max_pixels": 1024000,
+    "use_system_prompt": false,
+    "load_in_4bit": true,
+    "instruction_sha256": "c8316fd00d96283f479f8bd9a7626b4e3b5f1e9222ba09fe951823d8851683f6"
+  }
+}

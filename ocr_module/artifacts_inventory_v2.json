@@ -1,0 +1,647 @@
+{
+  "generated_at": "2026-11-15T12:51:08",
+  "checked_by": "脚本扫描 + 人工核对（未运行模型）",
+  "test_manifest": {
+    "file": "datasets/handwriting_notes/splits/test.jsonl",
+    "n_pages": 5,
+    "pages": [
+      "IMG_20261105_000020.jpg",
+      "IMG_20261105_000028.jpg",
+      "IMG_20261105_000037.jpg",
+      "IMG_20261105_000044.jpg",
+      "IMG_20261105_000051.jpg"
+    ]
+  },
+  "predictions": {
+    "outputs/baseline/test_pred.jsonl": {
+      "exists": true,
+      "sha256": "fd53a0b51ad885c0b51ccbf3fb2700f118106df72217901bc5fabff1f71e8963",
+      "bytes": 14601,
+      "n_lines": 5,
+      "n_unique_images": 5,
+      "duplicate_images": [],
+      "missing_pages": [],
+      "extra_pages": [],
+      "complete": true,
+      "per_page": [
+        {
+          "image": "IMG_20261105_000020.jpg",
+          "pred_chars": 205,
+          "ref_chars": 167,
+          "ref_unknown_marker": 28,
+          "elapsed_seconds": 61.7,
+          "original_size_wh": [
+            4096,
+            3072
+          ],
+          "image_grid_thw": [
+            [
+              1,
+              192,
+              256
+            ]
+          ]
+        },
+        {
+          "image": "IMG_20261105_000028.jpg",
+          "pred_chars": 532,
+          "ref_chars": 700,
+          "ref_unknown_marker": 1,
+          "elapsed_seconds": 66.7,
+          "original_size_wh": [
+            3072,
+            4096
+          ],
+          "image_grid_thw": [
+            [
+              1,
+              256,
+              192
+            ]
+          ]
+        },
+        {
+          "image": "IMG_20261105_000037.jpg",
+          "pred_chars": 628,
+          "ref_chars": 603,
+          "ref_unknown_marker": 0,
+          "elapsed_seconds": 89.7,
+          "original_size_wh": [
+            3072,
+            4096
+          ],
+          "image_grid_thw": [
+            [
+              1,
+              256,
+              192
+            ]
+          ]
+        },
+        {
+          "image": "IMG_20261105_000044.jpg",
+          "pred_chars": 717,
+          "ref_chars": 639,
+          "ref_unknown_marker": 0,
+          "elapsed_seconds": 102.1,
+          "original_size_wh": [
+            4096,
+            3072
+          ],
+          "image_grid_thw": [
+            [
+              1,
+              192,
+              256
+            ]
+          ]
+        },
+        {
+          "image": "IMG_20261105_000051.jpg",
+          "pred_chars": 7156,
+          "ref_chars": 447,
+          "ref_unknown_marker": 0,
+          "elapsed_seconds": 349.6,
+          "original_size_wh": [
+            4096,
+            3072
+          ],
+          "image_grid_thw": [
+            [
+              1,
+              192,
+              256
+            ]
+          ]
+        }
+      ],
+      "run_fields_recorded": [
+        "elapsed_seconds",
+        "image_grid_thw",
+        "original_size_wh",
+        "peak_cuda_allocated_bytes",
+        "peak_cuda_reserved_bytes",
+        "processed_size_wh"
+      ],
+      "run_fields_missing": [
+        "max_new_tokens",
+        "finish_reason"
+      ]
+    },
+    "outputs/baseline/test_pred_512.jsonl": {
+      "exists": true,
+      "sha256": "68331f70123a2a7188c4c17485a768c36f5405db0c8da529482e28227084e878",
+      "bytes": 6538,
+      "n_lines": 5,
+      "n_unique_images": 5,
+      "duplicate_images": [],
+      "missing_pages": [],
+      "extra_pages": [],
+      "complete": true,
+      "per_page": [
+        {
+          "image": "IMG_20261105_000020.jpg",
+          "pred_chars": 205,
+          "ref_chars": 167,
+          "ref_unknown_marker": 28,
+          "elapsed_seconds": 51.9,
+          "original_size_wh": [
+            4096,
+            3072
+          ],
+          "image_grid_thw": [
+            [
+              1,
+              192,
+              256
+            ]
+          ]
+        },
+        {
+          "image": "IMG_20261105_000028.jpg",
+          "pred_chars": 532,
+          "ref_chars": 700,
+          "ref_unknown_marker": 1,
+          "elapsed_seconds": 63.7,
+          "original_size_wh": [
+            3072,
+            4096
+          ],
+          "image_grid_thw": [
+            [
+              1,
+              256,
+              192
+            ]
+          ]
+        },
+        {
+          "image": "IMG_20261105_000037.jpg",
+          "pred_chars": 628,
+          "ref_chars": 603,
+          "ref_unknown_marker": 0,
+          "elapsed_seconds": 118.8,
+          "original_size_wh": [
+            3072,
+            4096
+          ],
+          "image_grid_thw": [
+            [
+              1,
+              256,
+              192
+            ]
+          ]
+        },
+        {
+          "image": "IMG_20261105_000044.jpg",
+          "pred_chars": 717,
+          "ref_chars": 639,
+          "ref_unknown_marker": 0,
+          "elapsed_seconds": 132.0,
+          "original_size_wh": [
+            4096,
+            3072
+          ],
+          "image_grid_thw": [
+            [
+              1,
+              192,
+              256
+            ]
+          ]
+        },
+        {
+          "image": "IMG_20261105_000051.jpg",
+          "pred_chars": 884,
+          "ref_chars": 447,
+          "ref_unknown_marker": 0,
+          "elapsed_seconds": 117.8,
+          "original_size_wh": [
+            4096,
+            3072
+          ],
+          "image_grid_thw": [
+            [
+              1,
+              192,
+              256
+            ]
+          ]
+        }
+      ],
+      "run_fields_recorded": [
+        "elapsed_seconds",
+        "image_grid_thw",
+        "original_size_wh",
+        "peak_cuda_allocated_bytes",
+        "peak_cuda_reserved_bytes",
+        "processed_size_wh"
+      ],
+      "run_fields_missing": [
+        "max_new_tokens",
+        "finish_reason"
+      ]
+    },
+    "outputs/finetuned/test_pred_512.jsonl": {
+      "exists": true,
+      "sha256": "7f2778f4f5292e03638dc0ba20c7d30657dcb587dac0ed9436dbfa789223a217",
+      "bytes": 2132,
+      "n_lines": 1,
+      "n_unique_images": 1,
+      "duplicate_images": [],
+      "missing_pages": [
+        "IMG_20261105_000028.jpg",
+        "IMG_20261105_000037.jpg",
+        "IMG_20261105_000044.jpg",
+        "IMG_20261105_000051.jpg"
+      ],
+      "extra_pages": [],
+      "complete": false,
+      "per_page": [
+        {
+          "image": "IMG_20261105_000020.jpg",
+          "pred_chars": 786,
+          "ref_chars": 167,
+          "ref_unknown_marker": 28,
+          "elapsed_seconds": 109.8,
+          "original_size_wh": [
+            4096,
+            3072
+          ],
+          "image_grid_thw": [
+            [
+              1,
+              192,
+              256
+            ]
+          ]
+        }
+      ],
+      "run_fields_recorded": [
+        "elapsed_seconds",
+        "image_grid_thw",
+        "original_size_wh",
+        "peak_cuda_allocated_bytes",
+        "peak_cuda_reserved_bytes",
+        "processed_size_wh"
+      ],
+      "run_fields_missing": [
+        "max_new_tokens",
+        "finish_reason"
+      ]
+    }
+  },
+  "baseline_4096_vs_512": {
+    "IMG_20261105_000020.jpg": {
+      "identical": true,
+      "chars_4096": 205,
+      "chars_512": 205,
+      "tail_4096": "参与\n  - 作业提交\n  - 项目作业\n  - 个人作业\n  - 考试\n```",
+      "tail_512": "参与\n  - 作业提交\n  - 项目作业\n  - 个人作业\n  - 考试\n```"
+    },
+    "IMG_20261105_000028.jpg": {
+      "identical": true,
+      "chars_4096": 532,
+      "chars_512": 532,
+      "tail_4096": "D1 { 1 (IN) 高值 D3 } { 1 (IN) 低值 D1 }\n```",
+      "tail_512": "D1 { 1 (IN) 高值 D3 } { 1 (IN) 低值 D1 }\n```"
+    },
+    "IMG_20261105_000037.jpg": {
+      "identical": true,
+      "chars_4096": 628,
+      "chars_512": 628,
+      "tail_4096": " BCD码\n  - 0: 二进制计数\n\n#### CTo = To·fc\n```",
+      "tail_512": " BCD码\n  - 0: 二进制计数\n\n#### CTo = To·fc\n```"
+    },
+    "IMG_20261105_000044.jpg": {
+      "identical": true,
+      "chars_4096": 717,
+      "chars_512": 717,
+      "tail_4096": "D D D\n\n### ICW3（级联时用）\n- D D D D D D\n\n```",
+      "tail_512": "D D D\n\n### ICW3（级联时用）\n- D D D D D D\n\n```"
+    },
+    "IMG_20261105_000051.jpg": {
+      "identical": false,
+      "chars_4096": 7156,
+      "chars_512": 884,
+      "tail_4096": "D D D\n\nD D D\n\nD D D\n\nD D D\n\nD D D\n\nD D D",
+      "tail_512": "D D D\n\nD D D\n\nD D D\n\nD D D\n\nD D D\n\nD D D"
+    }
+  },
+  "training": {
+    "run_dir": "outputs/qlora-v1/v2-20261115-114258",
+    "exists": true,
+    "checkpoints": {
+      "checkpoint-3": {
+        "files": {
+          "README.md": 5398,
+          "adapter_config.json": 1342,
+          "adapter_model.safetensors": 21700560,
+          "additional_config.json": 67,
+          "args.json": 18974,
+          "optimizer.pt": 43602670,
+          "rng_state.pth": 14244,
+          "scheduler.pt": 1000,
+          "trainer_state.json": 2267,
+          "training_args.bin": 6392
+        },
+        "lora": {
+          "r": 8,
+          "lora_alpha": 32.0,
+          "lora_dropout": 0.05,
+          "peft_type": "LORA",
+          "task_type": "CAUSAL_LM"
+        },
+        "target_modules": "^(model\\.language_model(?=\\.).*\\.(in_proj_qkv|gate_proj|k_proj|down_proj|out_proj|in_proj_a|q_proj|v_proj|in_proj_z|in_proj_b|up_proj|o_proj))$",
+        "base_model_snapshot": "C:\\Users\\48769\\.cache\\huggingface\\hub\\models--SeerRay-Lab--Xiaomi-OCR-0\\snapshots\\bbd8cf8d21f256b3644b44cb860f3a7cecb93c30",
+        "global_step": 3,
+        "epoch": 3.0,
+        "best_metric": 1.25331569,
+        "usable_for_inference": true
+      },
+      "checkpoint-4": {
+        "files": {
+          "README.md": 5398,
+          "adapter_config.json": 1342,
+          "adapter_model.safetensors": 21700560,
+          "additional_config.json": 67,
+          "args.json": 18974,
+          "optimizer.pt": 43602670,
+          "rng_state.pth": 14244,
+          "scheduler.pt": 1000,
+          "trainer_state.json": 2955,
+          "training_args.bin": 6392
+        },
+        "lora": {
+          "r": 8,
+          "lora_alpha": 32.0,
+          "lora_dropout": 0.05,
+          "peft_type": "LORA",
+          "task_type": "CAUSAL_LM"
+        },
+        "target_modules": "^(model\\.language_model(?=\\.).*\\.(in_proj_qkv|gate_proj|k_proj|down_proj|out_proj|in_proj_a|q_proj|v_proj|in_proj_z|in_proj_b|up_proj|o_proj))$",
+        "base_model_snapshot": "C:\\Users\\48769\\.cache\\huggingface\\hub\\models--SeerRay-Lab--Xiaomi-OCR-0\\snapshots\\bbd8cf8d21f256b3644b44cb860f3a7cecb93c30",
+        "global_step": 4,
+        "epoch": 4.0,
+        "best_metric": 1.24562669,
+        "usable_for_inference": true
+      }
+    },
+    "best_checkpoint_recorded": "checkpoint-4",
+    "last_checkpoint_alias_present": false,
+    "train_args": {
+      "model_type": "qwen3_5",
+      "template": "qwen3_5",
+      "dataset": [
+        "datasets/handwriting_notes/splits/train_swift.jsonl"
+      ],
+      "val_dataset": [
+        "datasets/handwriting_notes/splits/val_swift.jsonl"
+      ],
+      "split_dataset_ratio": 0.0,
+      "num_train_epochs": 4.0,
+      "per_device_train_batch_size": 1,
+      "gradient_accumulation_steps": 16,
+      "learning_rate": 0.0001,
+      "lr_scheduler_type": "cosine",
+      "warmup_ratio": 0.03,
+      "warmup_steps": 0,
+      "max_length": 8192,
+      "max_pixels": 1024000,
+      "lora_rank": 8,
+      "lora_alpha": 32.0,
+      "lora_dropout": 0.05,
+      "quant_method": "bnb",
+      "quant_bits": 4,
+      "bnb_4bit_quant_type": "nf4",
+      "bnb_4bit_use_double_quant": true,
+      "freeze_vit": true,
+      "freeze_aligner": true,
+      "gradient_checkpointing": true,
+      "bf16": true,
+      "dataloader_num_workers": 0,
+      "save_strategy": "epoch",
+      "eval_strategy": "epoch",
+      "save_total_limit": 2,
+      "seed": 42,
+      "load_best_model_at_end": false
+    },
+    "log": {
+      "n_entries": 11,
+      "train_loss_steps": [
+        {
+          "step": "1/4",
+          "loss": 1.31670499,
+          "token_acc": 0.74519754,
+          "lr": 0.0001,
+          "memory_GiB": 5.89
+        },
+        {
+          "step": "2/4",
+          "loss": 1.31670499,
+          "token_acc": 0.74519754,
+          "lr": 7.5e-05,
+          "memory_GiB": 6.43
+        },
+        {
+          "step": "3/4",
+          "loss": 1.22588599,
+          "token_acc": 0.75679594,
+          "lr": 2.5e-05,
+          "memory_GiB": 8.85
+        },
+        {
+          "step": "4/4",
+          "loss": 1.15324497,
+          "token_acc": 0.76676332,
+          "lr": 0.0,
+          "memory_GiB": 8.85
+        }
+      ],
+      "eval_loss_steps": [
+        {
+          "step": "1/4",
+          "eval_loss": 1.32243574,
+          "eval_token_acc": 0.75130208
+        },
+        {
+          "step": "2/4",
+          "eval_loss": 1.27781463,
+          "eval_token_acc": 0.75520833
+        },
+        {
+          "step": "3/4",
+          "eval_loss": 1.25331569,
+          "eval_token_acc": 0.76041667
+        },
+        {
+          "step": "4/4",
+          "eval_loss": 1.24562669,
+          "eval_token_acc": 0.75868056
+        },
+        {
+          "step": "4/4",
+          "eval_loss": 1.24562669,
+          "eval_token_acc": 0.75868056
+        }
+      ],
+      "train_runtime_s": 146.3642,
+      "train_loss_final": 1.25313523,
+      "peak_memory_GiB": 8.853515625,
+      "param_info": "PeftModelForCausalLM: 609.5898M Params (5.4113M Trainable [0.8877%]), 0.0001M Buffers."
+    },
+    "empty_run_dirs": [
+      "outputs/qlora-v1/v0-20261115-114149",
+      "outputs/qlora-v1/v1-20261115-114219"
+    ]
+  },
+  "evaluation": {
+    "baseline_metrics_file": "outputs/baseline/eval\\metrics.json",
+    "baseline_metrics": {
+      "n_pages": 5,
+      "n_scored_pages": 4,
+      "n_excluded_unknown_reference": 1,
+      "text_cer": 4.0866,
+      "formula_exact_match_rate": 0.0,
+      "formula_cer": 1.0,
+      "structure_heading_seq_match_rate": 0.0,
+      "per_page": [
+        {
+          "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000020.jpg",
+          "text_cer": null,
+          "formula": null,
+          "structure": null,
+          "excluded_reason": "unknown_reference"
+        },
+        {
+          "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000028.jpg",
+          "text_cer": 0.43902439024390244,
+          "formula": {
+            "n_ref": 13,
+            "n_hyp": 0,
+            "exact_match_rate": 0.0,
+            "formula_cer": 1.0
+          },
+          "structure": {
+            "ref": {
+              "headings": 3,
+              "list_items": 14,
+              "tables": 0,
+              "formulas": 13
+            },
+            "hyp": {
+              "headings": 7,
+              "list_items": 12,
+              "tables": 0,
+              "formulas": 0
+            },
+            "headings_count_match": false,
+            "heading_seq_match": false,
+            "list_count_match": false,
+            "table_count_match": true
+          }
+        },
+        {
+          "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000037.jpg",
+          "text_cer": 0.49577464788732395,
+          "formula": {
+            "n_ref": 11,
+            "n_hyp": 0,
+            "exact_match_rate": 0.0,
+            "formula_cer": 1.0
+          },
+          "structure": {
+            "ref": {
+              "headings": 2,
+              "list_items": 10,
+              "tables": 0,
+              "formulas": 11
+            },
+            "hyp": {
+              "headings": 11,
+              "list_items": 26,
+              "tables": 0,
+              "formulas": 0
+            },
+            "headings_count_match": false,
+            "heading_seq_match": false,
+            "list_count_match": false,
+            "table_count_match": true
+          }
+        },
+        {
+          "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000044.jpg",
+          "text_cer": 0.9209726443768997,
+          "formula": {
+            "n_ref": 20,
+            "n_hyp": 0,
+            "exact_match_rate": 0.0,
+            "formula_cer": 1.0
+          },
+          "structure": {
+            "ref": {
+              "headings": 5,
+              "list_items": 10,
+              "tables": 0,
+              "formulas": 20
+            },
+            "hyp": {
+              "headings": 25,
+              "list_items": 30,
+              "tables": 0,
+              "formulas": 0
+            },
+            "headings_count_match": false,
+            "heading_seq_match": false,
+            "list_count_match": false,
+            "table_count_match": true
+          }
+        },
+        {
+          "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000051.jpg",
+          "text_cer": 14.49056603773585,
+          "formula": {
+            "n_ref": 16,
+            "n_hyp": 0,
+            "exact_match_rate": 0.0,
+            "formula_cer": 1.0
+          },
+          "structure": {
+            "ref": {
+              "headings": 4,
+              "list_items": 11,
+              "tables": 0,
+              "formulas": 16
+            },
+            "hyp": {
+              "headings": 1,
+              "list_items": 0,
+              "tables": 0,
+              "formulas": 0
+            },
+            "headings_count_match": false,
+            "heading_seq_match": false,
+            "list_count_match": false,
+            "table_count_match": true
+          }
+        }
+      ]
+    },
+    "finetuned_eval_dir_exists": false,
+    "note": "metrics.json 对应 outputs/baseline/test_pred.jsonl（4096 上限）；微调版无任何评测产物"
+  },
+  "process_check": {
+    "python_processes": 0,
+    "gpu_used_MiB_at_check": 1354,
+    "gpu_total_MiB": 8188,
+    "note": "核对时无 python 训练/推理进程；显存占用来自桌面等其它程序，未终止任何进程"
+  },
+  "verdict": {
+    "baseline_complete_pages": 5,
+    "finetuned_complete_pages": 1,
+    "finetuned_scorable_pages": 0,
+    "comparison_possible": false,
+    "blocking_reason": "微调版只有 IMG_20261105_000020（参考含 28 个□，评测整页排除），4 个可评分页无预测；evaluate.py 对缺页直接抛错"
+  }
+}

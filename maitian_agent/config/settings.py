@@ -37,8 +37,13 @@ class Settings(BaseSettings):
     memory_persist_directory: str = Field(default="./data/memory", description="记忆持久化目录")
 
     # OCR配置
-    ocr_type: str = Field(default="easyocr", description="OCR类型")
+    ocr_type: str = Field(default="easyocr", description="OCR类型 (easyocr/paddleocr/xiaomi)")
     ocr_languages: list = Field(default=["ch_sim", "en"], description="OCR语言")
+    ocr_gpu: bool = Field(default=False, description="OCR是否使用GPU")
+    # ocr_module (Xiaomi-OCR-0) 相关
+    ocr_base_model: str = Field(default="SeerRay-Lab/Xiaomi-OCR-0", description="结构化OCR基座模型")
+    ocr_adapter_dir: Optional[str] = Field(default=None, description="LoRA adapter 目录（微调产物）")
+    ocr_load_in_4bit: bool = Field(default=True, description="结构化OCR是否4-bit加载")
 
     # Whisper配置
     whisper_model: str = Field(default="base", description="Whisper模型大小")

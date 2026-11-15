@@ -1,0 +1,120 @@
+{
+  "case": "val_base_IMG_20261105_000012",
+  "arm": "base",
+  "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000012.jpg",
+  "markdown": "| 中操操作数 | REP与MOIS、STOS、LODS | (REP在三者之前，重复操作，每次CX-1至前0) | \n | --- | --- | --- | \n | MOIS = MOISB 样 | MOISW 守 | (单物送) | \n | STOS = STOSR | STOSW | 单人阵 | \n | LOS = LOSB | LOSW | (取阵) | \n | 程序控制 | 无种(不影响标志) | JMP SHOR1, —— 修 | \n | | | JMP NEAR, —— 说 | \n | | | JMP CX —— 视相同 | \n | 程序控制(模拟标志): | 结果为0或0样, JR/E, 平=1 | 平=1 | \n | 结果为0或不横, JM/INE | 平=0 | | \n | 种类: JS, SF=1 | 挺=J/NS, SF=0 | | \n | 标志: JO, OF=1 | 无溢出, OF=0, OF=0 | | \n | 判断前1, 处理后 | 判断前0, JMP JPRO, OF=0 | | \n | 标志: JR, 低于, 挺挺JMAE: 不高或等于 | JC:适合对, | | \n | JNB:高于, JAE:高或等于 | 风NC:适合加 | | \n | 挺接变符号 | | | \n | JL:N于 | JNC,E:不高且不等于 | | \n | JLE:小于或于, 挺= 不好 | | | \n | JA:大于 | JMLE: 极小小于或等于 | | \n | JCE:好数 | JLE: 不于 | | \n | JCX2: (CX) =0 转模 | | |",
+  "raw_output": "<md> | 中操操作数 | REP与MOIS、STOS、LODS | (REP在三者之前，重复操作，每次CX-1至前0) | \n | --- | --- | --- | \n | MOIS = MOISB 样 | MOISW 守 | (单物送) | \n | STOS = STOSR | STOSW | 单人阵 | \n | LOS = LOSB | LOSW | (取阵) | \n | 程序控制 | 无种(不影响标志) | JMP SHOR1, —— 修 | \n | | | JMP NEAR, —— 说 | \n | | | JMP CX —— 视相同 | \n | 程序控制(模拟标志): | 结果为0或0样, JR/E, 平=1 | 平=1 | \n | 结果为0或不横, JM/INE | 平=0 | | \n | 种类: JS, SF=1 | 挺=J/NS, SF=0 | | \n | 标志: JO, OF=1 | 无溢出, OF=0, OF=0 | | \n | 判断前1, 处理后 | 判断前0, JMP JPRO, OF=0 | | \n | 标志: JR, 低于, 挺挺JMAE: 不高或等于 | JC:适合对, | | \n | JNB:高于, JAE:高或等于 | 风NC:适合加 | | \n | 挺接变符号 | | | \n | JL:N于 | JNC,E:不高且不等于 | | \n | JLE:小于或于, 挺= 不好 | | | \n | JA:大于 | JMLE: 极小小于或等于 | | \n | JCE:好数 | JLE: 不于 | | \n | JCX2: (CX) =0 转模 | | | </md>",
+  "run": {
+    "protocol_version": "v2",
+    "engine": "ocr.engine/OCREngine",
+    "base_model": "SeerRay-Lab/Xiaomi-OCR-0",
+    "load_in_4bit": true,
+    "adapter": null,
+    "image_path": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000012.jpg",
+    "prompt": {
+      "system_prompt_used": false,
+      "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+      "prompt_sha256": "557b0658a32f16024d414d155f18ce41997f5e2d0f4c19e10564d4da470c9354",
+      "prompt_tokens": 1008,
+      "n_image_pad_tokens": 972
+    },
+    "image": {
+      "sha256": "b22045fc9b963afdfc517712b80a8503f52f23e37b148084a2014ada78aa46a4",
+      "original_size_wh": [
+        4096,
+        3072
+      ],
+      "max_pixels": 1024000,
+      "patch_size": 16,
+      "merge_size": 2,
+      "image_grid_thw": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "processed_size_wh": [
+        1152,
+        864
+      ]
+    },
+    "generation": {
+      "max_new_tokens": 1024,
+      "do_sample": false,
+      "generated_tokens": 421,
+      "eos_token_id": 248046,
+      "last_token_id": 248046,
+      "stopped_on_eos": true,
+      "hit_length_cap": false,
+      "finish_reason": "eos"
+    },
+    "repetition": {
+      "line_run": {
+        "max_consecutive": 1,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "| 中操操作数 | REP与MOIS、STOS、LODS | (REP在三者之前，重复操作，每次CX-1至前0) |"
+      },
+      "unit_run": {
+        "max_consecutive": 0,
+        "threshold": 5,
+        "flagged": false,
+        "sample": ""
+      },
+      "template_line_run": {
+        "max_consecutive": 0,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "",
+        "raw_sample": "",
+        "rule": "连续 >=5 行仅数字不同（数字替换为 # 后相同），表格行不参与"
+      },
+      "ngram": {
+        "n": 10,
+        "top_count": 6,
+        "coverage": 0.0862,
+        "thresholds": [
+          20,
+          0.25
+        ],
+        "flagged": false,
+        "sample": " | | \n | J"
+      },
+      "detected": false
+    },
+    "postprocess": {
+      "raw_chars": 707,
+      "wrapper_stripped": "md_tag",
+      "display_math_converted": 0,
+      "inline_math_converted": 0,
+      "normalized_chars": 696,
+      "markdown_chars": 696,
+      "changed": true
+    },
+    "perf": {
+      "elapsed_seconds": 22.547,
+      "peak_cuda_allocated_bytes": 1036532736,
+      "peak_cuda_reserved_bytes": 1080033280,
+      "gpu_memory_used_before_mib": [
+        2216,
+        8188
+      ],
+      "gpu_memory_used_after_mib": [
+        2220,
+        8188
+      ],
+      "gpu_memory_note": "nvidia-smi memory.used 为整卡占用（含其它进程），Windows WDDM 下不等于本进程独占显存"
+    },
+    "structure_ok": true,
+    "latex_issues": [],
+    "stats": {
+      "headings": 0,
+      "list_items": 0,
+      "tables": 1,
+      "formulas": 0
+    }
+  }
+}

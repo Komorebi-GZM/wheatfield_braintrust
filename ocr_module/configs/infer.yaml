@@ -1,0 +1,7 @@
+# Inference config (maps to ocr/engine.py)
+base_model: SeerRay-Lab/Xiaomi-OCR-0
+adapter_dir: outputs/qlora-v1          # null 表示用基座 zero-shot
+load_in_4bit: true
+device: auto
+max_new_tokens: 4096
+trust_remote_code: true

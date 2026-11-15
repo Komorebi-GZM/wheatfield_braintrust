@@ -1,0 +1,152 @@
+{
+  "case": "val_ft_IMG_20261105_000012",
+  "arm": "ft",
+  "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000012.jpg",
+  "markdown": "|  | 中操操作题 |  |\n|---|---|---|\n|  | REP与MOIS、STOS、LODS（REP在三者之前，重复操作，每次CX-1至前0） |  |\n|  | MOIS = MOISB 样 | MOISW 守（单体送） |\n|  | STOS = STOSB | STOSW 临入审 |\n|  | LODS = LOSB B | LODSW（取体） |\n|  | 程序控制 |  |\n|  | 无种（不影响标志） | JMP SHOR1，—— 修 |\n|  |  | JMP NEAR，—— 说 |\n|  |  | JMP CX，—— 视相同 |\n|  | 程序控制（程序控制） |  |\n|  | 结果为0或0转，JPE、JPE=0 |  |\n|  | 结果为0或不转，JME/JNE |  |\n|  | 结果：JS，SF=1 | 非=JNS，SF=0 |\n|  | 结果：JO，OP=1 | 无溢出，OP=0 |\n|  | 非解前1，非解后 | 解前0，JMP JPO，OP=0 |\n|  | 结果：JPE、PE1 |  |\n|  | 非：低于，非非JNE：不高或等于 | JC：进合对 |\n|  | JNB：高于，JAE：高或等于 | 非NC：进和 |\n|  | 结果符号 |  |\n|  | JL：N于 | JNCE：不高且不等于 |\n|  | JLE：小于或等于 | 非：不好 |\n|  | JG：大于 | JME：非小于或等于 |\n|  | JCE：大于 | LE：不于 |\n|  | JCE：（CX）=0 转模 |  |",
+  "raw_output": "<fcel>中操操作题<lcel><nl><fcel>REP与MOIS、STOS、LODS（REP在三者之前，重复操作，每次CX-1至前0）<lcel><nl><fcel>MOIS = MOISB 样<fcel>MOISW 守（单体送）<nl><fcel>STOS = STOSB<fcel>STOSW 临入审<nl><fcel>LODS = LOSB B<fcel>LODSW（取体）<nl><fcel>程序控制<lcel><nl><fcel>无种（不影响标志）<fcel>JMP SHOR1，—— 修<nl><ucel><fcel>JMP NEAR，—— 说<nl><ucel><fcel>JMP CX，—— 视相同<nl><fcel>程序控制（程序控制）<lcel><nl><fcel>结果为0或0转，JPE、JPE=0<lcel><nl><fcel>结果为0或不转，JME/JNE<lcel><nl><fcel>结果：JS，SF=1<fcel>非=JNS，SF=0<nl><fcel>结果：JO，OP=1<fcel>无溢出，OP=0<nl><fcel>非解前1，非解后<fcel>解前0，JMP JPO，OP=0<nl><fcel>结果：JPE、PE1<lcel><nl><fcel>非：低于，非非JNE：不高或等于<fcel>JC：进合对<nl><fcel>JNB：高于，JAE：高或等于<fcel>非NC：进和<nl><fcel>结果符号<lcel><nl><fcel>JL：N于<fcel>JNCE：不高且不等于<nl><fcel>JLE：小于或等于<fcel>非：不好<nl><fcel>JG：大于<fcel>JME：非小于或等于<nl><fcel>JCE：大于<fcel>LE：不于<nl><fcel>JCE：（CX）=0 转模<lcel><nl>",
+  "run": {
+    "protocol_version": "v2",
+    "engine": "ocr.engine/OCREngine",
+    "base_model": "SeerRay-Lab/Xiaomi-OCR-0",
+    "load_in_4bit": true,
+    "adapter": {
+      "adapter_dir": "outputs/qlora-v1/v2-20261115-114258/checkpoint-4",
+      "adapter_config_sha256": "4119d0c886f69f8e15575535eade792e3d3cc520912e61d7c484543c3e111430",
+      "adapter_weights_sha256": "8121f7abfdaf2b997e2e3e0eb66d2f644a4e40fac5439dd38f869c19055fbcbb",
+      "r": 8,
+      "lora_alpha": 32.0,
+      "lora_dropout": 0.05,
+      "target_modules": "^(model\\.language_model(?=\\.).*\\.(in_proj_qkv|gate_proj|k_proj|down_proj|out_proj|in_proj_a|q_proj|v_proj|in_proj_z|in_proj_b|up_proj|o_proj))$",
+      "base_model_name_or_path": "C:\\Users\\48769\\.cache\\huggingface\\hub\\models--SeerRay-Lab--Xiaomi-OCR-0\\snapshots\\bbd8cf8d21f256b3644b44cb860f3a7cecb93c30",
+      "n_tensors_on_disk": 372,
+      "n_lora_tensors_live": 372,
+      "n_matched": 372,
+      "missing_in_model": 0,
+      "missing_examples": [],
+      "extra_in_model": 0,
+      "value_mismatched": 0,
+      "value_mismatch_examples": [],
+      "max_abs_diff": 0.0,
+      "peft_loader_missing_keys": 474,
+      "peft_loader_missing_lora_keys": 0,
+      "peft_loader_missing_note": "missing_keys 里绝大多数是未提供的 4bit 基座权重，只把 lora_ 前缀的缺失视为失败",
+      "peft_loader_unexpected_keys": 0,
+      "n_lora_modules": 372,
+      "lora_modules_outside_language_model": 0,
+      "lora_B_nonzero": 186,
+      "lora_B_all_zero": 0,
+      "lora_params_disk": 5411328,
+      "lora_params_live": 5411328,
+      "trainable_params": 0,
+      "model_training_mode": false,
+      "inference_uses_no_grad": true,
+      "weights_verified": true
+    },
+    "image_path": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000012.jpg",
+    "prompt": {
+      "system_prompt_used": false,
+      "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+      "prompt_sha256": "557b0658a32f16024d414d155f18ce41997f5e2d0f4c19e10564d4da470c9354",
+      "prompt_tokens": 1008,
+      "n_image_pad_tokens": 972
+    },
+    "image": {
+      "sha256": "b22045fc9b963afdfc517712b80a8503f52f23e37b148084a2014ada78aa46a4",
+      "original_size_wh": [
+        4096,
+        3072
+      ],
+      "max_pixels": 1024000,
+      "patch_size": 16,
+      "merge_size": 2,
+      "image_grid_thw": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "processed_size_wh": [
+        1152,
+        864
+      ]
+    },
+    "generation": {
+      "max_new_tokens": 1024,
+      "do_sample": false,
+      "generated_tokens": 485,
+      "eos_token_id": 248046,
+      "last_token_id": 248046,
+      "stopped_on_eos": true,
+      "hit_length_cap": false,
+      "finish_reason": "eos"
+    },
+    "repetition": {
+      "line_run": {
+        "max_consecutive": 1,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "<fcel>中操操作题<lcel><nl><fcel>REP与MOIS、STOS、LODS（REP在三者之前，重复操作，"
+      },
+      "unit_run": {
+        "max_consecutive": 0,
+        "threshold": 5,
+        "flagged": false,
+        "sample": ""
+      },
+      "template_line_run": {
+        "max_consecutive": 1,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "<fcel>中操操作题<lcel><nl><fcel>REP与MOIS、STOS、LODS（REP在三者之前，重复操作，",
+        "raw_sample": "<fcel>中操操作题<lcel><nl><fcel>REP与MOIS、STOS、LODS（REP在三者之前，重复操作，",
+        "rule": "连续 >=5 行仅数字不同（数字替换为 # 后相同），表格行不参与"
+      },
+      "ngram": {
+        "n": 10,
+        "top_count": 21,
+        "coverage": 0.2682,
+        "thresholds": [
+          20,
+          0.25
+        ],
+        "flagged": true,
+        "sample": "<nl><fcel>"
+      },
+      "detected": true
+    },
+    "postprocess": {
+      "raw_chars": 783,
+      "wrapper_stripped": null,
+      "display_math_converted": 0,
+      "inline_math_converted": 0,
+      "normalized_chars": 783,
+      "markdown_chars": 676,
+      "changed": false
+    },
+    "perf": {
+      "elapsed_seconds": 62.443,
+      "peak_cuda_allocated_bytes": 1058178048,
+      "peak_cuda_reserved_bytes": 1103101952,
+      "gpu_memory_used_before_mib": [
+        2749,
+        8188
+      ],
+      "gpu_memory_used_after_mib": [
+        2742,
+        8188
+      ],
+      "gpu_memory_note": "nvidia-smi memory.used 为整卡占用（含其它进程），Windows WDDM 下不等于本进程独占显存"
+    },
+    "structure_ok": true,
+    "latex_issues": [],
+    "stats": {
+      "headings": 0,
+      "list_items": 0,
+      "tables": 1,
+      "formulas": 0
+    }
+  }
+}

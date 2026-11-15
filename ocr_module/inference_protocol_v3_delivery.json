@@ -1,0 +1,211 @@
+{
+  "protocol_version": "v3-delivery",
+  "created_at": "2026-11-15T15:30:00",
+  "purpose": "本次交付（v2 数据 + 重训 checkpoint-26）实际使用的推理/评测配置记录。所有字段取自运行产物（args.json、运行 sidecar、metrics.json），不是手写预期值。",
+  "relation_to_v2": {
+    "file": "inference_protocol_v2.json",
+    "status": "原样保留，未修改",
+    "why_kept": "该文件冻结于重训之前，其 adapter 段落及其加载校验证据（372/372、max_abs_diff=0）记录的是 checkpoint-4，属于历史协议记录。修改它会让『旧指纹 ↔ 旧内容』的对应关系断裂。",
+    "not_used_for_fingerprint": "没有任何脚本读取该文件（全仓 grep 仅注释/docstring 提及）。运行 sidecar 的 fingerprint 由 scripts/infer_test_baseline.py::fingerprint(args, engine_desc) 在运行时按实参计算。",
+    "difference": "唯一的实质差异是 adapter：v2 记录 checkpoint-4，本次交付与评测实际使用 checkpoint-26。其余（max_pixels、max_new_tokens、提示词、停止条件、后处理、评测口径）与 v2 完全一致，未做任何调整。"
+  },
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.6.0+cu124",
+    "transformers": "5.14.1",
+    "peft": "0.20.0",
+    "ms_swift": "4.6.0",
+    "bitsandbytes": "0.50.2",
+    "qwen_vl_utils": "0.0.14",
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "gpu_total_mib": 8188,
+    "os_note": "Windows + WDDM：nvidia-smi memory.used 为整卡占用（含其它进程），不等于本进程独占显存"
+  },
+  "base_model": {
+    "id": "SeerRay-Lab/Xiaomi-OCR-0",
+    "model_type": "qwen3_5",
+    "arch": "Qwen3_5ForConditionalGeneration",
+    "loader": "AutoModelForImageTextToText",
+    "quantization": {
+      "method": "bitsandbytes",
+      "load_in_4bit": true,
+      "bnb_4bit_quant_type": "nf4",
+      "bnb_4bit_use_double_quant": true,
+      "bnb_4bit_compute_dtype": "bfloat16"
+    }
+  },
+  "adapter": {
+    "dir": "outputs/qlora-v2/v2data-20261115-134816/checkpoint-26",
+    "dir_note": "训练产物本身不在 Git 中（outputs/ 被忽略、*.safetensors 被忽略）；获取与校验见 CHECKPOINT_MANIFEST.md",
+    "weights_file": "adapter_model.safetensors",
+    "weights_sha256": "a2be86a210a107e7db63c61e3bd180f0c4be7f46693fb2ffb2910ebc1f9abbb6",
+    "config_sha256": "e5a66259994708c1447aed9dca9f838d650e025887b1eeaac3f0f866dd2e63d8",
+    "r": 8,
+    "lora_alpha": 32.0,
+    "lora_dropout": 0.05,
+    "target_modules": "^(model\\.language_model(?=\\.).*\\.(k_proj|q_proj|in_proj_a|v_proj|gate_proj|up_proj|down_proj|o_proj|in_proj_qkv|out_proj|in_proj_z|in_proj_b))$",
+    "n_lora_modules": 372,
+    "lora_modules_outside_language_model": 0,
+    "trainable_params": 0,
+    "verification": {
+      "evidence": "outputs/protocol/adapter_check_v2data_ckpt26.json",
+      "n_tensors_on_disk": 372,
+      "n_matched": 372,
+      "max_abs_diff": 0.0,
+      "peft_loader_missing_lora_keys": 0,
+      "lora_B_all_zero": 0,
+      "weights_verified": true
+    }
+  },
+  "data": {
+    "annotation": "datasets/handwriting_notes/annotation_template.jsonl",
+    "annotation_sha256": "34f262c270b2bf955a9d039b7d80f355c13e20bd87b8e7709c97201d19d17732",
+    "annotation_version": "v2 (2026-11-15)",
+    "version_manifest": "datasets/handwriting_notes/data_version_v2.json",
+    "splits": {
+      "train.jsonl": {
+        "path": "datasets/handwriting_notes/splits/train.jsonl",
+        "sha256": "aabb1af92132e11b8c829a4613349f86b981341080c608a970a843c054be73da",
+        "n_rows": 13
+      },
+      "val.jsonl": {
+        "path": "datasets/handwriting_notes/splits/val.jsonl",
+        "sha256": "aed108254fdfc01e8ee94c6ebb303f20acf3807a5a1a2e78f91d636316fddab4",
+        "n_rows": 5
+      },
+      "test.jsonl": {
+        "path": "datasets/handwriting_notes/splits/test.jsonl",
+        "sha256": "67a5df075e8575e3d1e9005633783076a67c2ce681b0fed3025319e3f1563f0a",
+        "n_rows": 5
+      },
+      "train_swift.jsonl": {
+        "path": "datasets/handwriting_notes/splits/train_swift.jsonl",
+        "sha256": "86e17f9d9e184dfa42521e4c1b2b9c7705e073cf481876365ea7c751bdcee7db",
+        "n_rows": 13
+      },
+      "val_swift.jsonl": {
+        "path": "datasets/handwriting_notes/splits/val_swift.jsonl",
+        "sha256": "f959cbc51aa2242afa00a48d11431b4736ebb351cfe5a5ce2b4fc4a49bf050b9",
+        "n_rows": 5
+      }
+    },
+    "synthetic": {
+      "count": 0,
+      "policy": "合成数据只允许由 scripts/prepare_dataset.py 拼进训练集；val/test 只用真实页。本轮未生成任何合成样本。"
+    }
+  },
+  "prompt": {
+    "system_prompt_used": false,
+    "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+    "instruction_sha256": "c8316fd00d96283f479f8bd9a7626b4e3b5f1e9222ba09fe951823d8851683f6",
+    "messages": "[{\"role\":\"user\",\"content\":[{\"type\":\"image\",\"url\":<abs path>},{\"type\":\"text\",\"text\":\"\\n\" + instruction}]}]",
+    "add_generation_prompt": true,
+    "alignment_with_training": {
+      "prompt_identical": true,
+      "train_render_tokens": 1012,
+      "infer_render_tokens": 1008,
+      "length_delta_explained_by": "训练侧多 4 个 token：答案首字 + <|im_end|> + 换行",
+      "assistant_header": "<|im_start|>assistant\n<think>\n\n</think>\n\n",
+      "thinking_mode": "non-thinking（空 think 块）"
+    }
+  },
+  "image_processing": {
+    "processor": "AutoProcessor (Qwen3VLProcessor / Qwen2VLImageProcessor)",
+    "max_pixels": 1024000,
+    "knob": "processor.image_processor.size['longest_edge'] = max_pixels（shortest_edge 保持模型默认）",
+    "patch_size": 16,
+    "merge_size": 2,
+    "observed_this_run": {
+      "original_size_wh": [4096, 3072],
+      "processed_size_wh": [1152, 864],
+      "image_grid_thw": [[1, 54, 72]],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008,
+      "n_image_pad_tokens": 972,
+      "note": "patch 数与合并后的视觉 token 数分开记录，不混称"
+    }
+  },
+  "generation": {
+    "decoding": "greedy (do_sample=false, temperature=None, top_p=None)",
+    "max_new_tokens": 1024,
+    "repetition_penalty": null,
+    "no_repeat_ngram_size": null,
+    "pad_token_id": "processor.tokenizer.pad_token_id",
+    "torch_no_grad": true,
+    "cap_decision": {
+      "chosen": 1024,
+      "rule": "只用非测试页的参考答案长度决定，不看测试集成绩",
+      "evidence": "outputs/protocol/supervised_tokens.json",
+      "max_supervised_tokens_non_test": 611,
+      "verdict_512": "不足：最长非测试参考答案 611 token > 512",
+      "verdict_1024": "采用：相对 611 约 1.6 倍余量",
+      "known_limit": "参考长度 ≠ 输出长度。验证页 235955 上两臂实际都命中 1024（见 outputs/smoke_v3/），测试集 5 页恰好未触顶。"
+    }
+  },
+  "stop_conditions": {
+    "eos_token": "<|im_end|>",
+    "eos_token_id": 248046,
+    "im_end_equals_eos": true,
+    "finish_reason_values": ["eos", "length", "other"],
+    "normal_end_requires_eos_evidence": true
+  },
+  "postprocess": {
+    "version": "v2-normalize",
+    "impl": "ocr/postprocess.py::normalize_output",
+    "steps": [
+      "剥 1~2 层外层代码围栏（内部 ``` 数为奇数则不剥，保留内部代码块）",
+      "剥 <md>...</md> 包装",
+      "\\[...\\] → $$...$$、\\(...\\) → $...$ 统一公式定界符"
+    ],
+    "idempotent": true,
+    "applied_to_both_arms": true,
+    "raw_preserved": "每个记录同时保留 raw_output 与归一化 markdown"
+  },
+  "evaluation": {
+    "script": "scripts/evaluate.py",
+    "reference": "datasets/handwriting_notes/splits/test.jsonl",
+    "n_pages": 5,
+    "n_scored_pages": 3,
+    "n_excluded": 2,
+    "exclusion_rule": "参考含 □ 的页整页排除（unknown_reference），双方同规则",
+    "excluded_pages": ["IMG_20261105_000020.jpg", "IMG_20261105_000028.jpg"],
+    "cer_macro_definition": "各可评分页 CER 的算术平均（每页等权）",
+    "cer_micro_definition": "sum(编辑距离)/sum(参考纯文本字符数)",
+    "plain_text_behavior": "plain_text() 删除 $...$ / $$...$$ 整段（因此另报含公式体版本）"
+  },
+  "runs": {
+    "baseline": {
+      "pred": "outputs/eval_v3/baseline/test_pred_v3.jsonl",
+      "sidecar": "outputs/eval_v3/baseline/test_pred_v3.jsonl.protocol.json",
+      "metrics": "outputs/eval_v3/baseline/metrics.json",
+      "adapter": null
+    },
+    "finetuned": {
+      "pred": "outputs/eval_v3/finetuned/test_pred_v3.jsonl",
+      "sidecar": "outputs/eval_v3/finetuned/test_pred_v3.jsonl.protocol.json",
+      "metrics": "outputs/eval_v3/finetuned/metrics.json",
+      "adapter": "outputs/qlora-v2/v2data-20261115-134816/checkpoint-26"
+    },
+    "comparison": ["outputs/eval_v3/comparison_v3.json", "outputs/eval_v3/comparison_v3.md"],
+    "supplement_with_math": "outputs/eval_v3/supplement.json",
+    "repro_check": "outputs/eval_v3/repro_check/",
+    "smoke_current_code": "outputs/smoke_v3/"
+  },
+  "results": {
+    "n_scored_pages": 3,
+    "text_cer_macro_no_math": {"base": 1.4872, "finetuned": 0.7725},
+    "text_cer_micro_no_math": {"base": 1.4386, "finetuned": 0.7433},
+    "text_cer_macro_with_math": {"base": 1.1217, "finetuned": 1.7952},
+    "text_cer_micro_with_math": {"base": 1.1125, "finetuned": 1.9119},
+    "failure_rate_hit_cap_or_repetition": {"base": 0.6667, "finetuned": 0.6667},
+    "formula_exact_match_rate": {"base": 0.0, "finetuned": 0.0},
+    "heading_seq_match_rate": {"base": 0.0, "finetuned": 0.0},
+    "verdict": "mixed",
+    "verdict_note": "主指标改善、含公式体指标退化；可评分页仅 3 页，不支持泛化结论，不得宣称整体 OCR 能力已改善。"
+  },
+  "reproduce": {
+    "cwd_rule": "所有相对路径以 ocr_module/ 为根目录解析；脚本内部用 os.path 相对当前工作目录，无硬编码绝对路径",
+    "commands_file": "HANDOFF.md"
+  }
+}

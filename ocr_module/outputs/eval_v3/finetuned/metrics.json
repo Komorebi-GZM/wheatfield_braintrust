@@ -1,0 +1,177 @@
+{
+  "n_pages": 5,
+  "n_scored_pages": 3,
+  "n_excluded_unknown_reference": 2,
+  "text_cer": 0.7725,
+  "text_cer_macro_definition": "各可评分页 CER 的算术平均（每页等权）",
+  "text_cer_micro": 0.7433,
+  "text_cer_micro_definition": "sum(编辑距离) / sum(参考字符数)，按字符长度加权；分母是可评分页参考纯文本字符总数",
+  "total_edit_distance": 666,
+  "total_ref_chars": 896,
+  "cer_can_exceed_100pct": true,
+  "n_pages_ref_has_formula_but_hyp_none": 0,
+  "formula_extractor_delimiters": [
+    "$...$",
+    "$$...$$"
+  ],
+  "formula_exact_match_rate": 0.0,
+  "formula_cer": 3.0894,
+  "structure_heading_seq_match_rate": 0.0,
+  "per_page": [
+    {
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000020.jpg",
+      "text_cer": null,
+      "formula": null,
+      "structure": null,
+      "excluded_reason": "unknown_reference"
+    },
+    {
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000028.jpg",
+      "text_cer": null,
+      "formula": null,
+      "structure": null,
+      "excluded_reason": "unknown_reference"
+    },
+    {
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000037.jpg",
+      "text_cer": 0.4732394366197183,
+      "formula": {
+        "n_ref": 11,
+        "n_hyp": 2,
+        "exact_match_rate": 0.0,
+        "formula_cer": 0.8110236220472441
+      },
+      "structure": {
+        "ref": {
+          "headings": 2,
+          "list_items": 10,
+          "tables": 0,
+          "formulas": 11
+        },
+        "hyp": {
+          "headings": 5,
+          "list_items": 12,
+          "tables": 0,
+          "formulas": 2
+        },
+        "headings_count_match": false,
+        "heading_seq_match": false,
+        "list_count_match": false,
+        "table_count_match": true
+      },
+      "ref_chars": 355,
+      "hyp_chars": 245,
+      "edit_distance": 168,
+      "hyp_normalization": {
+        "wrapper_stripped": null,
+        "raw_chars": 410,
+        "display_converted": 0,
+        "inline_converted": 0,
+        "normalized_chars": 410,
+        "changed": false
+      },
+      "ref_normalization": {
+        "wrapper_stripped": null,
+        "raw_chars": 603,
+        "display_converted": 0,
+        "inline_converted": 0,
+        "normalized_chars": 603,
+        "changed": false
+      }
+    },
+    {
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000044.jpg",
+      "text_cer": 0.9148936170212766,
+      "formula": {
+        "n_ref": 20,
+        "n_hyp": 1,
+        "exact_match_rate": 0.0,
+        "formula_cer": 6.9573170731707314
+      },
+      "structure": {
+        "ref": {
+          "headings": 5,
+          "list_items": 10,
+          "tables": 0,
+          "formulas": 20
+        },
+        "hyp": {
+          "headings": 23,
+          "list_items": 0,
+          "tables": 0,
+          "formulas": 1
+        },
+        "headings_count_match": false,
+        "heading_seq_match": false,
+        "list_count_match": false,
+        "table_count_match": true
+      },
+      "ref_chars": 329,
+      "hyp_chars": 77,
+      "edit_distance": 301,
+      "hyp_normalization": {
+        "wrapper_stripped": null,
+        "raw_chars": 2355,
+        "display_converted": 0,
+        "inline_converted": 0,
+        "normalized_chars": 2355,
+        "changed": false
+      },
+      "ref_normalization": {
+        "wrapper_stripped": null,
+        "raw_chars": 639,
+        "display_converted": 0,
+        "inline_converted": 0,
+        "normalized_chars": 639,
+        "changed": false
+      }
+    },
+    {
+      "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261105_000051.jpg",
+      "text_cer": 0.9292452830188679,
+      "formula": {
+        "n_ref": 16,
+        "n_hyp": 25,
+        "exact_match_rate": 0.0,
+        "formula_cer": 1.5
+      },
+      "structure": {
+        "ref": {
+          "headings": 4,
+          "list_items": 11,
+          "tables": 0,
+          "formulas": 16
+        },
+        "hyp": {
+          "headings": 1,
+          "list_items": 0,
+          "tables": 0,
+          "formulas": 25
+        },
+        "headings_count_match": false,
+        "heading_seq_match": false,
+        "list_count_match": false,
+        "table_count_match": true
+      },
+      "ref_chars": 212,
+      "hyp_chars": 35,
+      "edit_distance": 197,
+      "hyp_normalization": {
+        "wrapper_stripped": null,
+        "raw_chars": 469,
+        "display_converted": 0,
+        "inline_converted": 0,
+        "normalized_chars": 469,
+        "changed": false
+      },
+      "ref_normalization": {
+        "wrapper_stripped": null,
+        "raw_chars": 447,
+        "display_converted": 0,
+        "inline_converted": 0,
+        "normalized_chars": 447,
+        "changed": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+{
+  "case": "d2_ft_train_1mp_1024",
+  "image": "datasets/handwriting_notes/images/IMG_20261104_200903.jpg",
+  "markdown": "```markdown\n### 4-2\n**变曲根距模型中由导数和微分确定时，模型与真实成化**\n\n\\[ C = \\frac{\\partial}{\\partial x} \\frac{\\partial f}{\\partial x} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ C_0 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ C_0 = \\frac{\\partial f}{\\partial x} + \\frac{\\partial f}{\\partial x}^2 \\]\n\n**因此，电导式与微分方程为 \\( \\frac{\\partial f}{\\partial x} = k \\) 及 \\( \\frac{\\partial f}{\\partial x}^2 = k \\)，属于非线性系统。只有微分方程才使微分方程**\n\n**推论：微分方程模型中，如果一个片段微分方程是线性，则微分方程**\n\n**4-3**\n\n**微分函数**\n\n\\[ k_x \\quad \\frac{\\partial f}{\\partial x} \\]\n\n**由 \\( C = \\frac{\\partial f}{\\partial x} \\)，还有有电导式，有微分函数越大，绝对值越大**\n\n**提高特征与后果，增加可增加微分，但非线性增加；问题应正具微分函数**\n\n**4-6**\n\n取微分函数增大 \\( C_0 \\) 或 \\( C_0 = \\frac{\\partial f}{\\partial x} \\approx 0.4 \\) 时 \\( f \\)\n\n\\[ C_1 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ C_2 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ C_3 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_1 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_2 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_3 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_4 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_5 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_6 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_7 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_8 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_9 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{10} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{11} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{12} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{13} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{14} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{15} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{16} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{17} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{18} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{19} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{20} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{21} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{22} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{23} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{24} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{25} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{26} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{27} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{28} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{29} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{30} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{31} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{32} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{33} =",
+  "raw_output": "```markdown\n### 4-2\n**变曲根距模型中由导数和微分确定时，模型与真实成化**\n\n\\[ C = \\frac{\\partial}{\\partial x} \\frac{\\partial f}{\\partial x} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ C_0 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ C_0 = \\frac{\\partial f}{\\partial x} + \\frac{\\partial f}{\\partial x}^2 \\]\n\n**因此，电导式与微分方程为 \\( \\frac{\\partial f}{\\partial x} = k \\) 及 \\( \\frac{\\partial f}{\\partial x}^2 = k \\)，属于非线性系统。只有微分方程才使微分方程**\n\n**推论：微分方程模型中，如果一个片段微分方程是线性，则微分方程**\n\n**4-3**\n\n**微分函数**\n\n\\[ k_x \\quad \\frac{\\partial f}{\\partial x} \\]\n\n**由 \\( C = \\frac{\\partial f}{\\partial x} \\)，还有有电导式，有微分函数越大，绝对值越大**\n\n**提高特征与后果，增加可增加微分，但非线性增加；问题应正具微分函数**\n\n**4-6**\n\n取微分函数增大 \\( C_0 \\) 或 \\( C_0 = \\frac{\\partial f}{\\partial x} \\approx 0.4 \\) 时 \\( f \\)\n\n\\[ C_1 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ C_2 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ C_3 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_1 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_2 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_3 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_4 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_5 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_6 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_7 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_8 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_9 = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{10} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{11} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{12} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{13} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{14} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{15} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{16} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{17} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{18} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{19} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{20} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{21} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{22} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{23} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{24} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{25} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{26} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{27} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{28} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{29} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{30} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{31} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{32} = \\frac{\\partial f}{\\partial x} \\]\n\n\\[ W_{33} =",
+  "run": {
+    "protocol_version": "v2",
+    "engine": "ocr.engine/OCREngine",
+    "base_model": "SeerRay-Lab/Xiaomi-OCR-0",
+    "load_in_4bit": true,
+    "adapter": {
+      "adapter_dir": "outputs/qlora-v1/v2-20261115-114258/checkpoint-4",
+      "adapter_config_sha256": "4119d0c886f69f8e15575535eade792e3d3cc520912e61d7c484543c3e111430",
+      "adapter_weights_sha256": "8121f7abfdaf2b997e2e3e0eb66d2f644a4e40fac5439dd38f869c19055fbcbb",
+      "r": 8,
+      "lora_alpha": 32.0,
+      "lora_dropout": 0.05,
+      "target_modules": "^(model\\.language_model(?=\\.).*\\.(in_proj_qkv|gate_proj|k_proj|down_proj|out_proj|in_proj_a|q_proj|v_proj|in_proj_z|in_proj_b|up_proj|o_proj))$",
+      "base_model_name_or_path": "C:\\Users\\48769\\.cache\\huggingface\\hub\\models--SeerRay-Lab--Xiaomi-OCR-0\\snapshots\\bbd8cf8d21f256b3644b44cb860f3a7cecb93c30",
+      "n_tensors_on_disk": 372,
+      "n_tensors_live": 372,
+      "missing_in_model": 372,
+      "value_mismatch_first50": 0,
+      "trainable_params": 0,
+      "model_training_mode": false
+    },
+    "image_path": "datasets/handwriting_notes/images/IMG_20261104_200903.jpg",
+    "prompt": {
+      "system_prompt_used": false,
+      "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+      "prompt_sha256": "557b0658a32f16024d414d155f18ce41997f5e2d0f4c19e10564d4da470c9354",
+      "prompt_tokens": 1008,
+      "n_image_pad_tokens": 972
+    },
+    "image": {
+      "sha256": "4f11d80204e40c4d727a84507dcfca4672f29f1423a2db2c956bc8a0ea52d7ff",
+      "original_size_wh": [
+        4096,
+        3072
+      ],
+      "max_pixels": 1024000,
+      "patch_size": 16,
+      "merge_size": 2,
+      "image_grid_thw": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "processed_size_wh": [
+        1152,
+        864
+      ]
+    },
+    "generation": {
+      "max_new_tokens": 1024,
+      "do_sample": false,
+      "generated_tokens": 1024,
+      "eos_token_id": 248046,
+      "last_token_id": 283,
+      "stopped_on_eos": false,
+      "hit_length_cap": true,
+      "finish_reason": "length"
+    },
+    "repetition": {
+      "line_run": {
+        "max_consecutive": 1,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "```markdown"
+      },
+      "unit_run": {
+        "max_consecutive": 0,
+        "threshold": 5,
+        "flagged": false,
+        "sample": ""
+      },
+      "ngram": {
+        "n": 10,
+        "top_count": 91,
+        "coverage": 0.3989,
+        "thresholds": [
+          20,
+          0.25
+        ],
+        "flagged": true,
+        "sample": "{\\partial "
+      },
+      "detected": true
+    },
+    "postprocess": {
+      "outer_fence_stripped": false,
+      "raw_chars": 2281,
+      "markdown_chars": 2281
+    },
+    "perf": {
+      "elapsed_seconds": 102.501,
+      "peak_cuda_allocated_bytes": 1058423808,
+      "peak_cuda_reserved_bytes": 1101004800,
+      "gpu_memory_used_before_mib": [
+        2756,
+        8188
+      ],
+      "gpu_memory_used_after_mib": [
+        2955,
+        8188
+      ],
+      "gpu_memory_note": "nvidia-smi memory.used 为整卡占用（含其它进程），Windows WDDM 下不等于本进程独占显存"
+    },
+    "structure_ok": true,
+    "latex_issues": [],
+    "stats": {
+      "headings": 1,
+      "list_items": 0,
+      "tables": 0,
+      "formulas": 0
+    }
+  }
+}

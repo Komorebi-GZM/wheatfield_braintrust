@@ -1,0 +1,321 @@
+{
+  "version": "v2",
+  "created_at": "2026-11-15T12:47:29",
+  "scope": "23 张真实手写页；train/val/test = 13/5/5；合成数据仅允许进入训练集",
+  "annotation": {
+    "file": "datasets/handwriting_notes\\annotation_template.jsonl",
+    "sha256": "34f262c270b2bf955a9d039b7d80f355c13e20bd87b8e7709c97201d19d17732",
+    "n_pages": 23,
+    "supersedes": {
+      "file": "datasets/handwriting_notes\\annotation_template.v1.bak.jsonl",
+      "sha256": "b45d05ebd61432a08396c68dec5f2ba939b1eacd588688c8c65b002bdd88f67b"
+    }
+  },
+  "images": [
+    {
+      "file": "IMG_20261104_200839.jpg",
+      "sha256": "6f793b7a2e0a0a6c1c690fbef52b9e9adb57cfc39db3f3ecbc7916841202cd0a",
+      "width": 3072,
+      "height": 4096,
+      "bytes": 4410674
+    },
+    {
+      "file": "IMG_20261104_200843.jpg",
+      "sha256": "37baec3e78e1489781ddaea5e5214a50a09bb16e3f241bd5472d3d0751a48a83",
+      "width": 3072,
+      "height": 4096,
+      "bytes": 5189862
+    },
+    {
+      "file": "IMG_20261104_200854.jpg",
+      "sha256": "8d2ea59faca1e89f73b9ad94f5778fa19025b97fccda3e783101480e3bb0ce0c",
+      "width": 3072,
+      "height": 4096,
+      "bytes": 4891179
+    },
+    {
+      "file": "IMG_20261104_200858.jpg",
+      "sha256": "9c7c625f0b2f129afe0bf502c9dfd070346a7b2907cb8afe640288ad7129a722",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4214458
+    },
+    {
+      "file": "IMG_20261104_200903.jpg",
+      "sha256": "4f11d80204e40c4d727a84507dcfca4672f29f1423a2db2c956bc8a0ea52d7ff",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4905964
+    },
+    {
+      "file": "IMG_20261104_200907.jpg",
+      "sha256": "ca1e01c4fc8a24233a4887c5fdddfd373840bb3233b66d0d8ae94be978ac7260",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 5527406
+    },
+    {
+      "file": "IMG_20261104_200911.jpg",
+      "sha256": "1682b14bf9927a7d943f3ebb1e74bdb561b2e5c683ed6cd0a77f7b358684b06d",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 5428410
+    },
+    {
+      "file": "IMG_20261104_200914.jpg",
+      "sha256": "5ff085a85569ba9606db5f0cbe4a0cec800e7d8b4951fd132fb9e1a04c7ce6d9",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4877509
+    },
+    {
+      "file": "IMG_20261104_200917.jpg",
+      "sha256": "0caf639c0c751945714ba48c2b44757fffa5449105daf752c6473d9375577152",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 5167318
+    },
+    {
+      "file": "IMG_20261104_235900.jpg",
+      "sha256": "62d3151daa6ddf388d237992c78572e9595807da508a6ea236090ea093f1c3c5",
+      "width": 3072,
+      "height": 4096,
+      "bytes": 4550415
+    },
+    {
+      "file": "IMG_20261104_235908.jpg",
+      "sha256": "0331c85f9aebccfa5ddb68ea63ac6d4edacec156c0efde5776702d5a9df6bccf",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4432940
+    },
+    {
+      "file": "IMG_20261104_235916.jpg",
+      "sha256": "7dcb39fd8416a4be00efe725165a3d75a73f8b31f393767ae393757f1e8e78eb",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4732227
+    },
+    {
+      "file": "IMG_20261104_235922.jpg",
+      "sha256": "2d9d72a980e1e6bca6a5fd58b0209f90b336c8b14c1bbd8ee51c31e74cc0b638",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4555733
+    },
+    {
+      "file": "IMG_20261104_235932.jpg",
+      "sha256": "04981766f2270a8c275ccd3b2c19d4b2a1b6fe4fcda741a310d1252c9b8caf04",
+      "width": 3072,
+      "height": 4096,
+      "bytes": 4932834
+    },
+    {
+      "file": "IMG_20261104_235946.jpg",
+      "sha256": "6eca5c2662822f1d7e99605d74b696c0bd17288429e6e23d077242619a5e0879",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4256788
+    },
+    {
+      "file": "IMG_20261104_235955.jpg",
+      "sha256": "373f55638b7b77e665de451c88a359f51f949b328b1c1a8ede675dd3e15e601a",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4008583
+    },
+    {
+      "file": "IMG_20261105_000005.jpg",
+      "sha256": "5f868300bf332c3ac8f3aa24fa0204902770085086d0bcf301ca8a504bbf6935",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4263730
+    },
+    {
+      "file": "IMG_20261105_000012.jpg",
+      "sha256": "b22045fc9b963afdfc517712b80a8503f52f23e37b148084a2014ada78aa46a4",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4424408
+    },
+    {
+      "file": "IMG_20261105_000020.jpg",
+      "sha256": "e27d16f0709856179a2a0c5dbae2f857417a414ea257a92931230453e2b06945",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4677945
+    },
+    {
+      "file": "IMG_20261105_000028.jpg",
+      "sha256": "bba511c385ff151b4503e9cc94b51b76afa8c72361cb502d0b7c60a7c056e5b8",
+      "width": 3072,
+      "height": 4096,
+      "bytes": 4458828
+    },
+    {
+      "file": "IMG_20261105_000037.jpg",
+      "sha256": "d4fdab22c24a5d3498307e7bc1596bcb7a83e71756d17370424b80d4b72e6e6e",
+      "width": 3072,
+      "height": 4096,
+      "bytes": 4479439
+    },
+    {
+      "file": "IMG_20261105_000044.jpg",
+      "sha256": "3144ca3c0f03df60a3de8b8e414818d36893e53bafc7aab27ff659c4f7402f0f",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4710576
+    },
+    {
+      "file": "IMG_20261105_000051.jpg",
+      "sha256": "775275f3ece71050efb86eff64013dde85c126314a029c3df2d84d2737e2f190",
+      "width": 4096,
+      "height": 3072,
+      "bytes": 4440530
+    }
+  ],
+  "n_images": 23,
+  "splits": {
+    "train.jsonl": {
+      "sha256": "aabb1af92132e11b8c829a4613349f86b981341080c608a970a843c054be73da",
+      "bytes": 19868,
+      "n_rows": 13,
+      "images": [
+        "IMG_20261104_200839.jpg",
+        "IMG_20261104_200843.jpg",
+        "IMG_20261104_200854.jpg",
+        "IMG_20261104_200858.jpg",
+        "IMG_20261104_200903.jpg",
+        "IMG_20261104_200907.jpg",
+        "IMG_20261104_200911.jpg",
+        "IMG_20261104_200914.jpg",
+        "IMG_20261104_200917.jpg",
+        "IMG_20261104_235900.jpg",
+        "IMG_20261104_235908.jpg",
+        "IMG_20261104_235916.jpg",
+        "IMG_20261104_235922.jpg"
+      ]
+    },
+    "val.jsonl": {
+      "sha256": "aed108254fdfc01e8ee94c6ebb303f20acf3807a5a1a2e78f91d636316fddab4",
+      "bytes": 7254,
+      "n_rows": 5,
+      "images": [
+        "IMG_20261104_235932.jpg",
+        "IMG_20261104_235946.jpg",
+        "IMG_20261104_235955.jpg",
+        "IMG_20261105_000005.jpg",
+        "IMG_20261105_000012.jpg"
+      ]
+    },
+    "test.jsonl": {
+      "sha256": "67a5df075e8575e3d1e9005633783076a67c2ce681b0fed3025319e3f1563f0a",
+      "bytes": 5288,
+      "n_rows": 5,
+      "images": [
+        "IMG_20261105_000020.jpg",
+        "IMG_20261105_000028.jpg",
+        "IMG_20261105_000037.jpg",
+        "IMG_20261105_000044.jpg",
+        "IMG_20261105_000051.jpg"
+      ]
+    },
+    "train_swift.jsonl": {
+      "sha256": "86e17f9d9e184dfa42521e4c1b2b9c7705e073cf481876365ea7c751bdcee7db",
+      "bytes": 22013,
+      "n_rows": 13,
+      "images": [
+        "IMG_20261104_200839.jpg",
+        "IMG_20261104_200843.jpg",
+        "IMG_20261104_200854.jpg",
+        "IMG_20261104_200858.jpg",
+        "IMG_20261104_200903.jpg",
+        "IMG_20261104_200907.jpg",
+        "IMG_20261104_200911.jpg",
+        "IMG_20261104_200914.jpg",
+        "IMG_20261104_200917.jpg",
+        "IMG_20261104_235900.jpg",
+        "IMG_20261104_235908.jpg",
+        "IMG_20261104_235916.jpg",
+        "IMG_20261104_235922.jpg"
+      ]
+    },
+    "val_swift.jsonl": {
+      "sha256": "f959cbc51aa2242afa00a48d11431b4736ebb351cfe5a5ce2b4fc4a49bf050b9",
+      "bytes": 8079,
+      "n_rows": 5,
+      "images": [
+        "IMG_20261104_235932.jpg",
+        "IMG_20261104_235946.jpg",
+        "IMG_20261104_235955.jpg",
+        "IMG_20261105_000005.jpg",
+        "IMG_20261105_000012.jpg"
+      ]
+    },
+    "train_sharegpt.json": {
+      "sha256": "c7fb313c0d137322c62e158ed2d45ad569bdc2e65bad675ea4d5388806c3139c",
+      "bytes": 22874,
+      "n_rows": 13,
+      "images": [
+        "IMG_20261104_200839.jpg",
+        "IMG_20261104_200843.jpg",
+        "IMG_20261104_200854.jpg",
+        "IMG_20261104_200858.jpg",
+        "IMG_20261104_200903.jpg",
+        "IMG_20261104_200907.jpg",
+        "IMG_20261104_200911.jpg",
+        "IMG_20261104_200914.jpg",
+        "IMG_20261104_200917.jpg",
+        "IMG_20261104_235900.jpg",
+        "IMG_20261104_235908.jpg",
+        "IMG_20261104_235916.jpg",
+        "IMG_20261104_235922.jpg"
+      ]
+    }
+  },
+  "split_membership": {
+    "train": [
+      "IMG_20261104_200839.jpg",
+      "IMG_20261104_200843.jpg",
+      "IMG_20261104_200854.jpg",
+      "IMG_20261104_200858.jpg",
+      "IMG_20261104_200903.jpg",
+      "IMG_20261104_200907.jpg",
+      "IMG_20261104_200911.jpg",
+      "IMG_20261104_200914.jpg",
+      "IMG_20261104_200917.jpg",
+      "IMG_20261104_235900.jpg",
+      "IMG_20261104_235908.jpg",
+      "IMG_20261104_235916.jpg",
+      "IMG_20261104_235922.jpg"
+    ],
+    "val": [
+      "IMG_20261104_235932.jpg",
+      "IMG_20261104_235946.jpg",
+      "IMG_20261104_235955.jpg",
+      "IMG_20261105_000005.jpg",
+      "IMG_20261105_000012.jpg"
+    ],
+    "test": [
+      "IMG_20261105_000020.jpg",
+      "IMG_20261105_000028.jpg",
+      "IMG_20261105_000037.jpg",
+      "IMG_20261105_000044.jpg",
+      "IMG_20261105_000051.jpg"
+    ]
+  },
+  "synthetic": {
+    "count": 0,
+    "manifest": null,
+    "policy": "synth 只能由 prepare_dataset.py 拼进 train；val/test 仅取真实页",
+    "note": "本次核对时不存在合成样本，未生成任何新数据"
+  },
+  "checks": {
+    "image_count_23": true,
+    "splits_disjoint": true,
+    "splits_cover_all_images": true,
+    "markdown_equals_annotation": true,
+    "membership_unchanged_vs_v1": true
+  },
+  "change_log": "outputs/annotation_fixes_v2.json"
+}
