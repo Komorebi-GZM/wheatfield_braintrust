@@ -22,6 +22,7 @@ def test_api_startup_without_ocr_dependencies(monkeypatch):
     import sys
 
     from fastapi.testclient import TestClient
+
     from maitian_agent.api.routes import app
 
     monkeypatch.setenv("OPENAI_API_KEY", "dummy")
