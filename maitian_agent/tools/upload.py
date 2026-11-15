@@ -52,6 +52,15 @@ async def save_image_upload(file: UploadFile, settings) -> str:
         await file.close()
 
 
+def delete_saved_upload(path: str, upload_dir: str) -> None:
+    """Delete a saved upload only within the resolved upload directory."""
+    base = Path(upload_dir).resolve()
+    target = Path(path).resolve()
+    if target == base or not target.is_relative_to(base):
+        raise ValueError("上传文件路径超出上传目录")
+    target.unlink()
+
+
 def cleanup_stale_uploads(upload_dir: str, max_age_seconds: float = UPLOAD_TTL_SECONDS) -> int:
     """Remove expired regular files directly inside the upload directory."""
     base = Path(upload_dir).resolve()

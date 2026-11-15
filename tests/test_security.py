@@ -15,6 +15,7 @@ from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 from maitian_agent.api import routes
 from maitian_agent.config.settings import get_settings
 from maitian_agent.tools.file import FileProcessor
+from maitian_agent.tools.upload import delete_saved_upload
 
 
 @pytest.fixture
@@ -34,30 +35,36 @@ def api(monkeypatch, tmp_path):
     get_settings.cache_clear()
 
 
-def png():
+def image_bytes(extension="png"):
     buffer = BytesIO()
-    Image.new("RGB", (1, 1)).save(buffer, format="PNG")
+    Image.new("RGB", (1, 1)).save(buffer, format=extension.upper())
     return buffer.getvalue()
 
 
-def test_valid_upload(api):
+def png():
+    return image_bytes()
+
+
+@pytest.mark.parametrize("extension", ["png", "jpeg", "webp"])
+def test_valid_upload(api, extension):
     client, reader, directory = api
     def read(path, **kwargs):
-        assert Path(path).read_bytes() == png()
+        assert Path(path).read_bytes() == image_bytes(extension)
         return [(None, "教案", 0.99)]
 
     reader.readtext.side_effect = read
     for _ in range(2):
-        response = client.post("/api/wisdom-transfer", files={"file": ("original.png", png(), "image/png")})
+        response = client.post("/api/wisdom-transfer", files={"file": (f"original.{extension}", image_bytes(extension), f"image/{extension}")})
         assert response.status_code == 200
         assert "结构化教案" in response.json()["result"]
     paths = [Path(call.args[0]) for call in reader.readtext.call_args_list]
     assert len(set(paths)) == 2
     for path in paths:
         assert path.parent == directory.resolve()
-        assert path.name != "original.png"
+        assert path.name != f"original.{extension}"
         assert len(path.stem) == 32
         assert not path.exists()
+    assert not list(directory.iterdir())
 
 
 @pytest.mark.parametrize(("name", "content", "mime", "status"), [
@@ -164,8 +171,9 @@ def test_valid_file_writes(tmp_path):
     assert processor.delete_file(str(saved))
 
 
+@pytest.mark.parametrize("root_path", ["", "/prefix"])
 @pytest.mark.parametrize("declared", [None, "99999999", "1"])
-def test_upload_body_limit_before_save(api, monkeypatch, declared):
+def test_upload_body_limit_before_save(api, monkeypatch, declared, root_path):
     client, reader, _ = api
     save = AsyncMock()
     monkeypatch.setattr(routes, "save_image_upload", save)
@@ -188,8 +196,8 @@ def test_upload_body_limit_before_save(api, monkeypatch, declared):
 
     asyncio.run(client.app({
         "type": "http", "asgi": {"version": "3.0"}, "http_version": "1.1",
-        "method": "POST", "scheme": "http", "path": "/api/wisdom-transfer",
-        "raw_path": b"/api/wisdom-transfer", "query_string": b"", "headers": headers,
+        "method": "POST", "scheme": "http", "path": root_path + "/api/wisdom-transfer", "root_path": root_path,
+        "raw_path": (root_path + "/api/wisdom-transfer").encode(), "query_string": b"", "headers": headers,
         "client": ("test", 123), "server": ("test", 80),
     }, receive, send))
     assert sent[0]["status"] == 413
@@ -257,17 +265,37 @@ def test_pixel_limit_checked_before_decode(api, monkeypatch):
 
 def test_delete_failure_preserves_result(api, monkeypatch, caplog):
     client, _, _ = api
-    monkeypatch.setattr(FileProcessor, "delete_file", Mock(side_effect=OSError("disk error")))
+    monkeypatch.setattr(routes, "delete_saved_upload", Mock(side_effect=OSError("disk error")))
     response = client.post("/api/wisdom-transfer", files={"file": ("x.png", png(), "image/png")})
     assert response.status_code == 200
     assert "删除本次上传文件失败" in caplog.text
 
 
-def test_agent_exception_upload_deleted(api, monkeypatch):
+@pytest.mark.parametrize("extension", ["png", "jpeg", "webp"])
+def test_agent_exception_upload_deleted(api, monkeypatch, extension):
     client, _, directory = api
     failing = Mock()
     failing.run.side_effect = RuntimeError("agent failed")
     monkeypatch.setitem(routes.agents, "wisdom_transfer", failing)
-    response = client.post("/api/wisdom-transfer", files={"file": ("x.png", png(), "image/png")})
+    response = client.post("/api/wisdom-transfer", files={"file": (f"x.{extension}", image_bytes(extension), f"image/{extension}")})
     assert response.status_code == 500
     assert not list(directory.iterdir())
+
+
+@pytest.mark.parametrize("kind", ["parent", "absolute", "symlink"])
+def test_delete_saved_upload_boundaries(tmp_path, kind):
+    directory = tmp_path / "uploads"
+    directory.mkdir()
+    outside = tmp_path / "uploads-other" / "outside.webp"
+    outside.parent.mkdir()
+    outside.write_bytes(b"original")
+    link = directory / "link.webp"
+    link.symlink_to(outside)
+    paths = {
+        "parent": str(directory / ".." / "uploads-other" / "outside.webp"),
+        "absolute": str(outside),
+        "symlink": str(link),
+    }
+    with pytest.raises(ValueError):
+        delete_saved_upload(paths[kind], str(directory))
+    assert outside.read_bytes() == b"original"
