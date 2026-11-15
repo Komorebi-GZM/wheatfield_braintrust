@@ -2,36 +2,26 @@
 具象化素材Agent
 自动匹配科普视频/3D模型/动画素材
 """
-from typing import Dict, Any, Optional, List
-from langchain_core.prompts import ChatPromptTemplate
+from __future__ import annotations
+
+from typing import Any
+
+from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
-import os
-from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
-
-load_dotenv()
 
 
 class MaterialAgent(BaseAgent):
     """具象化素材Agent"""
 
-    def __init__(self, llm: Optional[ChatOpenAI] = None):
+    def __init__(self, llm: BaseChatModel | None = None):
         super().__init__(
+            llm=llm,
             name="MaterialAgent",
             description="具象化素材匹配，自动推荐教学视频/3D模型/动画"
         )
-        if llm is None:
-            api_key = os.getenv("OPENAI_API_KEY")
-            model_name = os.getenv("MODEL_NAME", "deepseek-v2")
-            self.llm = ChatOpenAI(
-                model=model_name,
-                api_key=api_key,
-                temperature=0.7
-            )
-        else:
-            self.llm = llm
 
         self.material_template = ChatPromptTemplate.from_template(
             """你是一位教育资源专家，请为以下教学内容推荐具象化素材：
@@ -95,14 +85,14 @@ class MaterialAgent(BaseAgent):
             })
             return result
         except Exception as e:
-            return f"推荐素材时出错：{str(e)}"
+            return f"推荐素材时出错：{e!s}"
 
     def search_material_library(
         self,
         keyword: str,
         material_type: str = "all",
         **kwargs
-    ) -> List[Dict[str, Any]]:
+    ) -> list[dict[str, Any]]:
         """搜索素材库（待集成素材库）
 
         Args:
@@ -115,7 +105,7 @@ class MaterialAgent(BaseAgent):
         # TODO: 集成素材库检索
         raise NotImplementedError("素材库检索功能待开发")
 
-    def run(self, input_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+    def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:
         """执行素材推荐"""
         result = self.recommend_materials(**input_data)
         return self._format_output(result)

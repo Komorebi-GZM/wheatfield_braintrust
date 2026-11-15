@@ -13,6 +13,8 @@ from maitian_agent.agents.material_agent import MaterialAgent
 from maitian_agent.agents.meeting_notes import MeetingNotesAgent
 from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
 from maitian_agent.agents.router import RouterAgent
+from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
+from maitian_agent.config.settings import get_settings
 
 load_dotenv()
 
@@ -330,7 +332,8 @@ def render_sidebar():
     st.sidebar.markdown("---")
     st.sidebar.markdown("## 环境信息")
     st.sidebar.markdown(f"- 项目版本：{os.getenv('VERSION', '1.0.0')}")
-    st.sidebar.markdown(f"- 模型：{os.getenv('MODEL_NAME', 'deepseek-v2')}")
+    llm_model = get_settings().llm_model or "未配置"
+    st.sidebar.markdown(f"- 模型：{llm_model}")
 
 
 def main():

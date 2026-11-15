@@ -2,44 +2,38 @@
 智慧传承Agent
 手写教案OCR识别→结构化→入库→风格学习
 性能要求: ≤5秒/张
+
+OCR 复用 ``EasyOCRProcessor`` 的懒加载：构造时不 import easyocr/torch，
+首次真正识别时才加载；也可注入已有 reader。
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, Any, Optional, List
-from langchain_core.prompts import ChatPromptTemplate
+from typing import TYPE_CHECKING, Any
+
+from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
-import os
-from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
 from maitian_agent.tools.ocr import EasyOCRProcessor
 
 if TYPE_CHECKING:
-    from easyocr import Reader
-
-load_dotenv()
+    from easyocr import Reader  # type: ignore[import-not-found]
 
 
 class WisdomTransferAgent(BaseAgent):
     """智慧传承Agent - 手写教案数字化传承"""
 
-    def __init__(self, llm: Optional[ChatOpenAI] = None, ocr_reader: Optional[Reader] = None):
+    def __init__(
+        self,
+        llm: BaseChatModel | None = None,
+        ocr_reader: Reader | None = None,
+    ):
         super().__init__(
+            llm=llm,
             name="WisdomTransferAgent",
             description="老教师经验一键传承，手写教案识别与结构化"
         )
-        if llm is None:
-            api_key = os.getenv("OPENAI_API_KEY")
-            model_name = os.getenv("MODEL_NAME", "deepseek-v2")
-            self.llm = ChatOpenAI(
-                model=model_name,
-                api_key=api_key,
-                temperature=0.3
-            )
-        else:
-            self.llm = llm
-
         if ocr_reader is None:
             self.ocr = EasyOCRProcessor(languages=["ch_sim", "en"], gpu=False)
         else:
@@ -91,7 +85,7 @@ class WisdomTransferAgent(BaseAgent):
                 ocr_text += detection[1] + "\n"
             return ocr_text.strip()
         except Exception as e:
-            raise RuntimeError(f"OCR识别失败: {str(e)}")
+            raise RuntimeError(f"OCR识别失败: {e!s}")
 
     def run(self, image_path: str, **kwargs) -> str:
         """执行手写教案识别与结构化
@@ -112,9 +106,9 @@ class WisdomTransferAgent(BaseAgent):
 
             return f"### OCR识别结果\n{ocr_text}\n\n### 结构化结果\n{structured_result}"
         except Exception as e:
-            return f"处理手写教案时出错：{str(e)}"
+            return f"处理手写教案时出错：{e!s}"
 
-    def run_batch(self, image_paths: List[str], **kwargs) -> List[Dict[str, Any]]:
+    def run_batch(self, image_paths: list[str], **kwargs) -> list[dict[str, Any]]:
         """批量处理多张手写教案
 
         Args:
@@ -133,7 +127,7 @@ class WisdomTransferAgent(BaseAgent):
             })
         return results
 
-    def save_to_knowledge_base(self, structured_content: str, metadata: Dict[str, Any]) -> bool:
+    def save_to_knowledge_base(self, structured_content: str, metadata: dict[str, Any]) -> bool:
         """保存到知识库（待集成RAG）
 
         Args:

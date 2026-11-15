@@ -16,6 +16,7 @@ from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
 from maitian_agent.agents.router import RouterAgent
 from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 from maitian_agent.config.settings import get_settings
+from maitian_agent.llm import LLMNotConfiguredError
 from maitian_agent.tools.upload import save_image_upload
 
 router = APIRouter()
@@ -24,8 +25,20 @@ logger = logging.getLogger(__name__)
 agents = {}
 
 
+def _require_llm() -> None:
+    """生成类端点前置校验：未配置大模型时返回明确失败码 LLM_NOT_CONFIGURED。"""
+    if not get_settings().llm_configured:
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "code": "LLM_NOT_CONFIGURED",
+                "message": "未配置大模型，请设置 LLM_BASE_URL、LLM_MODEL、LLM_API_KEY",
+            },
+        )
+
+
 async def startup_event():
-    """初始化Agent"""
+    """初始化Agent（构造时不加载 LLM / OCR，未配置也不会失败）"""
     global agents
     agents = {
         "quick_lesson_prep": QuickLessonPrepAgent(),
@@ -77,13 +90,18 @@ async def root():
 
 @router.get("/health")
 async def health_check():
-    """健康检查"""
-    return {"status": "healthy", "agents": list(agents.keys())}
+    """健康检查（不调用 LLM；无配置时仍返回 200，llm_configured=false）"""
+    return {
+        "status": "healthy",
+        "agents": list(agents.keys()),
+        "llm_configured": get_settings().llm_configured,
+    }
 
 
 @router.post("/api/lesson-prep")
 async def lesson_prep(request: LessonPrepRequest):
     """极速备课"""
+    _require_llm()
     try:
         result = agents["quick_lesson_prep"].run(
             subject=request.subject,
@@ -94,6 +112,8 @@ async def lesson_prep(request: LessonPrepRequest):
         return {"success": True, "result": result}
     except HTTPException:
         raise
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception:
         logger.exception("API 请求处理失败")
         raise HTTPException(status_code=500, detail="服务内部错误，请稍后重试") from None
@@ -102,6 +122,7 @@ async def lesson_prep(request: LessonPrepRequest):
 @router.post("/api/wisdom-transfer")
 async def wisdom_transfer(request: Request, file: UploadFile):
     """智慧传承"""
+    _require_llm()
     try:
         image_path = await save_image_upload(file, request.app.state.settings)
         result = agents["wisdom_transfer"].run(image_path=image_path)
@@ -112,6 +133,8 @@ async def wisdom_transfer(request: Request, file: UploadFile):
         return {"success": True, "result": result}
     except HTTPException:
         raise
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception:
         logger.exception("API 请求处理失败")
         raise HTTPException(status_code=500, detail="服务内部错误，请稍后重试") from None
@@ -120,6 +143,7 @@ async def wisdom_transfer(request: Request, file: UploadFile):
 @router.post("/api/quiz")
 async def generate_quiz(request: QuizRequest):
     """生成练习题"""
+    _require_llm()
     try:
         result = agents["classroom_companion"].generate_quiz(
             subject=request.subject,
@@ -132,6 +156,8 @@ async def generate_quiz(request: QuizRequest):
         return {"success": True, "result": result}
     except HTTPException:
         raise
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception:
         logger.exception("API 请求处理失败")
         raise HTTPException(status_code=500, detail="服务内部错误，请稍后重试") from None
@@ -140,6 +166,7 @@ async def generate_quiz(request: QuizRequest):
 @router.post("/api/material")
 async def recommend_material(request: MaterialRequest):
     """素材推荐"""
+    _require_llm()
     try:
         result = agents["material"].recommend_materials(
             subject=request.subject,
@@ -151,6 +178,8 @@ async def recommend_material(request: MaterialRequest):
         return {"success": True, "result": result}
     except HTTPException:
         raise
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception:
         logger.exception("API 请求处理失败")
         raise HTTPException(status_code=500, detail="服务内部错误，请稍后重试") from None
@@ -159,6 +188,7 @@ async def recommend_material(request: MaterialRequest):
 @router.post("/api/meeting-notes")
 async def process_meeting_notes(request: MeetingNotesRequest):
     """教研纪要"""
+    _require_llm()
     try:
         result = agents["meeting_notes"].process_meeting_notes(
             meeting_transcript=request.transcript
@@ -166,6 +196,8 @@ async def process_meeting_notes(request: MeetingNotesRequest):
         return {"success": True, "result": result}
     except HTTPException:
         raise
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception:
         logger.exception("API 请求处理失败")
         raise HTTPException(status_code=500, detail="服务内部错误，请稍后重试") from None
@@ -174,11 +206,14 @@ async def process_meeting_notes(request: MeetingNotesRequest):
 @router.post("/api/route")
 async def route_intent(request: RouteRequest):
     """意图路由"""
+    _require_llm()
     try:
         result = agents["router"].run({"user_input": request.user_input})
         return result
     except HTTPException:
         raise
+    except LLMNotConfiguredError as e:
+        raise HTTPException(status_code=503, detail={"code": e.code, "message": e.message}) from e
     except Exception:
         logger.exception("API 请求处理失败")
         raise HTTPException(status_code=500, detail="服务内部错误，请稍后重试") from None
