@@ -2,6 +2,7 @@
 Streamlit Web应用
 麦田智囊乡村教育Agent系统主界面
 """
+
 import os
 
 import httpx
@@ -18,11 +19,7 @@ from maitian_agent.config.settings import get_settings
 
 load_dotenv()
 
-st.set_page_config(
-    page_title="麦田智囊 - 乡村教育Agent系统",
-    page_icon="🌾",
-    layout="wide"
-)
+st.set_page_config(page_title="麦田智囊 - 乡村教育Agent系统", page_icon="🌾", layout="wide")
 
 
 def init_agents():
@@ -73,19 +70,14 @@ def render_quick_lesson_prep():
 
     with col1:
         subject = st.selectbox(
-            "学科",
-            ["语文", "数学", "英语", "科学", "道德与法治", "音乐", "美术", "体育"]
+            "学科", ["语文", "数学", "英语", "科学", "道德与法治", "音乐", "美术", "体育"]
         )
-        grade = st.selectbox(
-            "年级",
-            ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"]
-        )
+        grade = st.selectbox("年级", ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"])
 
     with col2:
         topic = st.text_input("课题")
         rural_context = st.text_area(
-            "乡村特色情境",
-            placeholder="例如：结合当地种植的水稻、小麦等农作物，或乡村生活实例"
+            "乡村特色情境", placeholder="例如：结合当地种植的水稻、小麦等农作物，或乡村生活实例"
         )
 
     if st.button("开始备课", type="primary"):
@@ -121,10 +113,7 @@ def render_wisdom_transfer():
     st.markdown("## 老教师经验一键传承")
     st.markdown("上传手写教案照片，系统自动识别、结构化并入库")
 
-    uploaded_file = st.file_uploader(
-        "上传手写教案照片",
-        type=["jpg", "jpeg", "png"]
-    )
+    uploaded_file = st.file_uploader("上传手写教案照片", type=["jpg", "jpeg", "png"])
 
     if uploaded_file is not None:
         col1, col2 = st.columns([1, 2])
@@ -139,8 +128,13 @@ def render_wisdom_transfer():
                         response = httpx.post(
                             os.getenv("MAITIAN_API_BASE", "http://127.0.0.1:8000").rstrip("/")
                             + "/api/wisdom-transfer",
-                            files={"file": (uploaded_file.name, uploaded_file.getvalue(),
-                                            uploaded_file.type)},
+                            files={
+                                "file": (
+                                    uploaded_file.name,
+                                    uploaded_file.getvalue(),
+                                    uploaded_file.type,
+                                )
+                            },
                             timeout=120,
                         )
                         payload = response.json()
@@ -169,11 +163,7 @@ def render_classroom_companion():
     st.markdown("## 课堂实时伴教")
     st.markdown("3秒极速出题、经典题检索")
 
-    action = st.radio(
-        "选择功能",
-        ["生成练习题", "检索经典题"],
-        horizontal=True
-    )
+    action = st.radio("选择功能", ["生成练习题", "检索经典题"], horizontal=True)
 
     col1, col2 = st.columns(2)
 
@@ -188,9 +178,7 @@ def render_classroom_companion():
     if action == "生成练习题":
         question_count = st.slider("题目数量", 1, 10, 5)
         question_types = st.multiselect(
-            "题目类型",
-            ["选择题", "填空题", "判断题", "简答题"],
-            default=["选择题", "填空题"]
+            "题目类型", ["选择题", "填空题", "判断题", "简答题"], default=["选择题", "填空题"]
         )
 
         if st.button("生成练习题", type="primary"):
@@ -289,16 +277,12 @@ def render_meeting_notes():
     st.markdown("#### 输入方式")
 
     input_method = st.radio(
-        "选择输入方式",
-        ["直接输入会议记录", "上传音频文件（待开发）"],
-        horizontal=True
+        "选择输入方式", ["直接输入会议记录", "上传音频文件（待开发）"], horizontal=True
     )
 
     if input_method == "直接输入会议记录":
         meeting_transcript = st.text_area(
-            "粘贴会议记录",
-            height=300,
-            placeholder="粘贴教研会议的原始记录文本..."
+            "粘贴会议记录", height=300, placeholder="粘贴教研会议的原始记录文本..."
         )
 
         if st.button("生成结构化报告", type="primary"):
@@ -364,10 +348,7 @@ def main():
         "📋 教研纪要": render_meeting_notes,
     }
 
-    selected_page = st.sidebar.selectbox(
-        "选择功能",
-        list(page_names_to_funcs.keys())
-    )
+    selected_page = st.sidebar.selectbox("选择功能", list(page_names_to_funcs.keys()))
 
     page_names_to_funcs[selected_page]()
     render_sidebar()

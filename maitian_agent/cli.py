@@ -2,6 +2,7 @@
 麦田智囊 CLI工具
 命令行接口
 """
+
 import os
 
 import click
@@ -68,6 +69,7 @@ def route(input):
 def agents_list():
     """列出所有可用Agent"""
     from maitian_agent.agents import __all__ as agent_names
+
     click.echo("\n可用Agent列表：")
     for name in agent_names:
         click.echo(f"  - {name}")

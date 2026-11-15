@@ -2,6 +2,7 @@
 OCR工具
 支持EasyOCR和PaddleOCR
 """
+
 import threading
 from abc import ABC, abstractmethod
 
@@ -27,7 +28,7 @@ class EasyOCRProcessor(BaseOCR):
         self,
         languages: list[str] = ["ch_sim", "en"],
         gpu: bool = False,
-        model_storage_directory: str | None = None
+        model_storage_directory: str | None = None,
     ):
         self.languages = languages
         self.gpu = gpu
@@ -40,13 +41,10 @@ class EasyOCRProcessor(BaseOCR):
             from easyocr import Reader
         except ImportError as exc:
             raise ImportError(
-                "EasyOCR 未安装，请安装 maitian-agent[ocr-easyocr] "
-                "（uv sync --extra ocr-easyocr）"
+                "EasyOCR 未安装，请安装 maitian-agent[ocr-easyocr] （uv sync --extra ocr-easyocr）"
             ) from exc
         return Reader(
-            self.languages,
-            gpu=self.gpu,
-            model_storage_directory=self.model_storage_directory
+            self.languages, gpu=self.gpu, model_storage_directory=self.model_storage_directory
         )
 
     @property
@@ -114,9 +112,9 @@ class PaddleOCRProcessor(BaseOCR):
     def __init__(
         self,
         use_angle_cls: bool = True,
-        lang: str = 'ch',
+        lang: str = "ch",
         enable_mkldnn: bool = False,
-        cpu_threads: int = 10
+        cpu_threads: int = 10,
     ):
         self.use_angle_cls = use_angle_cls
         self.lang = lang
@@ -136,7 +134,7 @@ class PaddleOCRProcessor(BaseOCR):
                 use_angle_cls=self.use_angle_cls,
                 lang=self.lang,
                 enable_mkldnn=self.enable_mkldnn,
-                cpu_threads=self.cpu_threads
+                cpu_threads=self.cpu_threads,
             )
         return self._ocr
 
@@ -158,10 +156,7 @@ class OCRProcessor:
     """OCR处理器工厂"""
 
     @staticmethod
-    def create(
-        ocr_type: str = "easyocr",
-        **kwargs
-    ) -> BaseOCR:
+    def create(ocr_type: str = "easyocr", **kwargs) -> BaseOCR:
         """创建OCR处理器
 
         Args:
@@ -175,14 +170,14 @@ class OCRProcessor:
             return EasyOCRProcessor(
                 languages=kwargs.get("languages", ["ch_sim", "en"]),
                 gpu=kwargs.get("gpu", False),
-                model_storage_directory=kwargs.get("model_storage_directory")
+                model_storage_directory=kwargs.get("model_storage_directory"),
             )
         elif ocr_type == "paddleocr":
             return PaddleOCRProcessor(
                 use_angle_cls=kwargs.get("use_angle_cls", True),
                 lang=kwargs.get("lang", "ch"),
                 enable_mkldnn=kwargs.get("enable_mkldnn", False),
-                cpu_threads=kwargs.get("cpu_threads", 10)
+                cpu_threads=kwargs.get("cpu_threads", 10),
             )
         else:
             raise ValueError(f"不支持的OCR类型: {ocr_type}")

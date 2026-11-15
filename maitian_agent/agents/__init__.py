@@ -2,6 +2,7 @@
 Agent模块
 包含五大核心Agent链
 """
+
 from maitian_agent.agents.base import BaseAgent
 from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
 from maitian_agent.agents.material_agent import MaterialAgent

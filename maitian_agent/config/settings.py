@@ -4,6 +4,7 @@
 模型层保持厂商无关：只认 OpenAI 兼容接口，三项必填（LLM_BASE_URL / LLM_MODEL /
 LLM_API_KEY）全部从环境变量读取，代码中不写任何厂商默认值。
 """
+
 from functools import lru_cache
 
 from pydantic import Field, SecretStr
@@ -41,8 +42,7 @@ class Settings(BaseSettings):
     embedding_model: str | None = Field(
         default=None,
         description=(
-            "嵌入模型名称；local 未配置时默认 bge-small-zh，"
-            "openai_compatible 时回退 LLM_MODEL"
+            "嵌入模型名称；local 未配置时默认 bge-small-zh，openai_compatible 时回退 LLM_MODEL"
         ),
     )
     embedding_base_url: str | None = Field(
@@ -93,8 +93,7 @@ class Settings(BaseSettings):
     # 上传与 CORS（P1-4）
     max_upload_mb: int = 20
     allowed_origins: str = (
-        "http://localhost:8501,http://127.0.0.1:8501,"
-        "http://localhost:5173,http://127.0.0.1:5173"
+        "http://localhost:8501,http://127.0.0.1:8501,http://localhost:5173,http://127.0.0.1:5173"
     )
 
     @property

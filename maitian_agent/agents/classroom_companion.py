@@ -3,6 +3,7 @@
 课堂极速出题、经典题检索
 性能要求: ≤3秒
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -21,7 +22,7 @@ class ClassroomCompanionAgent(BaseAgent):
         super().__init__(
             llm=llm,
             name="ClassroomCompanionAgent",
-            description="课堂实时伴教，3秒极速出题与经典题检索"
+            description="课堂实时伴教，3秒极速出题与经典题检索",
         )
 
         self.quiz_template = ChatPromptTemplate.from_template(
@@ -75,7 +76,7 @@ class ClassroomCompanionAgent(BaseAgent):
         knowledge_points: str = "",
         question_count: int = 5,
         question_types: str = "选择题、填空题",
-        **kwargs
+        **kwargs,
     ) -> str:
         """生成练习题
 
@@ -91,23 +92,20 @@ class ClassroomCompanionAgent(BaseAgent):
             生成的练习题
         """
         chain = self.build_chain("quiz")
-        result = chain.invoke({
-            "subject": subject,
-            "grade": grade,
-            "topic": topic,
-            "knowledge_points": knowledge_points or "本课主要内容",
-            "question_count": question_count,
-            "question_types": question_types
-        })
+        result = chain.invoke(
+            {
+                "subject": subject,
+                "grade": grade,
+                "topic": topic,
+                "knowledge_points": knowledge_points or "本课主要内容",
+                "question_count": question_count,
+                "question_types": question_types,
+            }
+        )
         return result
 
     def retrieve_classic_questions(
-        self,
-        subject: str,
-        grade: str,
-        topic: str,
-        knowledge_points: str = "",
-        **kwargs
+        self, subject: str, grade: str, topic: str, knowledge_points: str = "", **kwargs
     ) -> str:
         """检索经典题目
 
@@ -121,12 +119,14 @@ class ClassroomCompanionAgent(BaseAgent):
             检索到的经典题目
         """
         chain = self.build_chain("retrieval")
-        result = chain.invoke({
-            "subject": subject,
-            "grade": grade,
-            "topic": topic,
-            "knowledge_points": knowledge_points or "本课主要内容"
-        })
+        result = chain.invoke(
+            {
+                "subject": subject,
+                "grade": grade,
+                "topic": topic,
+                "knowledge_points": knowledge_points or "本课主要内容",
+            }
+        )
         return result
 
     def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:

@@ -1,4 +1,5 @@
 """Bound upload traffic before multipart parsing and spooling."""
+
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
@@ -8,12 +9,14 @@ except ImportError:
     try:
         from starlette._utils import get_route_path
     except ImportError:
+
         def get_route_path(scope: Scope) -> str:
             path = scope["path"]
             root_path = scope.get("root_path", "")
             if root_path and (path == root_path or path.startswith(root_path + "/")):
-                return path[len(root_path):]
+                return path[len(root_path) :]
             return path
+
 
 # Allow multipart headers/boundaries in addition to the exact file limit.
 MULTIPART_ALLOWANCE_BYTES = 64 * 1024
@@ -25,8 +28,11 @@ class UploadLimitMiddleware:
         self.settings = settings
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
-        if (scope["type"] != "http" or scope["method"] != "POST"
-                or get_route_path(scope) != "/api/wisdom-transfer"):
+        if (
+            scope["type"] != "http"
+            or scope["method"] != "POST"
+            or get_route_path(scope) != "/api/wisdom-transfer"
+        ):
             await self.app(scope, receive, send)
             return
 

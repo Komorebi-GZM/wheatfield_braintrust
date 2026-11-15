@@ -2,6 +2,7 @@
 FastAPI应用
 REST API封装
 """
+
 import logging
 from contextlib import asynccontextmanager
 
@@ -113,7 +114,7 @@ def lesson_prep(request: LessonPrepRequest):
             subject=request.subject,
             grade=request.grade,
             topic=request.topic,
-            rural_context=request.rural_context
+            rural_context=request.rural_context,
         )
         return {"success": True, "result": result}
     except HTTPException:
@@ -165,7 +166,7 @@ def generate_quiz(request: QuizRequest):
             topic=request.topic,
             knowledge_points=request.knowledge_points,
             question_count=request.question_count,
-            question_types=request.question_types
+            question_types=request.question_types,
         )
         return {"success": True, "result": result}
     except HTTPException:
@@ -187,7 +188,7 @@ def recommend_material(request: MaterialRequest):
             grade=request.grade,
             topic=request.topic,
             knowledge_points=request.knowledge_points,
-            rural_context=request.rural_context
+            rural_context=request.rural_context,
         )
         return {"success": True, "result": result}
     except HTTPException:
@@ -250,8 +251,11 @@ def create_app() -> FastAPI:
     app.add_middleware(UploadLimitMiddleware, settings=settings)
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=[origin.strip() for origin in settings.allowed_origins.split(",")
-                       if origin.strip() and origin.strip() != "*"],
+        allow_origins=[
+            origin.strip()
+            for origin in settings.allowed_origins.split(",")
+            if origin.strip() and origin.strip() != "*"
+        ],
         allow_credentials=False,
         allow_methods=["*"],
         allow_headers=["*"],

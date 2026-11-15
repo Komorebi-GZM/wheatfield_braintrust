@@ -7,6 +7,7 @@
 为方便测试与依赖注入，提供 ``set_chat_model`` / ``reset_chat_model``：
 设置覆盖后 ``get_chat_model()`` 直接返回覆盖模型，不读配置、不构造 ChatOpenAI。
 """
+
 from __future__ import annotations
 
 from langchain_core.language_models import BaseChatModel

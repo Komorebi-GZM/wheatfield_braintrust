@@ -2,6 +2,7 @@
 教师画像管理
 长期记忆实现
 """
+
 import json
 import os
 from datetime import datetime
@@ -13,6 +14,7 @@ from pydantic import BaseModel, Field
 
 class TeachingStyle(BaseModel):
     """教学风格标签"""
+
     style_name: str = Field(description="风格名称")
     description: str = Field(description="风格描述")
     examples: list[str] = Field(default_factory=list, description="示例")
@@ -21,7 +23,7 @@ class TeachingStyle(BaseModel):
         return {
             "style_name": self.style_name,
             "description": self.description,
-            "examples": self.examples
+            "examples": self.examples,
         }
 
 
@@ -65,7 +67,7 @@ class TeacherProfile(BaseModel):
             "preferences": self.preferences,
             "lesson_plans_count": self.lesson_plans_count,
             "created_at": self.created_at,
-            "updated_at": self.updated_at
+            "updated_at": self.updated_at,
         }
 
     def update(self, **kwargs) -> None:
@@ -99,12 +101,9 @@ class TeacherProfileManager:
         Args:
             profile: 教师画像
         """
-        profile_file = os.path.join(
-            self.persist_directory,
-            f"profile_{profile.teacher_id}.json"
-        )
+        profile_file = os.path.join(self.persist_directory, f"profile_{profile.teacher_id}.json")
 
-        with open(profile_file, 'w', encoding='utf-8') as f:
+        with open(profile_file, "w", encoding="utf-8") as f:
             json.dump(profile.to_dict(), f, ensure_ascii=False, indent=2)
 
     def load_profile(self, teacher_id: str) -> TeacherProfile | None:
@@ -116,22 +115,16 @@ class TeacherProfileManager:
         Returns:
             教师画像，如果没有找到则返回None
         """
-        profile_file = os.path.join(
-            self.persist_directory,
-            f"profile_{teacher_id}.json"
-        )
+        profile_file = os.path.join(self.persist_directory, f"profile_{teacher_id}.json")
 
         if not os.path.exists(profile_file):
             return None
 
         try:
-            with open(profile_file, encoding='utf-8') as f:
+            with open(profile_file, encoding="utf-8") as f:
                 data = json.load(f)
 
-            styles = [
-                TeachingStyle(**style_data)
-                for style_data in data.get("teaching_styles", [])
-            ]
+            styles = [TeachingStyle(**style_data) for style_data in data.get("teaching_styles", [])]
             data["teaching_styles"] = styles
 
             return TeacherProfile(**data)
@@ -145,7 +138,7 @@ class TeacherProfileManager:
         school: str = "",
         subjects: list[str] = None,
         grades: list[str] = None,
-        **kwargs
+        **kwargs,
     ) -> TeacherProfile:
         """创建新教师画像
 
@@ -166,7 +159,7 @@ class TeacherProfileManager:
             school=school,
             subjects=subjects or [],
             grades=grades or [],
-            **kwargs
+            **kwargs,
         )
         self.save_profile(profile)
         return profile
@@ -182,15 +175,17 @@ class TeacherProfileManager:
             if filename.startswith("profile_") and filename.endswith(".json"):
                 profile_path = os.path.join(self.persist_directory, filename)
                 try:
-                    with open(profile_path, encoding='utf-8') as f:
+                    with open(profile_path, encoding="utf-8") as f:
                         data = json.load(f)
-                        profiles.append({
-                            "teacher_id": data.get("teacher_id"),
-                            "name": data.get("name"),
-                            "school": data.get("school"),
-                            "subjects": data.get("subjects", []),
-                            "updated_at": data.get("updated_at")
-                        })
+                        profiles.append(
+                            {
+                                "teacher_id": data.get("teacher_id"),
+                                "name": data.get("name"),
+                                "school": data.get("school"),
+                                "subjects": data.get("subjects", []),
+                                "updated_at": data.get("updated_at"),
+                            }
+                        )
                 except Exception:
                     continue
         return profiles
@@ -204,10 +199,7 @@ class TeacherProfileManager:
         Returns:
             是否删除成功
         """
-        profile_file = os.path.join(
-            self.persist_directory,
-            f"profile_{teacher_id}.json"
-        )
+        profile_file = os.path.join(self.persist_directory, f"profile_{teacher_id}.json")
 
         if os.path.exists(profile_file):
             os.remove(profile_file)
@@ -219,9 +211,7 @@ class TeacherStyleVectorStore:
     """教师风格向量存储（待实现）"""
 
     def __init__(
-        self,
-        embedding_model: Embeddings,
-        persist_directory: str = "./data/style_vectors"
+        self, embedding_model: Embeddings, persist_directory: str = "./data/style_vectors"
     ):
         self.embedding_model = embedding_model
         self.persist_directory = persist_directory

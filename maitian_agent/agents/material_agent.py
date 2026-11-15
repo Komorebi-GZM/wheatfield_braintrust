@@ -2,6 +2,7 @@
 具象化素材Agent
 自动匹配科普视频/3D模型/动画素材
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -20,7 +21,7 @@ class MaterialAgent(BaseAgent):
         super().__init__(
             llm=llm,
             name="MaterialAgent",
-            description="具象化素材匹配，自动推荐教学视频/3D模型/动画"
+            description="具象化素材匹配，自动推荐教学视频/3D模型/动画",
         )
 
         self.material_template = ChatPromptTemplate.from_template(
@@ -60,7 +61,7 @@ class MaterialAgent(BaseAgent):
         topic: str,
         knowledge_points: str = "",
         rural_context: str = "",
-        **kwargs
+        **kwargs,
     ) -> str:
         """推荐教学素材
 
@@ -75,20 +76,19 @@ class MaterialAgent(BaseAgent):
             素材推荐结果
         """
         chain = self.build_chain()
-        result = chain.invoke({
-            "subject": subject,
-            "grade": grade,
-            "topic": topic,
-            "knowledge_points": knowledge_points or "本课主要内容",
-            "rural_context": rural_context or "乡村实际情境"
-        })
+        result = chain.invoke(
+            {
+                "subject": subject,
+                "grade": grade,
+                "topic": topic,
+                "knowledge_points": knowledge_points or "本课主要内容",
+                "rural_context": rural_context or "乡村实际情境",
+            }
+        )
         return result
 
     def search_material_library(
-        self,
-        keyword: str,
-        material_type: str = "all",
-        **kwargs
+        self, keyword: str, material_type: str = "all", **kwargs
     ) -> list[dict[str, Any]]:
         """搜索素材库（待集成素材库）
 

@@ -1,6 +1,7 @@
 """
 文件处理工具
 """
+
 import os
 import shutil
 import uuid
@@ -13,14 +14,14 @@ class FileProcessor:
     """文件处理器"""
 
     def __init__(
-        self,
-        upload_dir: str = "./data/uploads",
-        allowed_extensions: list[str] | None = None
+        self, upload_dir: str = "./data/uploads", allowed_extensions: list[str] | None = None
     ):
         self.upload_dir = str(Path(upload_dir).resolve())
-        self.allowed_extensions = allowed_extensions if allowed_extensions is not None else [
-            "jpg", "jpeg", "png", "mp3", "mp4", "wav", "m4a", "pdf", "docx"
-        ]
+        self.allowed_extensions = (
+            allowed_extensions
+            if allowed_extensions is not None
+            else ["jpg", "jpeg", "png", "mp3", "mp4", "wav", "m4a", "pdf", "docx"]
+        )
         os.makedirs(upload_dir, exist_ok=True)
 
     def resolve_write_path(self, filename: str) -> Path:
@@ -93,7 +94,7 @@ class FileProcessor:
             "size_mb": round(stat.st_size / (1024 * 1024), 2),
             "created_at": datetime.fromtimestamp(stat.st_ctime).isoformat(),
             "modified_at": datetime.fromtimestamp(stat.st_mtime).isoformat(),
-            "extension": Path(file_path).suffix
+            "extension": Path(file_path).suffix,
         }
 
     def delete_file(self, file_path: str) -> bool:
@@ -112,9 +113,7 @@ class FileProcessor:
         return False
 
     def list_files(
-        self,
-        extension: str | None = None,
-        sort_by: str = "modified"
+        self, extension: str | None = None, sort_by: str = "modified"
     ) -> list[dict[str, Any]]:
         """列出文件
 

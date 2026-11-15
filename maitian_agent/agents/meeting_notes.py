@@ -3,6 +3,7 @@
 录音转写→结构化教研报告→成果入库
 性能要求: 转写≥95%准确率
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -19,9 +20,7 @@ class MeetingNotesAgent(BaseAgent):
 
     def __init__(self, llm: BaseChatModel | None = None):
         super().__init__(
-            llm=llm,
-            name="MeetingNotesAgent",
-            description="教研纪要生成，录音转写与结构化报告"
+            llm=llm, name="MeetingNotesAgent", description="教研纪要生成，录音转写与结构化报告"
         )
 
         self.structure_template = ChatPromptTemplate.from_template(
@@ -78,11 +77,7 @@ class MeetingNotesAgent(BaseAgent):
         # TODO: 集成Whisper API进行音频转写
         raise NotImplementedError("音频转写功能待开发")
 
-    def process_meeting_notes(
-        self,
-        meeting_transcript: str,
-        **kwargs
-    ) -> str:
+    def process_meeting_notes(self, meeting_transcript: str, **kwargs) -> str:
         """处理教研纪要
 
         Args:

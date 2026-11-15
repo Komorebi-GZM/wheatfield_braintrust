@@ -6,6 +6,7 @@
 OCR 复用 ``EasyOCRProcessor`` 的懒加载：构造时不 import easyocr/torch，
 首次真正识别时才加载；也可注入已有 reader。
 """
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
@@ -32,7 +33,7 @@ class WisdomTransferAgent(BaseAgent):
         super().__init__(
             llm=llm,
             name="WisdomTransferAgent",
-            description="老教师经验一键传承，手写教案识别与结构化"
+            description="老教师经验一键传承，手写教案识别与结构化",
         )
         if ocr_reader is None:
             self.ocr = EasyOCRProcessor(languages=["ch_sim", "en"], gpu=False)
@@ -118,17 +119,21 @@ class WisdomTransferAgent(BaseAgent):
             try:
                 result = self.run(image_path)
             except Exception:
-                results.append({
-                    "image_path": image_path,
-                    "result": "处理失败，请稍后重试",
-                    "success": False,
-                })
+                results.append(
+                    {
+                        "image_path": image_path,
+                        "result": "处理失败，请稍后重试",
+                        "success": False,
+                    }
+                )
             else:
-                results.append({
-                    "image_path": image_path,
-                    "result": result,
-                    "success": True,
-                })
+                results.append(
+                    {
+                        "image_path": image_path,
+                        "result": result,
+                        "success": True,
+                    }
+                )
         return results
 
     def save_to_knowledge_base(self, structured_content: str, metadata: dict[str, Any]) -> bool:

@@ -1,4 +1,5 @@
 """前端调用 Agent 的安全封装：记录异常，不把异常文本展示给用户。"""
+
 from __future__ import annotations
 
 import logging
@@ -7,6 +8,7 @@ from collections.abc import Callable
 logger = logging.getLogger(__name__)
 
 GENERIC_AGENT_ERROR = "服务处理失败，请稍后重试"
+
 
 def invoke_agent[T](
     fn: Callable[..., T],

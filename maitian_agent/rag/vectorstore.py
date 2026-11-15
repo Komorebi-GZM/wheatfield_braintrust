@@ -2,6 +2,7 @@
 向量存储管理
 支持Chroma和Milvus
 """
+
 import logging
 import os
 from abc import ABC, abstractmethod
@@ -60,7 +61,7 @@ class ChromaVectorStore(BaseVectorStore):
         self,
         collection_name: str = "default",
         persist_directory: str = "./data/chroma",
-        embedding_function: Embeddings | None = None
+        embedding_function: Embeddings | None = None,
     ):
         self.collection_name = collection_name
         self.persist_directory = persist_directory
@@ -75,7 +76,7 @@ class ChromaVectorStore(BaseVectorStore):
             self._vectorstore = Chroma(
                 collection_name=self.collection_name,
                 persist_directory=self.persist_directory,
-                embedding_function=self.embedding_function
+                embedding_function=self.embedding_function,
             )
             self._validate_dimension(self._vectorstore)
         return self._vectorstore
@@ -157,10 +158,7 @@ class ChromaVectorStore(BaseVectorStore):
         return self.vectorstore.similarity_search(query, k=k, filter=filter)
 
     def similarity_search_with_score(
-        self,
-        query: str,
-        k: int = 4,
-        filter: dict | None = None
+        self, query: str, k: int = 4, filter: dict | None = None
     ) -> list[tuple]:
         """带分数的相似度搜索"""
         return self.vectorstore.similarity_search_with_score(query, k=k, filter=filter)
@@ -177,7 +175,7 @@ class ChromaVectorStore(BaseVectorStore):
         metadatas: list[dict] | None = None,
         collection_name: str = "default",
         persist_directory: str = "./data/chroma",
-        **kwargs
+        **kwargs,
     ) -> "ChromaVectorStore":
         """从文本创建向量存储（打开时先校验/写入维度）"""
         instance = cls(collection_name, persist_directory, embedding)
@@ -192,12 +190,9 @@ class MilvusVectorStore(BaseVectorStore):
         self,
         connection_args: dict[str, Any] | None = None,
         collection_name: str = "default",
-        embedding_function: Embeddings | None = None
+        embedding_function: Embeddings | None = None,
     ):
-        self.connection_args = connection_args or {
-            "host": "localhost",
-            "port": "19530"
-        }
+        self.connection_args = connection_args or {"host": "localhost", "port": "19530"}
         self.collection_name = collection_name
         self.embedding_function = embedding_function
         self._vectorstore = None
@@ -225,7 +220,7 @@ def get_vector_store(
     store_type: str = "chroma",
     collection_name: str = "default",
     embedding_function: Embeddings | None = None,
-    **kwargs
+    **kwargs,
 ) -> BaseVectorStore:
     """获取向量存储实例
 
@@ -242,13 +237,13 @@ def get_vector_store(
         return ChromaVectorStore(
             collection_name=collection_name,
             persist_directory=kwargs.get("persist_directory", "./data/chroma"),
-            embedding_function=embedding_function
+            embedding_function=embedding_function,
         )
     elif store_type == "milvus":
         return MilvusVectorStore(
             connection_args=kwargs.get("connection_args"),
             collection_name=collection_name,
-            embedding_function=embedding_function
+            embedding_function=embedding_function,
         )
     else:
         raise ValueError(f"不支持的向量存储类型: {store_type}")

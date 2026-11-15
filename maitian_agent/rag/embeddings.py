@@ -7,6 +7,7 @@
   ``pip install 'maitian-agent[rag]'``。
 - ``openai_compatible``：使用 OpenAI 兼容嵌入，凭证未配置时回退到 LLM_*。
 """
+
 from __future__ import annotations
 
 from typing import cast

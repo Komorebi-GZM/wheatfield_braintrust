@@ -1,4 +1,5 @@
 """Offline regressions for memory, blocking generation and lazy BGE setup."""
+
 import asyncio
 import json
 import sys
@@ -29,7 +30,8 @@ def test_memory_without_history_save_reload_and_clear(tmp_path):
     memory.save_context({"human_input": "问题"}, {"response": "回答"})
     restored = ConversationMemory(persist_directory=str(tmp_path))
     assert [(m.type, m.content) for m in restored.load_memory_variables()["history"]] == [
-        ("human", "问题"), ("ai", "回答")
+        ("human", "问题"),
+        ("ai", "回答"),
     ]
     restored.clear()
     assert restored.load_memory_variables()["history"] == []
@@ -37,13 +39,21 @@ def test_memory_without_history_save_reload_and_clear(tmp_path):
 
 
 def test_memory_loads_json_and_respects_window(tmp_path):
-    (tmp_path / "chat_history_default.json").write_text(json.dumps([
-        {"type": "human", "content": "旧问题"}, {"type": "ai", "content": "旧回答"},
-        {"type": "human", "content": "新问题"}, {"type": "ai", "content": "新回答"},
-    ]), encoding="utf-8")
+    (tmp_path / "chat_history_default.json").write_text(
+        json.dumps(
+            [
+                {"type": "human", "content": "旧问题"},
+                {"type": "ai", "content": "旧回答"},
+                {"type": "human", "content": "新问题"},
+                {"type": "ai", "content": "新回答"},
+            ]
+        ),
+        encoding="utf-8",
+    )
     memory = ConversationMemory(conversation_window=1, persist_directory=str(tmp_path))
     assert [(m.type, m.content) for m in memory.load_memory_variables()["history"]] == [
-        ("human", "新问题"), ("ai", "新回答")
+        ("human", "新问题"),
+        ("ai", "新回答"),
     ]
     assert len(memory.get_conversation_history()) == 4
 
@@ -54,8 +64,9 @@ def test_bge_maps_passage_to_embed_instruction(monkeypatch):
     calls = []
 
     class StrictBGE:
-        def __init__(self, *, model_name, model_kwargs, encode_kwargs,
-                     query_instruction, embed_instruction):
+        def __init__(
+            self, *, model_name, model_kwargs, encode_kwargs, query_instruction, embed_instruction
+        ):
             calls.append((query_instruction, embed_instruction))
 
     module.HuggingFaceBgeEmbeddings = StrictBGE
@@ -78,8 +89,12 @@ class SlowFakeChatModel(FakeListChatModel):
 @pytest.mark.asyncio
 @pytest.mark.parametrize("endpoint", ["lesson-prep", "wisdom-transfer"])
 async def test_health_responsive_during_slow_generation(monkeypatch, tmp_path, endpoint):
-    for key, value in {"LLM_BASE_URL": "http://fake.invalid/v1", "LLM_MODEL": "fake",
-                       "LLM_API_KEY": "placeholder", "UPLOAD_DIR": str(tmp_path)}.items():
+    for key, value in {
+        "LLM_BASE_URL": "http://fake.invalid/v1",
+        "LLM_MODEL": "fake",
+        "LLM_API_KEY": "placeholder",
+        "UPLOAD_DIR": str(tmp_path),
+    }.items():
         monkeypatch.setenv(key, value)
     get_settings.cache_clear()
     model = SlowFakeChatModel(responses=["生成结果"])
@@ -91,12 +106,17 @@ async def test_health_responsive_during_slow_generation(monkeypatch, tmp_path, e
     app = routes.create_app()
     try:
         async with app.router.lifespan_context(app):
-            monkeypatch.setattr(routes, "agents", {
-                "quick_lesson_prep": QuickLessonPrepAgent(llm=model),
-                "wisdom_transfer": WisdomTransferAgent(llm=model, ocr_reader=Reader()),
-            })
-            async with httpx.AsyncClient(transport=httpx.ASGITransport(app=app),
-                                         base_url="http://test") as client:
+            monkeypatch.setattr(
+                routes,
+                "agents",
+                {
+                    "quick_lesson_prep": QuickLessonPrepAgent(llm=model),
+                    "wisdom_transfer": WisdomTransferAgent(llm=model, ocr_reader=Reader()),
+                },
+            )
+            async with httpx.AsyncClient(
+                transport=httpx.ASGITransport(app=app), base_url="http://test"
+            ) as client:
                 if endpoint == "lesson-prep":
                     kwargs = {"json": {"subject": "语文", "grade": "三年级", "topic": "春天"}}
                 else:
@@ -122,18 +142,33 @@ async def test_health_responsive_during_slow_generation(monkeypatch, tmp_path, e
         get_settings.cache_clear()
 
 
-
 @pytest.mark.parametrize(
     "path,payload,agent_key,method",
     [
-        ("/api/lesson-prep", {"subject": "语文", "grade": "三年级", "topic": "春天"},
-         "quick_lesson_prep", "run"),
-        ("/api/quiz", {"subject": "语文", "grade": "三年级", "topic": "春天"},
-         "classroom_companion", "generate_quiz"),
-        ("/api/material", {"subject": "语文", "grade": "三年级", "topic": "春天"},
-         "material", "recommend_materials"),
-        ("/api/meeting-notes", {"transcript": "教研记录"},
-         "meeting_notes", "process_meeting_notes"),
+        (
+            "/api/lesson-prep",
+            {"subject": "语文", "grade": "三年级", "topic": "春天"},
+            "quick_lesson_prep",
+            "run",
+        ),
+        (
+            "/api/quiz",
+            {"subject": "语文", "grade": "三年级", "topic": "春天"},
+            "classroom_companion",
+            "generate_quiz",
+        ),
+        (
+            "/api/material",
+            {"subject": "语文", "grade": "三年级", "topic": "春天"},
+            "material",
+            "recommend_materials",
+        ),
+        (
+            "/api/meeting-notes",
+            {"transcript": "教研记录"},
+            "meeting_notes",
+            "process_meeting_notes",
+        ),
         ("/api/route", {"user_input": "帮我备课"}, "router", "run"),
     ],
 )

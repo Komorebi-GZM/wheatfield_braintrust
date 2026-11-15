@@ -1,4 +1,5 @@
 """P1-2 配置与厂商无关模型层测试（全部离线，不需要任何 Key）。"""
+
 import os
 import subprocess
 import sys
@@ -171,9 +172,7 @@ def test_deterministic_fake_embedding_available():
         },
     ],
 )
-def test_openai_compatible_missing_base_url_raises_without_constructing(
-    monkeypatch, extra_env
-):
+def test_openai_compatible_missing_base_url_raises_without_constructing(monkeypatch, extra_env):
     from unittest.mock import Mock
 
     from maitian_agent.rag.embeddings import EmbeddingNotConfiguredError, get_embeddings
@@ -411,4 +410,3 @@ def test_legacy_collection_without_metadata_probes_dimension(tmp_path):
     )
     with pytest.raises(EmbeddingDimensionMismatchError):
         _ = reopened.vectorstore
-

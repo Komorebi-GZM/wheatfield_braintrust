@@ -1,4 +1,5 @@
 """Offline smoke checks for the installed application entry points."""
+
 import importlib
 
 from click.testing import CliRunner

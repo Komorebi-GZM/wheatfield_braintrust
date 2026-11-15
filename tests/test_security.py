@@ -1,4 +1,5 @@
 """Offline regression tests for upload, path, CORS and error boundaries."""
+
 import asyncio
 import os
 import time
@@ -51,6 +52,7 @@ def png():
 @pytest.mark.parametrize("extension", ["png", "jpeg", "webp"])
 def test_valid_upload(api, extension):
     client, reader, directory = api
+
     def read(path, **kwargs):
         assert Path(path).read_bytes() == image_bytes(extension)
         return [(None, "教案", 0.99)]
@@ -73,12 +75,15 @@ def test_valid_upload(api, extension):
     assert not list(directory.iterdir())
 
 
-@pytest.mark.parametrize(("name", "content", "mime", "status"), [
-    ("large.png", b"x" * (1024 * 1024 + 1), "image/png", 413),
-    ("bad.txt", b"text", "image/png", 415),
-    ("fake.png", b"not an image", "image/png", 415),
-    ("magic.png", b"\x89PNG\r\n\x1a\nforged", "image/png", 415),
-])
+@pytest.mark.parametrize(
+    ("name", "content", "mime", "status"),
+    [
+        ("large.png", b"x" * (1024 * 1024 + 1), "image/png", 413),
+        ("bad.txt", b"text", "image/png", 415),
+        ("fake.png", b"not an image", "image/png", 415),
+        ("magic.png", b"\x89PNG\r\n\x1a\nforged", "image/png", 415),
+    ],
+)
 def test_invalid_upload(api, name, content, mime, status):
     client, reader, directory = api
     response = client.post("/api/wisdom-transfer", files={"file": (name, content, mime)})
@@ -89,9 +94,9 @@ def test_invalid_upload(api, name, content, mime, status):
 
 def test_server_path_removed(api):
     client, reader, _ = api
-    assert client.post(
-        "/api/wisdom-transfer", json={"image_path": "/etc/passwd"}
-    ).status_code == 422
+    assert (
+        client.post("/api/wisdom-transfer", json={"image_path": "/etc/passwd"}).status_code == 422
+    )
     reader.readtext.assert_not_called()
 
 
@@ -103,8 +108,12 @@ def test_write_boundaries(tmp_path, operation, kind):
     outside = tmp_path / "outside.png"
     outside.write_bytes(b"original")
     (base / "link.png").symlink_to(outside)
-    filename = {"parent": "../outside.png", "absolute": str(outside),
-                "symlink": "link.png", "extension": "bad.exe"}[kind]
+    filename = {
+        "parent": "../outside.png",
+        "absolute": str(outside),
+        "symlink": "link.png",
+        "extension": "bad.exe",
+    }[kind]
     with pytest.raises(ValueError):
         if operation == "save_bytes":
             processor.save_bytes(b"changed", filename)
@@ -194,10 +203,13 @@ def test_upload_body_limit_before_save(api, monkeypatch, declared, root_path):
     headers = [(b"content-type", b"multipart/form-data; boundary=test")]
     if declared is not None:
         headers.append((b"content-length", declared.encode()))
-    chunks = iter([
-        b'--test\r\nContent-Disposition: form-data; name="file"; filename="x.png"\r\n\r\n',
-        *([b"x" * 65536] * 24), b"\r\n--test--\r\n",
-    ])
+    chunks = iter(
+        [
+            b'--test\r\nContent-Disposition: form-data; name="file"; filename="x.png"\r\n\r\n',
+            *([b"x" * 65536] * 24),
+            b"\r\n--test--\r\n",
+        ]
+    )
     sent, received = [], []
 
     async def receive():
@@ -208,20 +220,26 @@ def test_upload_body_limit_before_save(api, monkeypatch, declared, root_path):
     async def send(message):
         sent.append(message)
 
-    asyncio.run(client.app({
-        "type": "http",
-        "asgi": {"version": "3.0"},
-        "http_version": "1.1",
-        "method": "POST",
-        "scheme": "http",
-        "path": root_path + "/api/wisdom-transfer",
-        "root_path": root_path,
-        "raw_path": (root_path + "/api/wisdom-transfer").encode(),
-        "query_string": b"",
-        "headers": headers,
-        "client": ("test", 123),
-        "server": ("test", 80),
-    }, receive, send))
+    asyncio.run(
+        client.app(
+            {
+                "type": "http",
+                "asgi": {"version": "3.0"},
+                "http_version": "1.1",
+                "method": "POST",
+                "scheme": "http",
+                "path": root_path + "/api/wisdom-transfer",
+                "root_path": root_path,
+                "raw_path": (root_path + "/api/wisdom-transfer").encode(),
+                "query_string": b"",
+                "headers": headers,
+                "client": ("test", 123),
+                "server": ("test", 80),
+            },
+            receive,
+            send,
+        )
+    )
     assert sent[0]["status"] == 413
     assert sum(message["type"] == "http.response.start" for message in sent) == 1
     if declared == "99999999":

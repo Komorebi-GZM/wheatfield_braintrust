@@ -1,4 +1,5 @@
 """Demo 智慧传承 Agent —— 使用厂商无关模型工厂，OCR 懒加载。"""
+
 from __future__ import annotations
 
 from langchain_core.language_models import BaseChatModel
@@ -55,7 +56,7 @@ class WisdomTransferAgent:
                 )
             from easyocr import Reader  # type: ignore[import-not-found]
 
-            self._ocr = Reader(['ch_sim', 'en'], gpu=False)
+            self._ocr = Reader(["ch_sim", "en"], gpu=False)
         return self._ocr
 
     def run(self, image_path):
