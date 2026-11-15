@@ -2,44 +2,38 @@
 智慧传承Agent
 手写教案OCR识别→结构化→入库→风格学习
 性能要求: ≤5秒/张
+
+OCR 复用 ``EasyOCRProcessor`` 的懒加载：构造时不 import easyocr/torch，
+首次真正识别时才加载；也可注入已有 reader。
 """
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Dict, Any, Optional, List
-from langchain_core.prompts import ChatPromptTemplate
+from typing import TYPE_CHECKING, Any
+
+from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
-import os
-from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
 from maitian_agent.tools.ocr import EasyOCRProcessor
 
 if TYPE_CHECKING:
-    from easyocr import Reader
-
-load_dotenv()
+    from easyocr import Reader  # type: ignore[import-not-found]
 
 
 class WisdomTransferAgent(BaseAgent):
     """智慧传承Agent - 手写教案数字化传承"""
 
-    def __init__(self, llm: Optional[ChatOpenAI] = None, ocr_reader: Optional[Reader] = None):
+    def __init__(
+        self,
+        llm: BaseChatModel | None = None,
+        ocr_reader: Reader | None = None,
+    ):
         super().__init__(
+            llm=llm,
             name="WisdomTransferAgent",
             description="老教师经验一键传承，手写教案识别与结构化"
         )
-        if llm is None:
-            api_key = os.getenv("OPENAI_API_KEY")
-            model_name = os.getenv("MODEL_NAME", "deepseek-v2")
-            self.llm = ChatOpenAI(
-                model=model_name,
-                api_key=api_key,
-                temperature=0.3
-            )
-        else:
-            self.llm = llm
-
         if ocr_reader is None:
             self.ocr = EasyOCRProcessor(languages=["ch_sim", "en"], gpu=False)
         else:
@@ -84,14 +78,13 @@ class WisdomTransferAgent(BaseAgent):
             识别出的文本
         """
         try:
-            reader = self.ocr.reader if isinstance(self.ocr, EasyOCRProcessor) else self.ocr
-            result = reader.readtext(image_path, detail=1)
-            ocr_text = ""
-            for detection in result:
-                ocr_text += detection[1] + "\n"
-            return ocr_text.strip()
+            # EasyOCRProcessor 走带锁的 recognize，避免并发重复构造/调用 Reader
+            if isinstance(self.ocr, EasyOCRProcessor):
+                return self.ocr.recognize(image_path, detail=1).strip()
+            result = self.ocr.readtext(image_path, detail=1)
+            return "\n".join(detection[1] for detection in result).strip()
         except Exception as e:
-            raise RuntimeError(f"OCR识别失败: {str(e)}")
+            raise RuntimeError(f"OCR识别失败: {e!s}")
 
     def run(self, image_path: str, **kwargs) -> str:
         """执行手写教案识别与结构化
@@ -102,19 +95,16 @@ class WisdomTransferAgent(BaseAgent):
         Returns:
             结构化处理后的教案内容
         """
-        try:
-            ocr_text = self.recognize_handwriting(image_path)
-            if not ocr_text:
-                return "未能识别出文字，请确保图片清晰"
+        ocr_text = self.recognize_handwriting(image_path)
+        if not ocr_text:
+            return "未能识别出文字，请确保图片清晰"
 
-            chain = self.build_chain()
-            structured_result = chain.invoke({"ocr_text": ocr_text})
+        chain = self.build_chain()
+        structured_result = chain.invoke({"ocr_text": ocr_text})
 
-            return f"### OCR识别结果\n{ocr_text}\n\n### 结构化结果\n{structured_result}"
-        except Exception as e:
-            return f"处理手写教案时出错：{str(e)}"
+        return f"### OCR识别结果\n{ocr_text}\n\n### 结构化结果\n{structured_result}"
 
-    def run_batch(self, image_paths: List[str], **kwargs) -> List[Dict[str, Any]]:
+    def run_batch(self, image_paths: list[str], **kwargs) -> list[dict[str, Any]]:
         """批量处理多张手写教案
 
         Args:
@@ -125,15 +115,23 @@ class WisdomTransferAgent(BaseAgent):
         """
         results = []
         for image_path in image_paths:
-            result = self.run(image_path)
-            results.append({
-                "image_path": image_path,
-                "result": result,
-                "success": not result.startswith("处理手写教案时出错")
-            })
+            try:
+                result = self.run(image_path)
+            except Exception:
+                results.append({
+                    "image_path": image_path,
+                    "result": "处理失败，请稍后重试",
+                    "success": False,
+                })
+            else:
+                results.append({
+                    "image_path": image_path,
+                    "result": result,
+                    "success": True,
+                })
         return results
 
-    def save_to_knowledge_base(self, structured_content: str, metadata: Dict[str, Any]) -> bool:
+    def save_to_knowledge_base(self, structured_content: str, metadata: dict[str, Any]) -> bool:
         """保存到知识库（待集成RAG）
 
         Args:

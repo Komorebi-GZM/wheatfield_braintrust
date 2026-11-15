@@ -38,21 +38,65 @@ uv run maitian-agent --help
 
 ### 配置环境变量
 
-复制 `.env.example` 为 `.env`，填入API密钥：
+复制 `.env.example` 为 `.env`，按需填写模型配置（密钥只放 `.env`，不要提交）：
 
 ```bash
 cp .env.example .env
 ```
 
+### 知识库向量维度迁移
+
+默认嵌入模型已从 `BAAI/bge-large-zh`（1024 维）改为 `BAAI/bge-small-zh-v1.5`（512 维）。
+
+- 已有 `./data/chroma` 索引目录是旧模型（1024 维）生成的，**不能**与新模型（512 维）混用；
+- 打开知识库时会校验已存向量的维度，若与当前 embedding 维度不一致会直接报错（提示已存维度与当前维度）；
+- 处理办法（二选一）：
+  1. 把 `EMBEDDING_MODEL` 设回原来的模型（例如 `BAAI/bge-large-zh`），继续使用旧索引；
+  2. 备份或删除原索引目录（如 `./data/chroma`）后，用当前模型重建索引。
+
 ### 启动应用
 
 ```bash
+# 在两个终端分别启动 Web 界面与 API
 # 启动Web界面
 uv run streamlit run maitian_agent/frontend/streamlit_app.py
 
-# 或启动API服务
+# 启动API服务
 uv run uvicorn maitian_agent.api.routes:app --host 0.0.0.0 --port 8000
 ```
+
+### Docker 一键启动
+
+在仓库根目录使用 `compose.yaml` 运行（Docker Compose 2.24+，没有 `.env` 也能启动）：
+
+```bash
+docker compose up --build -d
+# 停止并清理容器
+docker compose down
+```
+
+访问 API http://127.0.0.1:8000/health 和 Streamlit http://127.0.0.1:8501 。
+默认端口只绑定本机 `127.0.0.1`（容器内服务仍监听 `0.0.0.0`）。若要对外暴露，必须自己去掉 `127.0.0.1` 绑定，并且加上认证（例如放在反向代理之后并启用鉴权）。不要只改端口映射就直接暴露到公网。
+无 Key 时健康检查仍返回 200；生成能力需要补齐 `LLM_*` 配置。
+两个服务共用镜像，前端通过 `MAITIAN_API_BASE=http://api:8000` 访问 API。
+两者挂载 `./data:/app/data`，上传目录固定为 `/app/data/uploads`。
+一次性 `data-init` 服务创建子目录并将宿主数据目录所有权设为 UID/GID 1000，应用以非 root 运行。
+
+环境变量见 `.env.example`：支持 LLM、嵌入、ASR（`ASR_BASE_URL` / `ASR_MODEL` / `ASR_API_KEY`）、OCR、CORS 和上传大小。
+默认镜像不含 torch、EasyOCR 或本地嵌入依赖，`OCR_BACKEND=none`。
+需要时选择对应 extras（首次使用还可能下载模型）：
+
+```bash
+# 本地安装，可只选一个 extra
+uv sync --extra rag --extra ocr-easyocr
+# 单独构建镜像
+docker build --build-arg UV_EXTRAS="--extra rag --extra ocr-easyocr" -t wheatfield:p1-5 .
+# Compose 构建并启动可选版本
+UV_EXTRAS="--extra rag --extra ocr-easyocr" docker compose up --build -d
+```
+
+根目录 `Dockerfile` 与 `compose.yaml` 使用锁定依赖，CI 的 `docker build -t maitian-agent:ci .` 会自动构建根目录 Dockerfile。
+需要 Docker 组权限时可用 `sg docker -c "docker compose up --build -d"`。
 
 ## 项目结构
 

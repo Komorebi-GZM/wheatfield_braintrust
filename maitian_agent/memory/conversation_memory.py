@@ -8,6 +8,7 @@ from datetime import datetime
 from typing import Any
 
 from langchain.memory import ConversationBufferWindowMemory
+from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
 
@@ -32,7 +33,7 @@ class ConversationMemory:
         if memory_type == "buffer":
             self.memory = ConversationBufferWindowMemory(
                 k=conversation_window,
-                chat_memory=self._load_chat_history(),
+                chat_memory=InMemoryChatMessageHistory(messages=self._load_chat_history()),
                 return_messages=True
             )
         else:

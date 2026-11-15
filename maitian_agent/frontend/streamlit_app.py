@@ -4,15 +4,17 @@ Streamlit Web应用
 """
 import os
 
+import httpx
 import streamlit as st
 from dotenv import load_dotenv
 
+from maitian_agent.agent_call import invoke_agent
 from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
 from maitian_agent.agents.material_agent import MaterialAgent
 from maitian_agent.agents.meeting_notes import MeetingNotesAgent
 from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
 from maitian_agent.agents.router import RouterAgent
-from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
+from maitian_agent.config.settings import get_settings
 
 load_dotenv()
 
@@ -27,9 +29,6 @@ def init_agents():
     """初始化Agent实例"""
     if "quick_lesson_prep_agent" not in st.session_state:
         st.session_state.quick_lesson_prep_agent = QuickLessonPrepAgent()
-
-    if "wisdom_transfer_agent" not in st.session_state:
-        st.session_state.wisdom_transfer_agent = WisdomTransferAgent()
 
     if "classroom_companion_agent" not in st.session_state:
         st.session_state.classroom_companion_agent = ClassroomCompanionAgent()
@@ -95,16 +94,18 @@ def render_quick_lesson_prep():
         else:
             with st.spinner("正在生成教案，请稍候..."):
                 agent = st.session_state.quick_lesson_prep_agent
-                result = agent.run(
+                result = invoke_agent(
+                    agent.run,
+                    error_handler=st.error,
                     subject=subject,
                     grade=grade,
                     topic=topic,
-                    rural_context=rural_context
+                    rural_context=rural_context,
                 )
-
-                st.success("教案生成完成！")
-                st.markdown("### 生成的教案")
-                st.markdown(result)
+                if result is not None:
+                    st.success("教案生成完成！")
+                    st.markdown("### 生成的教案")
+                    st.markdown(result)
 
     st.markdown("---")
     st.markdown("#### 备课助手功能说明")
@@ -134,16 +135,24 @@ def render_wisdom_transfer():
         with col2:
             if st.button("开始识别与处理", type="primary"):
                 with st.spinner("正在处理，请稍候..."):
-                    temp_path = os.path.join("assets", uploaded_file.name)
-                    with open(temp_path, "wb") as f:
-                        f.write(uploaded_file.getbuffer())
-
-                    agent = st.session_state.wisdom_transfer_agent
-                    result = agent.run(temp_path)
-
-                    st.success("处理完成！")
-                    st.markdown("### 识别结果")
-                    st.markdown(result)
+                    try:
+                        response = httpx.post(
+                            os.getenv("MAITIAN_API_BASE", "http://127.0.0.1:8000").rstrip("/")
+                            + "/api/wisdom-transfer",
+                            files={"file": (uploaded_file.name, uploaded_file.getvalue(),
+                                            uploaded_file.type)},
+                            timeout=120,
+                        )
+                        payload = response.json()
+                        if response.is_error:
+                            detail = payload.get("detail")
+                            st.error(detail if isinstance(detail, str) else "上传失败，请检查图片")
+                        else:
+                            st.success("处理完成！")
+                            st.markdown("### 识别结果")
+                            st.markdown(payload["result"])
+                    except (httpx.HTTPError, ValueError, KeyError):
+                        st.error("服务暂不可用，请稍后重试")
 
     st.markdown("---")
     st.markdown("#### 功能说明")
@@ -190,18 +199,20 @@ def render_classroom_companion():
             else:
                 with st.spinner("正在生成练习题..."):
                     agent = st.session_state.classroom_companion_agent
-                    result = agent.generate_quiz(
+                    result = invoke_agent(
+                        agent.generate_quiz,
+                        error_handler=st.error,
                         subject=subject,
                         grade=grade,
                         topic=topic,
                         knowledge_points=knowledge_points,
                         question_count=question_count,
-                        question_types="、".join(question_types)
+                        question_types="、".join(question_types),
                     )
-
-                    st.success("练习题生成完成！")
-                    st.markdown("### 生成的练习题")
-                    st.markdown(result)
+                    if result is not None:
+                        st.success("练习题生成完成！")
+                        st.markdown("### 生成的练习题")
+                        st.markdown(result)
 
     else:
         if st.button("检索经典题", type="primary"):
@@ -210,16 +221,18 @@ def render_classroom_companion():
             else:
                 with st.spinner("正在检索经典题..."):
                     agent = st.session_state.classroom_companion_agent
-                    result = agent.retrieve_classic_questions(
+                    result = invoke_agent(
+                        agent.retrieve_classic_questions,
+                        error_handler=st.error,
                         subject=subject,
                         grade=grade,
                         topic=topic,
-                        knowledge_points=knowledge_points
+                        knowledge_points=knowledge_points,
                     )
-
-                    st.success("检索完成！")
-                    st.markdown("### 经典题检索结果")
-                    st.markdown(result)
+                    if result is not None:
+                        st.success("检索完成！")
+                        st.markdown("### 经典题检索结果")
+                        st.markdown(result)
 
 
 def render_material_recommend():
@@ -245,17 +258,19 @@ def render_material_recommend():
         else:
             with st.spinner("正在推荐素材..."):
                 agent = st.session_state.material_agent
-                result = agent.recommend_materials(
+                result = invoke_agent(
+                    agent.recommend_materials,
+                    error_handler=st.error,
                     subject=subject,
                     grade=grade,
                     topic=topic,
                     knowledge_points=knowledge_points,
-                    rural_context=rural_context
+                    rural_context=rural_context,
                 )
-
-                st.success("素材推荐完成！")
-                st.markdown("### 推荐素材")
-                st.markdown(result)
+                if result is not None:
+                    st.success("素材推荐完成！")
+                    st.markdown("### 推荐素材")
+                    st.markdown(result)
 
     st.markdown("---")
     st.markdown("#### 功能说明")
@@ -292,11 +307,15 @@ def render_meeting_notes():
             else:
                 with st.spinner("正在处理，请稍候..."):
                     agent = st.session_state.meeting_notes_agent
-                    result = agent.process_meeting_notes(meeting_transcript)
-
-                    st.success("报告生成完成！")
-                    st.markdown("### 教研纪要")
-                    st.markdown(result)
+                    result = invoke_agent(
+                        agent.process_meeting_notes,
+                        meeting_transcript,
+                        error_handler=st.error,
+                    )
+                    if result is not None:
+                        st.success("报告生成完成！")
+                        st.markdown("### 教研纪要")
+                        st.markdown(result)
     else:
         st.info("音频转写功能待集成Whisper API")
 
@@ -325,7 +344,8 @@ def render_sidebar():
     st.sidebar.markdown("---")
     st.sidebar.markdown("## 环境信息")
     st.sidebar.markdown(f"- 项目版本：{os.getenv('VERSION', '1.0.0')}")
-    st.sidebar.markdown(f"- 模型：{os.getenv('MODEL_NAME', 'deepseek-v2')}")
+    llm_model = get_settings().llm_model or "未配置"
+    st.sidebar.markdown(f"- 模型：{llm_model}")
 
 
 def main():

@@ -79,7 +79,7 @@ demo/
 - 自进化RAG知识库
 - 对话记忆+教师画像
 - FastAPI REST接口
-- Docker容器化部署
+- Docker 容器化部署：在仓库根目录执行 `docker compose up --build -d`，使用根目录 `compose.yaml` 启动主应用；独立 demo 可继续使用 `uv run`
 
 ## License
 

@@ -2,20 +2,22 @@
 知识库管理
 三层知识库架构实现
 """
-
 from enum import Enum
 from typing import Any
 
-from maitian_agent.rag.embeddings import BGEEmbeddings, get_embedding_model
-from maitian_agent.rag.vectorstore import BaseVectorStore, get_vector_store
+from maitian_agent.rag.embeddings import BGEEmbeddings, get_embeddings
+from maitian_agent.rag.vectorstore import (
+    BaseVectorStore,
+    ChromaVectorStore,
+    get_vector_store,
+)
 
 
 class KnowledgeLevel(str, Enum):
     """知识库层级"""
-
     UNIVERSAL = "universal"  # 通用基础库（教材）
-    SCHOOL = "school"  # 学校共享库（校本教案）
-    TEACHER = "teacher"  # 教师专属库（个人风格）
+    SCHOOL = "school"        # 学校共享库（校本教案）
+    TEACHER = "teacher"      # 教师专属库（个人风格）
 
 
 class KnowledgeBase:
@@ -30,26 +32,34 @@ class KnowledgeBase:
     def __init__(
         self,
         persist_directory: str = "./data/chroma",
-        embedding_model_name: str = "BAAI/bge-large-zh",
+        embedding_model_name: str | None = None
     ):
         self.persist_directory = persist_directory
-        self.embedding = get_embedding_model("bge", embedding_model_name)
+        # 未显式指定模型时按配置解析（local 默认 bge-small-zh；openai_compatible 回退 LLM_*）
+        self.embedding = get_embeddings(model=embedding_model_name)
         self.collections: dict[KnowledgeLevel, BaseVectorStore] = {}
 
         self._init_collections()
 
     def _init_collections(self):
-        """初始化知识库集合"""
+        """初始化知识库集合（打开时即校验向量维度，避免拖到首次 search 才爆）"""
         for level in KnowledgeLevel:
-            self.collections[level] = get_vector_store(
+            store = get_vector_store(
                 store_type="chroma",
                 collection_name=f"knowledge_{level.value}",
                 persist_directory=self.persist_directory,
-                embedding_function=self.embedding,
+                embedding_function=self.embedding
             )
+            self.collections[level] = store
+            # 触发 Chroma 打开路径：读取已存维度并与当前 embedding 比对
+            if isinstance(store, ChromaVectorStore):
+                _ = store.vectorstore
 
     def add_document(
-        self, text: str, level: KnowledgeLevel, metadata: dict[str, Any] | None = None
+        self,
+        text: str,
+        level: KnowledgeLevel,
+        metadata: dict[str, Any] | None = None
     ) -> list[str]:
         """添加文档到指定层级知识库
 
@@ -71,7 +81,10 @@ class KnowledgeBase:
         return vectorstore.add_texts([text], metadatas=[doc_metadata])
 
     def add_documents(
-        self, texts: list[str], level: KnowledgeLevel, metadatas: list[dict[str, Any]] | None = None
+        self,
+        texts: list[str],
+        level: KnowledgeLevel,
+        metadatas: list[dict[str, Any]] | None = None
     ) -> list[str]:
         """批量添加文档
 
@@ -95,7 +108,12 @@ class KnowledgeBase:
         vectorstore = self.collections[level]
         return vectorstore.add_texts(texts, metadatas=docs_metadata)
 
-    def search(self, query: str, level: KnowledgeLevel | None = None, k: int = 4) -> list[Any]:
+    def search(
+        self,
+        query: str,
+        level: KnowledgeLevel | None = None,
+        k: int = 4
+    ) -> list[Any]:
         """搜索知识库
 
         Args:
@@ -117,7 +135,12 @@ class KnowledgeBase:
             results.extend(level_results)
         return results
 
-    def search_with_filter(self, query: str, filter_dict: dict[str, Any], k: int = 4) -> list[Any]:
+    def search_with_filter(
+        self,
+        query: str,
+        filter_dict: dict[str, Any],
+        k: int = 4
+    ) -> list[Any]:
         """带过滤条件的搜索
 
         Args:
@@ -132,9 +155,7 @@ class KnowledgeBase:
         for level_vectorstore in self.collections.values():
             try:
                 level_results = level_vectorstore.similarity_search(
-                    query,
-                    k=k,
-                    filter=filter_dict,  # pyright: ignore[reportCallIssue]
+                    query, k=k, filter=filter_dict  # type: ignore[call-arg]
                 )
                 results.extend(level_results)
             except Exception:
@@ -164,11 +185,10 @@ class KnowledgeBase:
         if level not in self.collections:
             raise ValueError(f"未知的知识库层级: {level}")
 
-        vectorstore = self.collections[level]
         return {
             "level": level.value,
             "name": f"knowledge_{level.value}",
-            "persist_directory": self.persist_directory,
+            "persist_directory": self.persist_directory
         }
 
 
@@ -178,7 +198,11 @@ class HybridRetriever:
     结合向量检索和关键词检索
     """
 
-    def __init__(self, vectorstore: BaseVectorStore, embedding_model: BGEEmbeddings | None = None):
+    def __init__(
+        self,
+        vectorstore: BaseVectorStore,
+        embedding_model: BGEEmbeddings | None = None
+    ):
         self.vectorstore = vectorstore
         self.embedding_model = embedding_model
 
@@ -200,7 +224,11 @@ class HybridRetriever:
         raise NotImplementedError("BM25关键词检索待实现")
 
     def hybrid_search(
-        self, query: str, k: int = 4, vector_weight: float = 0.7, keyword_weight: float = 0.3
+        self,
+        query: str,
+        k: int = 4,
+        vector_weight: float = 0.7,
+        keyword_weight: float = 0.3
     ) -> list[Any]:
         """混合检索
 

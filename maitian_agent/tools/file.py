@@ -15,13 +15,23 @@ class FileProcessor:
     def __init__(
         self,
         upload_dir: str = "./data/uploads",
-        allowed_extensions: list[str] = None
+        allowed_extensions: list[str] | None = None
     ):
-        self.upload_dir = upload_dir
-        self.allowed_extensions = allowed_extensions or [
+        self.upload_dir = str(Path(upload_dir).resolve())
+        self.allowed_extensions = allowed_extensions if allowed_extensions is not None else [
             "jpg", "jpeg", "png", "mp3", "mp4", "wav", "m4a", "pdf", "docx"
         ]
         os.makedirs(upload_dir, exist_ok=True)
+
+    def resolve_write_path(self, filename: str) -> Path:
+        """只允许基目录内且扩展名获准的路径（解析符号链接）。"""
+        base = Path(self.upload_dir).resolve()
+        path = (base / filename).resolve()
+        if not path.is_relative_to(base) or path == base:
+            raise ValueError("文件路径必须位于上传目录内")
+        if path.suffix.lower().lstrip(".") not in self.allowed_extensions:
+            raise ValueError("不支持的文件扩展名")
+        return path
 
     def save_upload(self, file, custom_filename: str | None = None) -> str:
         """保存上传的文件
@@ -39,7 +49,7 @@ class FileProcessor:
             ext = file.name.split(".")[-1] if "." in file.name else ""
             filename = f"{uuid.uuid4().hex}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{ext}"
 
-        file_path = os.path.join(self.upload_dir, filename)
+        file_path = str(self.resolve_write_path(filename))
 
         if hasattr(file, "getbuffer"):
             with open(file_path, "wb") as f:
@@ -59,7 +69,7 @@ class FileProcessor:
         Returns:
             保存的文件路径
         """
-        file_path = os.path.join(self.upload_dir, filename)
+        file_path = str(self.resolve_write_path(filename))
         with open(file_path, "wb") as f:
             f.write(content)
         return file_path
@@ -95,6 +105,7 @@ class FileProcessor:
         Returns:
             是否删除成功
         """
+        file_path = str(self.resolve_write_path(file_path))
         if os.path.exists(file_path):
             os.remove(file_path)
             return True
@@ -148,9 +159,8 @@ class FileProcessor:
 
         for filename in os.listdir(self.upload_dir):
             file_path = os.path.join(self.upload_dir, filename)
-            if os.path.isfile(file_path):
-                if now - os.stat(file_path).st_mtime > threshold:
-                    os.remove(file_path)
-                    count += 1
+            if os.path.isfile(file_path) and now - os.stat(file_path).st_mtime > threshold:
+                self.delete_file(file_path)
+                count += 1
 
         return count

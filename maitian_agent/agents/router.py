@@ -3,23 +3,21 @@
 LangChain Router 意图路由器
 Few-Shot示例校验 + 路由结果二次校验
 """
-from typing import Dict, Any, Optional, Literal
-from langchain_core.prompts import ChatPromptTemplate
+from __future__ import annotations
+
+from typing import Any, ClassVar
+
+from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
-from langchain.output_parsers import CommaSeparatedListOutputParser
-import os
-from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
-
-load_dotenv()
 
 
 class RouterAgent(BaseAgent):
     """意图路由Agent"""
 
-    INTENTS = {
+    INTENTS: ClassVar[dict[str, str]] = {
         "quick_lesson_prep": "乡村专属极速备课，生成乡土化教案",
         "wisdom_transfer": "老教师经验传承，手写教案识别与结构化",
         "classroom_companion": "课堂实时伴教，练习题生成与经典题检索",
@@ -28,21 +26,12 @@ class RouterAgent(BaseAgent):
         "general_chat": "通用对话，其他教育相关咨询"
     }
 
-    def __init__(self, llm: Optional[ChatOpenAI] = None):
+    def __init__(self, llm: BaseChatModel | None = None):
         super().__init__(
+            llm=llm,
             name="RouterAgent",
             description="意图路由器，智能识别用户需求并路由到对应Agent"
         )
-        if llm is None:
-            api_key = os.getenv("OPENAI_API_KEY")
-            model_name = os.getenv("MODEL_NAME", "deepseek-v2")
-            self.llm = ChatOpenAI(
-                model=model_name,
-                api_key=api_key,
-                temperature=0.1
-            )
-        else:
-            self.llm = llm
 
         self.router_template = ChatPromptTemplate.from_template(
             """你是一个意图识别路由器，请分析用户输入并确定其意图。
@@ -101,7 +90,7 @@ class RouterAgent(BaseAgent):
             validated_intent = self._validate_intent(user_input, intent)
             return validated_intent
 
-        except Exception as e:
+        except Exception:
             return "general_chat"
 
     def _validate_intent(self, user_input: str, intent: str) -> str:
@@ -132,7 +121,7 @@ class RouterAgent(BaseAgent):
         except Exception:
             return intent
 
-    def get_intent_info(self, intent: str) -> Dict[str, Any]:
+    def get_intent_info(self, intent: str) -> dict[str, Any]:
         """获取意图信息"""
         return {
             "intent": intent,
@@ -140,7 +129,7 @@ class RouterAgent(BaseAgent):
             "available_intents": list(self.INTENTS.keys())
         }
 
-    def run(self, input_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+    def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:
         """执行路由"""
         user_input = input_data.get("user_input", "")
         if not user_input:

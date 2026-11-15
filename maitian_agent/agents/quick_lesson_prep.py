@@ -3,37 +3,26 @@
 语音驱动全流程备课，生成乡土化教案
 性能要求: ≤10秒
 """
-from typing import Dict, Any, Optional
-from langchain_core.prompts import ChatPromptTemplate
+from __future__ import annotations
+
+from typing import Any
+
+from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
-from langchain.chains import LLMChain
-import os
-from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
-
-load_dotenv()
 
 
 class QuickLessonPrepAgent(BaseAgent):
     """极速备课Agent - 生成乡土化教案"""
 
-    def __init__(self, llm: Optional[ChatOpenAI] = None):
+    def __init__(self, llm: BaseChatModel | None = None):
         super().__init__(
+            llm=llm,
             name="QuickLessonPrepAgent",
             description="乡村专属极速备课，10秒生成乡土化教案"
         )
-        if llm is None:
-            api_key = os.getenv("OPENAI_API_KEY")
-            model_name = os.getenv("MODEL_NAME", "deepseek-v2")
-            self.llm = ChatOpenAI(
-                model=model_name,
-                api_key=api_key,
-                temperature=0.7
-            )
-        else:
-            self.llm = llm
 
         self.lesson_plan_template = ChatPromptTemplate.from_template(
             """你是一位经验丰富的乡村教师，擅长结合乡村实际情境设计教案。请根据以下信息生成一份详细的教案：
@@ -85,17 +74,14 @@ class QuickLessonPrepAgent(BaseAgent):
         Returns:
             生成的教案内容
         """
-        try:
-            chain = self.build_chain()
-            result = chain.invoke({
-                "subject": subject,
-                "grade": grade,
-                "topic": topic,
-                "rural_context": rural_context or "结合乡村实际教学"
-            })
-            return result
-        except Exception as e:
-            return f"生成教案时出错：{str(e)}"
+        chain = self.build_chain()
+        result = chain.invoke({
+            "subject": subject,
+            "grade": grade,
+            "topic": topic,
+            "rural_context": rural_context or "结合乡村实际教学"
+        })
+        return result
 
     def run_with_voice(self, audio_path: str, **kwargs) -> str:
         """通过语音输入执行备课（待集成Whisper）
@@ -109,7 +95,7 @@ class QuickLessonPrepAgent(BaseAgent):
         # TODO: 集成Whisper API进行语音转文本
         raise NotImplementedError("语音备课功能待开发")
 
-    def _build_response(self, lesson_plan: str, metadata: Dict[str, Any]) -> Dict[str, Any]:
+    def _build_response(self, lesson_plan: str, metadata: dict[str, Any]) -> dict[str, Any]:
         """构建响应"""
         return {
             "success": True,

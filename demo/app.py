@@ -1,14 +1,13 @@
 import os
 
+import httpx
 import streamlit as st
 from agents.quick_lesson_prep import QuickLessonPrepAgent
-from agents.wisdom_transfer import WisdomTransferAgent
 from dotenv import load_dotenv
 
-load_dotenv()
+from maitian_agent.agent_call import invoke_agent
 
-if not os.path.exists("assets"):
-    os.makedirs("assets")
+load_dotenv()
 
 st.set_page_config(
     page_title="麦田智囊 - 乡村教育Agent系统",
@@ -59,10 +58,18 @@ def render_quick_lesson_prep():
         else:
             with st.spinner("正在生成教案，请稍候..."):
                 agent = QuickLessonPrepAgent()
-                result = agent.run(subject=subject, grade=grade, topic=topic, rural_context=rural_context)
-                st.success("教案生成完成！")
-                st.markdown("### 生成的教案")
-                st.markdown(result)
+                result = invoke_agent(
+                    agent.run,
+                    error_handler=st.error,
+                    subject=subject,
+                    grade=grade,
+                    topic=topic,
+                    rural_context=rural_context,
+                )
+                if result is not None:
+                    st.success("教案生成完成！")
+                    st.markdown("### 生成的教案")
+                    st.markdown(result)
 
     st.markdown("---")
     st.markdown("#### 📝 功能说明")
@@ -89,16 +96,24 @@ def render_wisdom_transfer():
         with col2:
             if st.button("开始识别与处理", type="primary"):
                 with st.spinner("正在处理，请稍候..."):
-                    temp_path = os.path.join("assets", uploaded_file.name)
-                    with open(temp_path, "wb") as f:
-                        f.write(uploaded_file.getbuffer())
-
-                    agent = WisdomTransferAgent()
-                    result = agent.run(temp_path)
-
-                    st.success("处理完成！")
-                    st.markdown("### 识别结果")
-                    st.markdown(result)
+                    try:
+                        response = httpx.post(
+                            os.getenv("MAITIAN_API_BASE", "http://127.0.0.1:8000").rstrip("/")
+                            + "/api/wisdom-transfer",
+                            files={"file": (uploaded_file.name, uploaded_file.getvalue(),
+                                            uploaded_file.type)},
+                            timeout=120,
+                        )
+                        payload = response.json()
+                        if response.is_error:
+                            detail = payload.get("detail")
+                            st.error(detail if isinstance(detail, str) else "上传失败，请检查图片")
+                        else:
+                            st.success("处理完成！")
+                            st.markdown("### 识别结果")
+                            st.markdown(payload["result"])
+                    except (httpx.HTTPError, ValueError, KeyError):
+                        st.error("服务暂不可用，请稍后重试")
 
     st.markdown("---")
     st.markdown("#### 📋 功能说明")
@@ -117,17 +132,17 @@ def render_classroom_companion():
 
     st.info("🚧 功能开发中，敬请期待...")
 
-    action = st.radio("选择功能", ["生成练习题", "检索经典题"], horizontal=True, disabled=True)
+    st.radio("选择功能", ["生成练习题", "检索经典题"], horizontal=True, disabled=True)
 
     col1, col2 = st.columns(2)
 
     with col1:
-        subject = st.selectbox("学科", ["语文", "数学", "英语", "科学"], disabled=True)
-        grade = st.selectbox("年级", ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"], disabled=True)
+        st.selectbox("学科", ["语文", "数学", "英语", "科学"], disabled=True)
+        st.selectbox("年级", ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"], disabled=True)
 
     with col2:
-        topic = st.text_input("课题", disabled=True)
-        knowledge_points = st.text_area("知识点", placeholder="输入要考察的知识点", disabled=True)
+        st.text_input("课题", disabled=True)
+        st.text_area("知识点", placeholder="输入要考察的知识点", disabled=True)
 
     st.markdown("---")
     st.markdown("#### 📋 功能说明")
@@ -148,14 +163,14 @@ def render_material_recommend():
     col1, col2 = st.columns(2)
 
     with col1:
-        subject = st.selectbox("学科", ["语文", "数学", "英语", "科学", "道德与法治"], disabled=True)
-        grade = st.selectbox("年级", ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"], disabled=True)
+        st.selectbox("学科", ["语文", "数学", "英语", "科学", "道德与法治"], disabled=True)
+        st.selectbox("年级", ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"], disabled=True)
 
     with col2:
-        topic = st.text_input("课题", disabled=True)
-        knowledge_points = st.text_area("知识点", placeholder="输入要讲解的知识点", disabled=True)
+        st.text_input("课题", disabled=True)
+        st.text_area("知识点", placeholder="输入要讲解的知识点", disabled=True)
 
-    rural_context = st.text_area("乡村情境", placeholder="结合乡村实际情境", disabled=True)
+    st.text_area("乡村情境", placeholder="结合乡村实际情境", disabled=True)
 
     if st.button("推荐素材", type="primary", disabled=True):
         st.info("功能开发中...")
@@ -181,7 +196,7 @@ def render_meeting_notes():
     input_method = st.radio("选择输入方式", ["直接输入会议记录", "上传音频文件（待开发）"], horizontal=True, disabled=True)
 
     if input_method == "直接输入会议记录":
-        meeting_transcript = st.text_area("粘贴会议记录", height=200, placeholder="粘贴教研会议的原始记录文本...", disabled=True)
+        st.text_area("粘贴会议记录", height=200, placeholder="粘贴教研会议的原始记录文本...", disabled=True)
 
         if st.button("生成结构化报告", type="primary", disabled=True):
             st.info("功能开发中...")

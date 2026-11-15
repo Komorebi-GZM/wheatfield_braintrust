@@ -2,6 +2,7 @@
 OCR工具
 支持EasyOCR和PaddleOCR
 """
+import threading
 from abc import ABC, abstractmethod
 
 
@@ -32,24 +33,36 @@ class EasyOCRProcessor(BaseOCR):
         self.gpu = gpu
         self.model_storage_directory = model_storage_directory
         self._reader = None
+        self._lock = threading.Lock()
+
+    def _create_reader(self):
+        try:
+            from easyocr import Reader
+        except ImportError as exc:
+            raise ImportError(
+                "EasyOCR 未安装，请安装 maitian-agent[ocr-easyocr] "
+                "（uv sync --extra ocr-easyocr）"
+            ) from exc
+        return Reader(
+            self.languages,
+            gpu=self.gpu,
+            model_storage_directory=self.model_storage_directory
+        )
 
     @property
     def reader(self):
-        """获取OCR读取器"""
+        """获取OCR读取器（双重检查锁定，避免并发重复构造）"""
         if self._reader is None:
-            try:
-                from easyocr import Reader
-            except ImportError as exc:
-                raise ImportError(
-                    "EasyOCR 未安装，请安装 maitian-agent[ocr-easyocr] "
-                    "（uv sync --extra ocr-easyocr）"
-                ) from exc
-            self._reader = Reader(
-                self.languages,
-                gpu=self.gpu,
-                model_storage_directory=self.model_storage_directory
-            )
+            with self._lock:
+                if self._reader is None:
+                    self._reader = self._create_reader()
         return self._reader
+
+    def _readtext(self, image_path: str, detail: int = 1):
+        """串行化 readtext，避免共享 Reader 并发调用。"""
+        reader = self.reader
+        with self._lock:
+            return reader.readtext(image_path, detail=detail)
 
     def recognize(self, image_path: str, detail: int = 1) -> str:
         """识别文字
@@ -61,7 +74,7 @@ class EasyOCRProcessor(BaseOCR):
         Returns:
             识别的文字
         """
-        result = self.reader.readtext(image_path, detail=detail)
+        result = self._readtext(image_path, detail=detail)
 
         if detail == 0:
             return "".join([item[1] for item in result])
@@ -80,7 +93,7 @@ class EasyOCRProcessor(BaseOCR):
         Returns:
             [(边界框, 文字, 置信度), ...]
         """
-        result = self.reader.readtext(image_path, detail=1)
+        result = self._readtext(image_path, detail=1)
         return [(item[0], item[1], item[2]) for item in result]
 
     def recognize_batch(self, image_paths: list[str]) -> list[str]:

@@ -3,36 +3,26 @@
 课堂极速出题、经典题检索
 性能要求: ≤3秒
 """
-from typing import Dict, Any, Optional, List
-from langchain_core.prompts import ChatPromptTemplate
+from __future__ import annotations
+
+from typing import Any
+
+from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
-from langchain_openai import ChatOpenAI
-import os
-from dotenv import load_dotenv
+from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
-
-load_dotenv()
 
 
 class ClassroomCompanionAgent(BaseAgent):
     """课堂实时伴教Agent"""
 
-    def __init__(self, llm: Optional[ChatOpenAI] = None):
+    def __init__(self, llm: BaseChatModel | None = None):
         super().__init__(
+            llm=llm,
             name="ClassroomCompanionAgent",
             description="课堂实时伴教，3秒极速出题与经典题检索"
         )
-        if llm is None:
-            api_key = os.getenv("OPENAI_API_KEY")
-            model_name = os.getenv("MODEL_NAME", "deepseek-v2")
-            self.llm = ChatOpenAI(
-                model=model_name,
-                api_key=api_key,
-                temperature=0.5
-            )
-        else:
-            self.llm = llm
 
         self.quiz_template = ChatPromptTemplate.from_template(
             """你是一位专业的乡村教师，请根据以下信息快速生成练习题：
@@ -100,19 +90,16 @@ class ClassroomCompanionAgent(BaseAgent):
         Returns:
             生成的练习题
         """
-        try:
-            chain = self.build_chain("quiz")
-            result = chain.invoke({
-                "subject": subject,
-                "grade": grade,
-                "topic": topic,
-                "knowledge_points": knowledge_points or "本课主要内容",
-                "question_count": question_count,
-                "question_types": question_types
-            })
-            return result
-        except Exception as e:
-            return f"生成练习题时出错：{str(e)}"
+        chain = self.build_chain("quiz")
+        result = chain.invoke({
+            "subject": subject,
+            "grade": grade,
+            "topic": topic,
+            "knowledge_points": knowledge_points or "本课主要内容",
+            "question_count": question_count,
+            "question_types": question_types
+        })
+        return result
 
     def retrieve_classic_questions(
         self,
@@ -133,19 +120,16 @@ class ClassroomCompanionAgent(BaseAgent):
         Returns:
             检索到的经典题目
         """
-        try:
-            chain = self.build_chain("retrieval")
-            result = chain.invoke({
-                "subject": subject,
-                "grade": grade,
-                "topic": topic,
-                "knowledge_points": knowledge_points or "本课主要内容"
-            })
-            return result
-        except Exception as e:
-            return f"检索经典题目时出错：{str(e)}"
+        chain = self.build_chain("retrieval")
+        result = chain.invoke({
+            "subject": subject,
+            "grade": grade,
+            "topic": topic,
+            "knowledge_points": knowledge_points or "本课主要内容"
+        })
+        return result
 
-    def run(self, input_data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
+    def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:
         """执行伴教功能"""
         action = input_data.get("action", "quiz")
 
