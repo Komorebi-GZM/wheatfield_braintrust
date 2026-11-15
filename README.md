@@ -87,7 +87,7 @@ maitian_agent/
 
 ## 环境要求
 
-- Python 3.10+
+- Python 3.12+
 - OpenAI API Key 或兼容API
 
 ## 文档

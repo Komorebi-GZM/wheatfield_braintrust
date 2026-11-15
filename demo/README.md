@@ -31,7 +31,10 @@
 ### 安装依赖
 
 ```bash
-pip install -r requirements.txt
+# 在仓库根目录运行
+uv sync
+# 手写识别功能需要：uv sync --extra ocr-easyocr
+# 本地 BGE 嵌入模型需要：uv sync --extra rag
 ```
 
 ### 配置环境变量
@@ -44,7 +47,7 @@ cp .env.example .env
 ### 启动演示
 
 ```bash
-streamlit run demo/app.py
+uv run streamlit run demo/app.py
 ```
 
 访问 http://localhost:8501 查看演示。

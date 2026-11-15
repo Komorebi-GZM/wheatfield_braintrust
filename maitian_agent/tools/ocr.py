@@ -39,7 +39,13 @@ class EasyOCRProcessor(BaseOCR):
     def reader(self):
         """获取OCR读取器"""
         if self._reader is None:
-            from easyocr import Reader
+            try:
+                from easyocr import Reader
+            except ImportError as exc:
+                raise ImportError(
+                    "EasyOCR 未安装，请安装 maitian-agent[ocr-easyocr] "
+                    "（uv sync --extra ocr-easyocr）"
+                ) from exc
             self._reader = Reader(
                 self.languages,
                 gpu=self.gpu,
@@ -111,7 +117,10 @@ class PaddleOCRProcessor(BaseOCR):
     def ocr(self):
         """获取OCR实例"""
         if self._ocr is None:
-            from paddleocr import PaddleOCR
+            try:
+                from paddleocr import PaddleOCR
+            except ImportError as exc:
+                raise ImportError("PaddleOCR 未安装，请安装 paddleocr") from exc
             self._ocr = PaddleOCR(
                 use_angle_cls=self.use_angle_cls,
                 lang=self.lang,
