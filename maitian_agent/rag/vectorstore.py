@@ -2,30 +2,29 @@
 向量存储管理
 支持Chroma和Milvus
 """
-from abc import ABC, abstractmethod
-from typing import Any, List, Optional, Dict
-from langchain_core.embeddings import Embeddings
-from langchain_core.vectorstores import VectorStore
-from langchain_chroma import Chroma
-from langchain_community.vectorstores import Milvus
 import os
+from abc import ABC, abstractmethod
+from typing import Any
+
+from langchain_chroma import Chroma
+from langchain_core.embeddings import Embeddings
 
 
 class BaseVectorStore(ABC):
     """向量存储基类"""
 
     @abstractmethod
-    def add_texts(self, texts: List[str], metadatas: Optional[List[Dict]] = None) -> List[str]:
+    def add_texts(self, texts: list[str], metadatas: list[dict] | None = None) -> list[str]:
         """添加文本"""
         pass
 
     @abstractmethod
-    def similarity_search(self, query: str, k: int = 4) -> List[Any]:
+    def similarity_search(self, query: str, k: int = 4) -> list[Any]:
         """相似度搜索"""
         pass
 
     @abstractmethod
-    def delete(self, ids: List[str]) -> None:
+    def delete(self, ids: list[str]) -> None:
         """删除向量"""
         pass
 
@@ -37,7 +36,7 @@ class ChromaVectorStore(BaseVectorStore):
         self,
         collection_name: str = "default",
         persist_directory: str = "./data/chroma",
-        embedding_function: Optional[Embeddings] = None
+        embedding_function: Embeddings | None = None
     ):
         self.collection_name = collection_name
         self.persist_directory = persist_directory
@@ -56,11 +55,11 @@ class ChromaVectorStore(BaseVectorStore):
             )
         return self._vectorstore
 
-    def add_texts(self, texts: List[str], metadatas: Optional[List[Dict]] = None) -> List[str]:
+    def add_texts(self, texts: list[str], metadatas: list[dict] | None = None) -> list[str]:
         """添加文本"""
         return self.vectorstore.add_texts(texts, metadatas=metadatas)
 
-    def similarity_search(self, query: str, k: int = 4, filter: Optional[Dict] = None) -> List[Any]:
+    def similarity_search(self, query: str, k: int = 4, filter: dict | None = None) -> list[Any]:
         """相似度搜索"""
         return self.vectorstore.similarity_search(query, k=k, filter=filter)
 
@@ -68,21 +67,21 @@ class ChromaVectorStore(BaseVectorStore):
         self,
         query: str,
         k: int = 4,
-        filter: Optional[Dict] = None
-    ) -> List[tuple]:
+        filter: dict | None = None
+    ) -> list[tuple]:
         """带分数的相似度搜索"""
         return self.vectorstore.similarity_search_with_score(query, k=k, filter=filter)
 
-    def delete(self, ids: List[str]) -> None:
+    def delete(self, ids: list[str]) -> None:
         """删除向量"""
         self.vectorstore.delete(ids)
 
     @classmethod
     def from_texts(
         cls,
-        texts: List[str],
-        embedding: Optional[Embeddings] = None,
-        metadatas: Optional[List[Dict]] = None,
+        texts: list[str],
+        embedding: Embeddings | None = None,
+        metadatas: list[dict] | None = None,
         collection_name: str = "default",
         persist_directory: str = "./data/chroma",
         **kwargs
@@ -104,9 +103,9 @@ class MilvusVectorStore(BaseVectorStore):
 
     def __init__(
         self,
-        connection_args: Dict[str, Any] = None,
+        connection_args: dict[str, Any] = None,
         collection_name: str = "default",
-        embedding_function: Optional[Embeddings] = None
+        embedding_function: Embeddings | None = None
     ):
         self.connection_args = connection_args or {
             "host": "localhost",
@@ -116,19 +115,19 @@ class MilvusVectorStore(BaseVectorStore):
         self.embedding_function = embedding_function
         self._vectorstore = None
 
-    def add_texts(self, texts: List[str], metadatas: Optional[List[Dict]] = None) -> List[str]:
+    def add_texts(self, texts: list[str], metadatas: list[dict] | None = None) -> list[str]:
         """添加文本"""
         if self._vectorstore is None:
             raise NotImplementedError("Milvus连接未配置")
         return self._vectorstore.add_texts(texts, metadatas=metadatas)
 
-    def similarity_search(self, query: str, k: int = 4) -> List[Any]:
+    def similarity_search(self, query: str, k: int = 4) -> list[Any]:
         """相似度搜索"""
         if self._vectorstore is None:
             raise NotImplementedError("Milvus连接未配置")
         return self._vectorstore.similarity_search(query, k=k)
 
-    def delete(self, ids: List[str]) -> None:
+    def delete(self, ids: list[str]) -> None:
         """删除向量"""
         if self._vectorstore is None:
             raise NotImplementedError("Milvus连接未配置")
@@ -138,7 +137,7 @@ class MilvusVectorStore(BaseVectorStore):
 def get_vector_store(
     store_type: str = "chroma",
     collection_name: str = "default",
-    embedding_function: Optional[Embeddings] = None,
+    embedding_function: Embeddings | None = None,
     **kwargs
 ) -> BaseVectorStore:
     """获取向量存储实例

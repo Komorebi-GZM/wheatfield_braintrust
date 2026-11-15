@@ -2,21 +2,22 @@
 教师画像管理
 长期记忆实现
 """
-from typing import Dict, Any, List, Optional
-from langchain_core.embeddings import Embeddings
-from pydantic import BaseModel, Field
-from datetime import datetime
 import json
 import os
+from datetime import datetime
+from typing import Any
+
+from langchain_core.embeddings import Embeddings
+from pydantic import BaseModel, Field
 
 
 class TeachingStyle(BaseModel):
     """教学风格标签"""
     style_name: str = Field(description="风格名称")
     description: str = Field(description="风格描述")
-    examples: List[str] = Field(default_factory=list, description="示例")
+    examples: list[str] = Field(default_factory=list, description="示例")
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "style_name": self.style_name,
             "description": self.description,
@@ -33,15 +34,15 @@ class TeacherProfile(BaseModel):
     teacher_id: str = Field(description="教师ID")
     name: str = Field(description="教师姓名")
     school: str = Field(default="", description="所在学校")
-    subjects: List[str] = Field(default_factory=list, description="教授科目")
-    grades: List[str] = Field(default_factory=list, description="教授年级")
+    subjects: list[str] = Field(default_factory=list, description="教授科目")
+    grades: list[str] = Field(default_factory=list, description="教授年级")
     teaching_years: int = Field(default=0, description="教龄")
 
-    teaching_styles: List[TeachingStyle] = Field(default_factory=list, description="教学风格")
+    teaching_styles: list[TeachingStyle] = Field(default_factory=list, description="教学风格")
     rural_experience: str = Field(default="", description="乡村教学经验")
-    specializations: List[str] = Field(default_factory=list, description="专业特长")
+    specializations: list[str] = Field(default_factory=list, description="专业特长")
 
-    preferences: Dict[str, Any] = Field(default_factory=dict, description="个性化偏好")
+    preferences: dict[str, Any] = Field(default_factory=dict, description="个性化偏好")
     lesson_plans_count: int = Field(default=0, description="教案数量")
     created_at: str = Field(default_factory=lambda: datetime.now().isoformat())
     updated_at: str = Field(default_factory=lambda: datetime.now().isoformat())
@@ -49,7 +50,7 @@ class TeacherProfile(BaseModel):
     class Config:
         arbitrary_types_allowed = True
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """转换为字典"""
         return {
             "teacher_id": self.teacher_id,
@@ -106,7 +107,7 @@ class TeacherProfileManager:
         with open(profile_file, 'w', encoding='utf-8') as f:
             json.dump(profile.to_dict(), f, ensure_ascii=False, indent=2)
 
-    def load_profile(self, teacher_id: str) -> Optional[TeacherProfile]:
+    def load_profile(self, teacher_id: str) -> TeacherProfile | None:
         """加载教师画像
 
         Args:
@@ -124,7 +125,7 @@ class TeacherProfileManager:
             return None
 
         try:
-            with open(profile_file, 'r', encoding='utf-8') as f:
+            with open(profile_file, encoding='utf-8') as f:
                 data = json.load(f)
 
             styles = [
@@ -142,8 +143,8 @@ class TeacherProfileManager:
         teacher_id: str,
         name: str,
         school: str = "",
-        subjects: List[str] = None,
-        grades: List[str] = None,
+        subjects: list[str] = None,
+        grades: list[str] = None,
         **kwargs
     ) -> TeacherProfile:
         """创建新教师画像
@@ -170,7 +171,7 @@ class TeacherProfileManager:
         self.save_profile(profile)
         return profile
 
-    def list_profiles(self) -> List[Dict[str, Any]]:
+    def list_profiles(self) -> list[dict[str, Any]]:
         """列出所有教师画像摘要
 
         Returns:
@@ -181,7 +182,7 @@ class TeacherProfileManager:
             if filename.startswith("profile_") and filename.endswith(".json"):
                 profile_path = os.path.join(self.persist_directory, filename)
                 try:
-                    with open(profile_path, 'r', encoding='utf-8') as f:
+                    with open(profile_path, encoding='utf-8') as f:
                         data = json.load(f)
                         profiles.append({
                             "teacher_id": data.get("teacher_id"),
@@ -231,6 +232,6 @@ class TeacherStyleVectorStore:
         """添加教师风格向量"""
         raise NotImplementedError("教师风格向量存储待实现")
 
-    def find_similar_teachers(self, style_description: str, k: int = 5) -> List[str]:
+    def find_similar_teachers(self, style_description: str, k: int = 5) -> list[str]:
         """查找风格相似的教师"""
         raise NotImplementedError("教师风格向量存储待实现")

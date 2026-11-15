@@ -2,9 +2,8 @@
 语音识别工具
 基于Whisper API
 """
-from abc import ABC, abstractmethod
-from typing import Optional
 import os
+from abc import ABC, abstractmethod
 
 
 class BaseASR(ABC):
@@ -25,7 +24,7 @@ class WhisperASR(BaseASR):
     def __init__(
         self,
         model: str = "base",
-        api_key: Optional[str] = None,
+        api_key: str | None = None,
         api_base: str = "https://api.openai.com/v1",
         language: str = "zh"
     ):

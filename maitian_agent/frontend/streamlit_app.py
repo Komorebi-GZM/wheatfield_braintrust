@@ -2,16 +2,17 @@
 Streamlit Web应用
 麦田智囊乡村教育Agent系统主界面
 """
-import streamlit as st
 import os
+
+import streamlit as st
 from dotenv import load_dotenv
 
-from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
-from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
 from maitian_agent.agents.material_agent import MaterialAgent
 from maitian_agent.agents.meeting_notes import MeetingNotesAgent
+from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
 from maitian_agent.agents.router import RouterAgent
+from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 
 load_dotenv()
 

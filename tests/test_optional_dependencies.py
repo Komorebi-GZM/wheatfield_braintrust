@@ -31,7 +31,7 @@ def test_missing_rag_dependency(monkeypatch):
     monkeypatch.setitem(sys.modules, "sentence_transformers", None)
 
     with pytest.raises(ImportError, match=r"maitian-agent\[rag\]"):
-        BGEEmbeddings().embeddings
+        _ = BGEEmbeddings().embeddings
 
 
 def test_wisdom_transfer_reuses_lazy_reader():
