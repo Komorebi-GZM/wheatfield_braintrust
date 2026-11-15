@@ -38,7 +38,7 @@ uv run maitian-agent --help
 
 ### 配置环境变量
 
-复制 `.env.example` 为 `.env`，填入API密钥：
+复制 `.env.example` 为 `.env`，按需填写模型配置（密钥只放 `.env`，不要提交）：
 
 ```bash
 cp .env.example .env
@@ -47,12 +47,46 @@ cp .env.example .env
 ### 启动应用
 
 ```bash
+# 在两个终端分别启动 Web 界面与 API
 # 启动Web界面
 uv run streamlit run maitian_agent/frontend/streamlit_app.py
 
-# 或启动API服务
+# 启动API服务
 uv run uvicorn maitian_agent.api.routes:app --host 0.0.0.0 --port 8000
 ```
+
+### Docker 一键启动
+
+在仓库根目录运行（Docker Compose 2.24+，没有 `.env` 也能启动）：
+
+```bash
+docker compose up --build -d
+# 停止并清理容器
+docker compose down
+```
+
+访问 API http://localhost:8000/health 和 Streamlit http://localhost:8501 。
+无 Key 时健康检查仍返回 200；生成能力需要补齐 `LLM_*` 配置。
+两个服务共用镜像，前端通过 `MAITIAN_API_BASE=http://api:8000` 访问 API。
+两者挂载 `./data:/app/data`，上传目录固定为 `/app/data/uploads`。
+一次性 `data-init` 服务创建子目录并将宿主数据目录所有权设为 UID/GID 1000，应用以非 root 运行。
+
+环境变量见 `.env.example`：支持 LLM、嵌入、ASR 预留配置、OCR、CORS 和上传大小。
+ASR 当前仍读取 `OPENAI_API_KEY`，`ASR_*` 仅预留，尚未接入。
+默认镜像不含 torch、EasyOCR 或本地嵌入依赖，`OCR_BACKEND=none`。
+需要时选择对应 extras（首次使用还可能下载模型）：
+
+```bash
+# 本地安装，可只选一个 extra
+uv sync --extra rag --extra ocr-easyocr
+# 单独构建镜像
+docker build --build-arg UV_EXTRAS="--extra rag --extra ocr-easyocr" -t wheatfield:p1-5 .
+# Compose 构建并启动可选版本
+UV_EXTRAS="--extra rag --extra ocr-easyocr" docker compose up --build -d
+```
+
+根目录 `Dockerfile` 使用锁定依赖，CI 的 `docker build -t maitian-agent:ci .` 会自动构建它。
+需要 Docker 组权限时可用 `sg docker -c "docker compose up --build -d"`。
 
 ## 项目结构
 
