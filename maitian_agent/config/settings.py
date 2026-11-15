@@ -70,7 +70,11 @@ class Settings(BaseSettings):
     ocr_type: str = Field(default="easyocr", description="OCR类型（兼容旧字段）")
     ocr_languages: list = Field(default=["ch_sim", "en"], description="OCR语言")
 
-    # Whisper配置
+    # ASR 语音识别配置（厂商无关，OpenAI 兼容接口）—— 三项均无厂商默认值
+    asr_base_url: str | None = Field(default=None, description="ASR 基础 URL（OpenAI 兼容）")
+    asr_model: str | None = Field(default=None, description="ASR 模型名称")
+    asr_api_key: SecretStr | None = Field(default=None, description="ASR API 密钥")
+    # 兼容旧字段：本地 Whisper 模型大小（不用于远程 ASR API）
     whisper_model: str = Field(default="base", description="Whisper模型大小")
 
     # 路径配置
@@ -110,6 +114,17 @@ class Settings(BaseSettings):
         """openai_compatible 时的嵌入密钥明文，未配置回退 LLM_API_KEY。"""
         key = self.embedding_api_key or self.llm_api_key
         return key.get_secret_value() if key is not None else None
+
+    @property
+    def asr_configured(self) -> bool:
+        """ASR 三项（BASE_URL / MODEL / API_KEY）都非空才为 True。"""
+        if not self.asr_base_url or not self.asr_model or self.asr_api_key is None:
+            return False
+        return bool(self.asr_api_key.get_secret_value())
+
+    def get_asr_api_key(self) -> str | None:
+        """取出 ASR 明文密钥，供构造 OpenAI 客户端使用；不要写入日志或 API 响应。"""
+        return self.asr_api_key.get_secret_value() if self.asr_api_key is not None else None
 
 
 @lru_cache

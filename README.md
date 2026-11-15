@@ -44,6 +44,16 @@ uv run maitian-agent --help
 cp .env.example .env
 ```
 
+### 知识库向量维度迁移
+
+默认嵌入模型已从 `BAAI/bge-large-zh`（1024 维）改为 `BAAI/bge-small-zh-v1.5`（512 维）。
+
+- 已有 `./data/chroma` 索引目录是旧模型（1024 维）生成的，**不能**与新模型（512 维）混用；
+- 打开知识库时会校验已存向量的维度，若与当前 embedding 维度不一致会直接报错（提示已存维度与当前维度）；
+- 处理办法（二选一）：
+  1. 把 `EMBEDDING_MODEL` 设回原来的模型（例如 `BAAI/bge-large-zh`），继续使用旧索引；
+  2. 备份或删除原索引目录（如 `./data/chroma`）后，用当前模型重建索引。
+
 ### 启动应用
 
 ```bash
