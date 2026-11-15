@@ -16,9 +16,11 @@ from maitian_agent.agents.meeting_notes import MeetingNotesAgent
 from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
 from maitian_agent.agents.router import RouterAgent
 from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
+from maitian_agent.api.upload_limit import UploadLimitMiddleware
 from maitian_agent.config.settings import get_settings
 from maitian_agent.llm import LLMNotConfiguredError
-from maitian_agent.tools.upload import save_image_upload
+from maitian_agent.tools.file import FileProcessor
+from maitian_agent.tools.upload import cleanup_stale_uploads, save_image_upload
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -123,6 +125,7 @@ def lesson_prep(request: LessonPrepRequest):
 @router.post("/api/wisdom-transfer")
 async def wisdom_transfer(request: Request, file: UploadFile):
     """智慧传承"""
+    image_path = None
     _require_llm()
     try:
         image_path = await save_image_upload(file, request.app.state.settings)
@@ -139,6 +142,13 @@ async def wisdom_transfer(request: Request, file: UploadFile):
     except Exception:
         logger.exception("API 请求处理失败")
         raise HTTPException(status_code=500, detail="服务内部错误，请稍后重试") from None
+
+    finally:
+        if image_path is not None:
+            try:
+                FileProcessor(request.app.state.settings.upload_dir).delete_file(image_path)
+            except Exception:
+                logger.exception("删除本次上传文件失败")
 
 
 @router.post("/api/quiz")
@@ -222,6 +232,7 @@ def route_intent(request: RouteRequest):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    cleanup_stale_uploads(app.state.settings.upload_dir)
     await startup_event()
     yield
 
@@ -231,6 +242,9 @@ def create_app() -> FastAPI:
     settings = get_settings()
     app = FastAPI(title="麦田智囊API", version="1.0.0", lifespan=lifespan)
     app.state.settings = settings
+    # Last added middleware is outermost. Keep CORS outside the size limit so
+    # early 413 responses still receive Access-Control-Allow-Origin.
+    app.add_middleware(UploadLimitMiddleware, settings=settings)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[origin.strip() for origin in settings.allowed_origins.split(",")
