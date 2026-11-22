@@ -103,21 +103,25 @@ def test_schema_export_is_a_deterministic_root_command():
 
 
 def test_quick_lesson_agent_returns_typed_result():
+    from maitian_agent.agents.results import LessonPrepInput
+
     agent = QuickLessonPrepAgent(llm=FakeListChatModel(responses=["教案正文"]))
-    result = agent.run(subject="语文", grade="三年级", topic="春天")
+    result = agent.run(LessonPrepInput(subject="语文", grade="三年级", topic="春天"))
     assert isinstance(result, AgentResult)
     assert result.status == "success"
     assert result.data.text == "教案正文"
 
 
 def test_router_model_failure_propagates():
+    from maitian_agent.agents.results import RouteInput
+
     class FailingModel(FakeListChatModel):
         def _call(self, *args, **kwargs):
             raise RuntimeError("SECRET_MODEL_FAILURE")
 
     agent = RouterAgent(llm=FailingModel(responses=[]))
     try:
-        agent.run({"user_input": "帮我备课"})
+        agent.run(RouteInput(user_input="帮我备课"))
     except RuntimeError as exc:
         assert "SECRET_MODEL_FAILURE" in str(exc)
     else:
@@ -125,10 +129,12 @@ def test_router_model_failure_propagates():
 
 
 def test_ocr_empty_result_is_needs_review_without_model_call():
+    from maitian_agent.agents.results import WisdomInput
+
     reader = Mock()
     reader.readtext.return_value = []
     agent = WisdomTransferAgent(ocr_reader=reader)
-    result = agent.run("image.png")
+    result = agent.run(WisdomInput(image_path="image.png"))
     assert result.status == "needs_review"
     assert result.data.text == ""
     assert result.data.review_reasons == ["OCR_NO_TEXT"]
@@ -193,21 +199,25 @@ def test_v1_llm_not_configured_uses_envelope(monkeypatch, tmp_path):
 
 
 def test_ocr_with_text_is_needs_review():
+    from maitian_agent.agents.results import WisdomInput
+
     reader = Mock()
     reader.readtext.return_value = [((0, 0), "课堂导入", 0.9)]
     agent = WisdomTransferAgent(ocr_reader=reader, llm=FakeListChatModel(responses=["结构化教案"]))
-    result = agent.run("image.png")
+    result = agent.run(WisdomInput(image_path="image.png"))
     assert result.status == "needs_review"
     assert "课堂导入" in result.data.text
     assert result.data.review_reasons == ["OCR_REQUIRES_REVIEW"]
 
 
 def test_ocr_execution_error_is_not_needs_review():
+    from maitian_agent.agents.results import WisdomInput
+
     reader = Mock()
     reader.readtext.side_effect = RuntimeError("OCR engine crashed")
     agent = WisdomTransferAgent(ocr_reader=reader)
     try:
-        agent.run("image.png")
+        agent.run(WisdomInput(image_path="image.png"))
     except RuntimeError as exc:
         assert "OCR" in str(exc)
     else:
@@ -230,7 +240,10 @@ def test_cli_needs_review_exits_zero(monkeypatch, tmp_path):
     from maitian_agent.cli import cli
 
     class FakeAgent:
-        def run(self, image_path):
+        def run(self, input_model):
+            from maitian_agent.agents.results import WisdomInput
+
+            assert isinstance(input_model, WisdomInput)
             return AgentResult(
                 status="needs_review",
                 data=WisdomData(text="识别草稿", review_reasons=["OCR_REQUIRES_REVIEW"]),

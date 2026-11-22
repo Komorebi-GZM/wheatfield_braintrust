@@ -3,7 +3,7 @@
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
-from maitian_agent import __version__
+from maitian_agent.openapi import application_version
 
 try:
     from starlette.routing import get_route_path
@@ -55,7 +55,7 @@ class UploadLimitMiddleware:
                         "code": "UPLOAD_TOO_LARGE",
                         "message": "上传内容过大，请上传大小限制以内的图片",
                     },
-                    "meta": {"model": None, "duration_ms": 0, "version": __version__},
+                    "meta": {"model": None, "duration_ms": 0, "version": application_version()},
                 },
                 status_code=413,
             )

@@ -9,6 +9,7 @@ import click
 from dotenv import load_dotenv
 
 from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
+from maitian_agent.agents.results import LessonPrepInput, RouteInput, WisdomInput
 from maitian_agent.agents.router import RouterAgent
 from maitian_agent.agents.wisdom_transfer import WisdomTransferAgent
 
@@ -32,7 +33,9 @@ def lesson_prep(subject, grade, topic, context):
     click.echo(f"正在为 {subject} {grade} 生成教案...")
     agent = QuickLessonPrepAgent()
     try:
-        result = agent.run(subject, grade, topic, context)
+        result = agent.run(
+            LessonPrepInput(subject=subject, grade=grade, topic=topic, rural_context=context)
+        )
     except Exception:
         click.echo("服务处理失败，请检查大模型配置后重试", err=True)
         raise click.exceptions.Exit(1) from None
@@ -53,7 +56,7 @@ def wisdom_transfer(image):
     click.echo(f"正在处理 {image} ...")
     agent = WisdomTransferAgent()
     try:
-        result = agent.run(image)
+        result = agent.run(WisdomInput(image_path=image))
     except Exception:
         click.echo("服务处理失败，请检查大模型配置后重试", err=True)
         raise click.exceptions.Exit(1) from None
@@ -71,7 +74,7 @@ def route(input):
     """意图路由：识别用户意图"""
     agent = RouterAgent()
     try:
-        result = agent.run({"user_input": input})
+        result = agent.run(RouteInput(user_input=input))
     except Exception:
         click.echo("服务处理失败，请检查大模型配置后重试", err=True)
         raise click.exceptions.Exit(1) from None

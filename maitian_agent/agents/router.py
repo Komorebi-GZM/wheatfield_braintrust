@@ -119,12 +119,9 @@ class RouterAgent(BaseAgent):
             "available_intents": list(self.INTENTS.keys()),
         }
 
-    def run(self, input_data: RouteInput | dict[str, Any], **kwargs) -> AgentResult[RouteData]:
+    def run(self, input_model: RouteInput) -> AgentResult[RouteData]:
         """执行路由"""
-        values = input_data.model_dump() if isinstance(input_data, RouteInput) else dict(input_data)
-        values.update(kwargs)
-        request = RouteInput.model_validate(values)
-        user_input = request.user_input
+        user_input = input_model.user_input
         if not user_input.strip():
             return AgentResult(
                 status="failed",

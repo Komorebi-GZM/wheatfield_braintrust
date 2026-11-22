@@ -103,12 +103,7 @@ class MaterialAgent(BaseAgent):
         # TODO: 集成素材库检索
         raise NotImplementedError("素材库检索功能待开发")
 
-    def run(self, input_data: MaterialInput | dict[str, Any], **kwargs) -> AgentResult[TextData]:
+    def run(self, input_model: MaterialInput) -> AgentResult[TextData]:
         """执行素材推荐"""
-        values = (
-            input_data.model_dump() if isinstance(input_data, MaterialInput) else dict(input_data)
-        )
-        values.update(kwargs)
-        request = MaterialInput.model_validate(values)
-        result = self.recommend_materials(**request.model_dump())
+        result = self.recommend_materials(**input_model.model_dump())
         return AgentResult(status="success", data=TextData(text=result))

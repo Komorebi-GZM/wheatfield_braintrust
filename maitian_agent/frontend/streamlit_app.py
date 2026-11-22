@@ -14,6 +14,12 @@ from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
 from maitian_agent.agents.material_agent import MaterialAgent
 from maitian_agent.agents.meeting_notes import MeetingNotesAgent
 from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
+from maitian_agent.agents.results import (
+    LessonPrepInput,
+    MaterialInput,
+    MeetingNotesInput,
+    QuizInput,
+)
 from maitian_agent.agents.router import RouterAgent
 from maitian_agent.config.settings import get_settings
 
@@ -96,11 +102,10 @@ def render_quick_lesson_prep():
                 agent = st.session_state.quick_lesson_prep_agent
                 result = invoke_agent(
                     agent.run,
+                    LessonPrepInput(
+                        subject=subject, grade=grade, topic=topic, rural_context=rural_context
+                    ),
                     error_handler=st.error,
-                    subject=subject,
-                    grade=grade,
-                    topic=topic,
-                    rural_context=rural_context,
                 )
                 if result is not None:
                     st.success("教案生成完成！")
@@ -208,15 +213,14 @@ def render_classroom_companion():
                     result = invoke_agent(
                         _agent_text,
                         agent,
-                        {
-                            "action": "quiz",
-                            "subject": subject,
-                            "grade": grade,
-                            "topic": topic,
-                            "knowledge_points": knowledge_points,
-                            "question_count": question_count,
-                            "question_types": "、".join(question_types),
-                        },
+                        QuizInput(
+                            subject=subject,
+                            grade=grade,
+                            topic=topic,
+                            knowledge_points=knowledge_points,
+                            question_count=question_count,
+                            question_types="、".join(question_types),
+                        ),
                         error_handler=st.error,
                     )
                     if result is not None:
@@ -234,13 +238,13 @@ def render_classroom_companion():
                     result = invoke_agent(
                         _agent_text,
                         agent,
-                        {
-                            "action": "retrieve",
-                            "subject": subject,
-                            "grade": grade,
-                            "topic": topic,
-                            "knowledge_points": knowledge_points,
-                        },
+                        QuizInput(
+                            action="retrieve",
+                            subject=subject,
+                            grade=grade,
+                            topic=topic,
+                            knowledge_points=knowledge_points,
+                        ),
                         error_handler=st.error,
                     )
                     if result is not None:
@@ -275,13 +279,13 @@ def render_material_recommend():
                 result = invoke_agent(
                     _agent_text,
                     agent,
-                    {
-                        "subject": subject,
-                        "grade": grade,
-                        "topic": topic,
-                        "knowledge_points": knowledge_points,
-                        "rural_context": rural_context,
-                    },
+                    MaterialInput(
+                        subject=subject,
+                        grade=grade,
+                        topic=topic,
+                        knowledge_points=knowledge_points,
+                        rural_context=rural_context,
+                    ),
                     error_handler=st.error,
                 )
                 if result is not None:
@@ -323,7 +327,7 @@ def render_meeting_notes():
                     result = invoke_agent(
                         _agent_text,
                         agent,
-                        {"transcript": meeting_transcript},
+                        MeetingNotesInput(transcript=meeting_transcript),
                         error_handler=st.error,
                     )
                     if result is not None:

@@ -6,8 +6,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -91,16 +89,7 @@ class MeetingNotesAgent(BaseAgent):
         result = chain.invoke({"meeting_transcript": meeting_transcript})
         return result
 
-    def run(
-        self, input_data: MeetingNotesInput | dict[str, Any], **kwargs
-    ) -> AgentResult[TextData]:
+    def run(self, input_model: MeetingNotesInput) -> AgentResult[TextData]:
         """执行教研纪要生成"""
-        values = (
-            input_data.model_dump()
-            if isinstance(input_data, MeetingNotesInput)
-            else dict(input_data)
-        )
-        values.update(kwargs)
-        request = MeetingNotesInput.model_validate(values)
-        result = self.process_meeting_notes(request.transcript)
+        result = self.process_meeting_notes(input_model.transcript)
         return AgentResult(status="success", data=TextData(text=result))

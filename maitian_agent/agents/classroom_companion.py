@@ -6,8 +6,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
@@ -130,18 +128,15 @@ class ClassroomCompanionAgent(BaseAgent):
         )
         return result
 
-    def run(self, input_data: QuizInput | dict[str, Any], **kwargs) -> AgentResult[TextData]:
+    def run(self, input_model: QuizInput) -> AgentResult[TextData]:
         """执行伴教功能"""
-        values = input_data.model_dump() if isinstance(input_data, QuizInput) else dict(input_data)
-        values.update(kwargs)
-        request = QuizInput.model_validate(values)
-        action = request.action
+        action = input_model.action
 
         if action == "quiz":
-            result = self.generate_quiz(**request.model_dump(exclude={"action"}))
+            result = self.generate_quiz(**input_model.model_dump(exclude={"action"}))
         elif action == "retrieve":
             result = self.retrieve_classic_questions(
-                **request.model_dump(exclude={"action", "question_count", "question_types"})
+                **input_model.model_dump(exclude={"action", "question_count", "question_types"})
             )
 
         return AgentResult(status="success", data=TextData(text=result))

@@ -343,4 +343,6 @@ def test_quick_lesson_prep_raises_instead_of_returning_error():
 
     agent = QuickLessonPrepAgent(llm=Boom(responses=["unused"]))
     with pytest.raises(RuntimeError, match="SECRET_TRACE_xyz"):
-        agent.run(subject="语文", grade="三年级", topic="春天", rural_context="")
+        from maitian_agent.agents.results import LessonPrepInput
+
+        agent.run(LessonPrepInput(subject="语文", grade="三年级", topic="春天", rural_context=""))

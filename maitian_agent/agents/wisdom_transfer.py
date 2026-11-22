@@ -88,7 +88,7 @@ class WisdomTransferAgent(BaseAgent):
         except Exception as e:
             raise RuntimeError(f"OCR识别失败: {e!s}") from e
 
-    def run(self, image_path: str | WisdomInput, **kwargs) -> AgentResult[WisdomData]:
+    def run(self, input_model: WisdomInput) -> AgentResult[WisdomData]:
         """执行手写教案识别与结构化
 
         Args:
@@ -97,7 +97,7 @@ class WisdomTransferAgent(BaseAgent):
         Returns:
             结构化处理后的教案内容
         """
-        image_path = image_path.image_path if isinstance(image_path, WisdomInput) else image_path
+        image_path = input_model.image_path
         ocr_text = self.recognize_handwriting(image_path)
         if not ocr_text:
             return AgentResult(
@@ -128,7 +128,7 @@ class WisdomTransferAgent(BaseAgent):
         results = []
         for image_path in image_paths:
             try:
-                result = self.run(image_path)
+                result = self.run(WisdomInput(image_path=image_path))
             except Exception:
                 results.append(
                     {
