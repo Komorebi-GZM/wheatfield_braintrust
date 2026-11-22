@@ -2,6 +2,7 @@
 语音识别工具
 基于 OpenAI 兼容的 Whisper API（厂商无关）
 """
+
 from abc import ABC, abstractmethod
 from typing import cast
 
@@ -14,9 +15,7 @@ class ASRNotConfiguredError(RuntimeError):
     code = "ASR_NOT_CONFIGURED"
 
     def __init__(self, message: str | None = None) -> None:
-        self.message = message or (
-            "未配置语音识别，请设置 ASR_BASE_URL、ASR_MODEL、ASR_API_KEY"
-        )
+        self.message = message or ("未配置语音识别，请设置 ASR_BASE_URL、ASR_MODEL、ASR_API_KEY")
         super().__init__(self.message)
 
 
@@ -44,12 +43,8 @@ class WhisperASR(BaseASR):
     ):
         settings = get_settings()
         resolved_model = model if model is not None else settings.asr_model
-        resolved_api_key = (
-            api_key if api_key is not None else settings.get_asr_api_key()
-        )
-        resolved_api_base = (
-            api_base if api_base is not None else settings.asr_base_url
-        )
+        resolved_api_key = api_key if api_key is not None else settings.get_asr_api_key()
+        resolved_api_base = api_base if api_base is not None else settings.asr_base_url
 
         missing = [
             name
@@ -62,7 +57,8 @@ class WhisperASR(BaseASR):
         ]
         if missing:
             raise ASRNotConfiguredError(
-                "语音识别配置不完整，缺少：" + "、".join(missing)
+                "语音识别配置不完整，缺少："
+                + "、".join(missing)
                 + "。请设置 ASR_BASE_URL、ASR_MODEL、ASR_API_KEY。"
             )
 
@@ -93,9 +89,7 @@ class WhisperASR(BaseASR):
         try:
             with open(audio_path, "rb") as audio_file:
                 transcript = self.client.audio.transcriptions.create(
-                    model=self.model,
-                    file=audio_file,
-                    language=self.language
+                    model=self.model, file=audio_file, language=self.language
                 )
             return transcript.text
         except Exception as e:
@@ -113,10 +107,7 @@ class WhisperASR(BaseASR):
         try:
             with open(audio_path, "rb") as audio_file:
                 transcript = self.client.audio.transcriptions.create(
-                    model=self.model,
-                    file=audio_file,
-                    language=self.language,
-                    response_format="srt"
+                    model=self.model, file=audio_file, language=self.language, response_format="srt"
                 )
             return transcript
         except Exception as e:
@@ -126,11 +117,7 @@ class WhisperASR(BaseASR):
 class LocalWhisperASR(BaseASR):
     """本地Whisper模型（待实现）"""
 
-    def __init__(
-        self,
-        model_name: str = "base",
-        device: str = "cpu"
-    ):
+    def __init__(self, model_name: str = "base", device: str = "cpu"):
         self.model_name = model_name
         self.device = device
         self._model = None

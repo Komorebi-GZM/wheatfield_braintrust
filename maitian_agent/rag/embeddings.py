@@ -3,9 +3,11 @@
 
 - ``local``：默认 ``BAAI/bge-small-zh-v1.5``，使用 sentence-transformers。
   sentence-transformers / HuggingFaceBgeEmbeddings 必须在函数内部懒加载，
-  缺失时抛出清晰错误，提示安装可选 extra：``uv sync --extra rag`` 或 ``pip install 'maitian-agent[rag]'``。
+  缺失时抛出清晰错误，提示安装可选 extra：``uv sync --extra rag`` 或
+  ``pip install 'maitian-agent[rag]'``。
 - ``openai_compatible``：使用 OpenAI 兼容嵌入，凭证未配置时回退到 LLM_*。
 """
+
 from __future__ import annotations
 
 from typing import cast

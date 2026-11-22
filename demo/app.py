@@ -9,11 +9,7 @@ from maitian_agent.agent_call import invoke_agent
 
 load_dotenv()
 
-st.set_page_config(
-    page_title="麦田智囊 - 乡村教育Agent系统",
-    page_icon="🌾",
-    layout="wide"
-)
+st.set_page_config(page_title="麦田智囊 - 乡村教育Agent系统", page_icon="🌾", layout="wide")
 
 
 def render_home():
@@ -45,12 +41,16 @@ def render_quick_lesson_prep():
     col1, col2 = st.columns(2)
 
     with col1:
-        subject = st.selectbox("学科", ["语文", "数学", "英语", "科学", "道德与法治", "音乐", "美术", "体育"])
+        subject = st.selectbox(
+            "学科", ["语文", "数学", "英语", "科学", "道德与法治", "音乐", "美术", "体育"]
+        )
         grade = st.selectbox("年级", ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"])
 
     with col2:
         topic = st.text_input("课题")
-        rural_context = st.text_area("乡村特色情境", placeholder="例如：结合当地种植的水稻、小麦等农作物，或乡村生活实例")
+        rural_context = st.text_area(
+            "乡村特色情境", placeholder="例如：结合当地种植的水稻、小麦等农作物，或乡村生活实例"
+        )
 
     if st.button("开始备课", type="primary"):
         if not topic:
@@ -100,8 +100,13 @@ def render_wisdom_transfer():
                         response = httpx.post(
                             os.getenv("MAITIAN_API_BASE", "http://127.0.0.1:8000").rstrip("/")
                             + "/api/wisdom-transfer",
-                            files={"file": (uploaded_file.name, uploaded_file.getvalue(),
-                                            uploaded_file.type)},
+                            files={
+                                "file": (
+                                    uploaded_file.name,
+                                    uploaded_file.getvalue(),
+                                    uploaded_file.type,
+                                )
+                            },
                             timeout=120,
                         )
                         payload = response.json()
@@ -138,7 +143,9 @@ def render_classroom_companion():
 
     with col1:
         st.selectbox("学科", ["语文", "数学", "英语", "科学"], disabled=True)
-        st.selectbox("年级", ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"], disabled=True)
+        st.selectbox(
+            "年级", ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"], disabled=True
+        )
 
     with col2:
         st.text_input("课题", disabled=True)
@@ -164,7 +171,9 @@ def render_material_recommend():
 
     with col1:
         st.selectbox("学科", ["语文", "数学", "英语", "科学", "道德与法治"], disabled=True)
-        st.selectbox("年级", ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"], disabled=True)
+        st.selectbox(
+            "年级", ["一年级", "二年级", "三年级", "四年级", "五年级", "六年级"], disabled=True
+        )
 
     with col2:
         st.text_input("课题", disabled=True)
@@ -193,10 +202,17 @@ def render_meeting_notes():
 
     st.markdown("#### 输入方式")
 
-    input_method = st.radio("选择输入方式", ["直接输入会议记录", "上传音频文件（待开发）"], horizontal=True, disabled=True)
+    input_method = st.radio(
+        "选择输入方式",
+        ["直接输入会议记录", "上传音频文件（待开发）"],
+        horizontal=True,
+        disabled=True,
+    )
 
     if input_method == "直接输入会议记录":
-        st.text_area("粘贴会议记录", height=200, placeholder="粘贴教研会议的原始记录文本...", disabled=True)
+        st.text_area(
+            "粘贴会议记录", height=200, placeholder="粘贴教研会议的原始记录文本...", disabled=True
+        )
 
         if st.button("生成结构化报告", type="primary", disabled=True):
             st.info("功能开发中...")

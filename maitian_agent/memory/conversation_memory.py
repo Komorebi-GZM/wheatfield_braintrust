@@ -2,6 +2,7 @@
 对话记忆管理
 短期记忆实现
 """
+
 import json
 import os
 from datetime import datetime
@@ -23,7 +24,7 @@ class ConversationMemory:
         memory_type: str = "buffer",
         conversation_window: int = 5,
         session_id: str = "default",
-        persist_directory: str = "./data/memory"
+        persist_directory: str = "./data/memory",
     ):
         self.memory_type = memory_type
         self.conversation_window = conversation_window
@@ -34,26 +35,22 @@ class ConversationMemory:
             self.memory = ConversationBufferWindowMemory(
                 k=conversation_window,
                 chat_memory=InMemoryChatMessageHistory(messages=self._load_chat_history()),
-                return_messages=True
+                return_messages=True,
             )
         else:
             self.memory = ConversationBufferWindowMemory(
-                k=conversation_window,
-                return_messages=True
+                k=conversation_window, return_messages=True
             )
 
         os.makedirs(persist_directory, exist_ok=True)
 
     def _load_chat_history(self):
         """加载聊天历史"""
-        history_file = os.path.join(
-            self.persist_directory,
-            f"chat_history_{self.session_id}.json"
-        )
+        history_file = os.path.join(self.persist_directory, f"chat_history_{self.session_id}.json")
 
         if os.path.exists(history_file):
             try:
-                with open(history_file, encoding='utf-8') as f:
+                with open(history_file, encoding="utf-8") as f:
                     messages = json.load(f)
                     return self._messages_to_objects(messages)
             except Exception:
@@ -99,13 +96,10 @@ class ConversationMemory:
 
     def _persist_history(self) -> None:
         """持久化聊天历史"""
-        history_file = os.path.join(
-            self.persist_directory,
-            f"chat_history_{self.session_id}.json"
-        )
+        history_file = os.path.join(self.persist_directory, f"chat_history_{self.session_id}.json")
 
         messages = self._objects_to_dict(self.memory.chat_memory.messages)
-        with open(history_file, 'w', encoding='utf-8') as f:
+        with open(history_file, "w", encoding="utf-8") as f:
             json.dump(messages, f, ensure_ascii=False, indent=2)
 
     def load_memory_variables(self) -> dict[str, Any]:
@@ -125,11 +119,7 @@ class ConversationMemory:
         """
         messages = self.memory.chat_memory.messages
         return [
-            {
-                "type": msg.type,
-                "content": msg.content,
-                "timestamp": datetime.now().isoformat()
-            }
+            {"type": msg.type, "content": msg.content, "timestamp": datetime.now().isoformat()}
             for msg in messages
         ]
 
@@ -137,11 +127,7 @@ class ConversationMemory:
 class RedisMemory(ConversationMemory):
     """Redis记忆（待配置）"""
 
-    def __init__(
-        self,
-        session_id: str = "default",
-        url: str = "redis://localhost:6379/0"
-    ):
+    def __init__(self, session_id: str = "default", url: str = "redis://localhost:6379/0"):
         # TODO: 实现Redis聊天历史
         raise NotImplementedError("Redis记忆待实现")
 
@@ -153,7 +139,7 @@ class MongoDBMemory(ConversationMemory):
         self,
         session_id: str = "default",
         connection_string: str = "mongodb://localhost:27017/",
-        database_name: str = "maitian_agent"
+        database_name: str = "maitian_agent",
     ):
         # TODO: 实现MongoDB聊天历史
         raise NotImplementedError("MongoDB记忆待实现")

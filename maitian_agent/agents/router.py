@@ -3,6 +3,7 @@
 LangChain Router 意图路由器
 Few-Shot示例校验 + 路由结果二次校验
 """
+
 from __future__ import annotations
 
 from typing import Any, ClassVar
@@ -23,14 +24,12 @@ class RouterAgent(BaseAgent):
         "classroom_companion": "课堂实时伴教，练习题生成与经典题检索",
         "material_recommend": "具象化素材推荐，教学视频/3D模型/动画",
         "meeting_notes": "教研纪要生成，录音转写与结构化报告",
-        "general_chat": "通用对话，其他教育相关咨询"
+        "general_chat": "通用对话，其他教育相关咨询",
     }
 
     def __init__(self, llm: BaseChatModel | None = None):
         super().__init__(
-            llm=llm,
-            name="RouterAgent",
-            description="意图路由器，智能识别用户需求并路由到对应Agent"
+            llm=llm, name="RouterAgent", description="意图路由器，智能识别用户需求并路由到对应Agent"
         )
 
         self.router_template = ChatPromptTemplate.from_template(
@@ -82,10 +81,9 @@ class RouterAgent(BaseAgent):
             intent_list = "\n".join([f"- {k}: {v}" for k, v in self.INTENTS.items()])
 
             router_chain = self.build_chain("router")
-            intent = router_chain.invoke({
-                "intent_list": intent_list,
-                "user_input": user_input
-            }).strip()
+            intent = router_chain.invoke(
+                {"intent_list": intent_list, "user_input": user_input}
+            ).strip()
 
             validated_intent = self._validate_intent(user_input, intent)
             return validated_intent
@@ -108,11 +106,13 @@ class RouterAgent(BaseAgent):
 
         try:
             validation_chain = self.build_chain("validation")
-            result = validation_chain.invoke({
-                "user_input": user_input,
-                "intent": intent,
-                "intent_description": self.INTENTS.get(intent, "")
-            }).strip()
+            result = validation_chain.invoke(
+                {
+                    "user_input": user_input,
+                    "intent": intent,
+                    "intent_description": self.INTENTS.get(intent, ""),
+                }
+            ).strip()
 
             if "错误" in result or "不正确" in result:
                 return "general_chat"
@@ -126,7 +126,7 @@ class RouterAgent(BaseAgent):
         return {
             "intent": intent,
             "description": self.INTENTS.get(intent, "未知意图"),
-            "available_intents": list(self.INTENTS.keys())
+            "available_intents": list(self.INTENTS.keys()),
         }
 
     def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:
@@ -138,9 +138,4 @@ class RouterAgent(BaseAgent):
         intent = self.route(user_input)
         intent_info = self.get_intent_info(intent)
 
-        return {
-            "success": True,
-            "intent": intent,
-            "agent": self.name,
-            "info": intent_info
-        }
+        return {"success": True, "intent": intent, "agent": self.name, "info": intent_info}

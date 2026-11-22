@@ -3,6 +3,7 @@
 语音驱动全流程备课，生成乡土化教案
 性能要求: ≤10秒
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -19,9 +20,7 @@ class QuickLessonPrepAgent(BaseAgent):
 
     def __init__(self, llm: BaseChatModel | None = None):
         super().__init__(
-            llm=llm,
-            name="QuickLessonPrepAgent",
-            description="乡村专属极速备课，10秒生成乡土化教案"
+            llm=llm, name="QuickLessonPrepAgent", description="乡村专属极速备课，10秒生成乡土化教案"
         )
 
         self.lesson_plan_template = ChatPromptTemplate.from_template(
@@ -55,14 +54,7 @@ class QuickLessonPrepAgent(BaseAgent):
             self._chain = self.lesson_plan_template | self.llm | StrOutputParser()
         return self._chain
 
-    def run(
-        self,
-        subject: str,
-        grade: str,
-        topic: str,
-        rural_context: str = "",
-        **kwargs
-    ) -> str:
+    def run(self, subject: str, grade: str, topic: str, rural_context: str = "", **kwargs) -> str:
         """执行备课流程
 
         Args:
@@ -75,12 +67,14 @@ class QuickLessonPrepAgent(BaseAgent):
             生成的教案内容
         """
         chain = self.build_chain()
-        result = chain.invoke({
-            "subject": subject,
-            "grade": grade,
-            "topic": topic,
-            "rural_context": rural_context or "结合乡村实际教学"
-        })
+        result = chain.invoke(
+            {
+                "subject": subject,
+                "grade": grade,
+                "topic": topic,
+                "rural_context": rural_context or "结合乡村实际教学",
+            }
+        )
         return result
 
     def run_with_voice(self, audio_path: str, **kwargs) -> str:
@@ -105,6 +99,6 @@ class QuickLessonPrepAgent(BaseAgent):
                 "subject": metadata.get("subject"),
                 "grade": metadata.get("grade"),
                 "topic": metadata.get("topic"),
-                "response_time": metadata.get("response_time", 0)
-            }
+                "response_time": metadata.get("response_time", 0),
+            },
         }

@@ -35,6 +35,9 @@ logs/
 # Mac
 .DS_Store
 
+# Trae IDE
+.trae/
+
 # Temporary files
 tmp/
 temp/
