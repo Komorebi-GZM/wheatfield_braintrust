@@ -26,6 +26,14 @@ jobs:
       - name: Sync dependencies (including dev group)
         run: uv sync --frozen
 
+      - name: Verify lockfile
+        run: uv lock --check
+
+      - name: Verify committed OpenAPI export
+        run: |
+          uv run python maitian_agent/openapi.py /tmp/openapi.json
+          diff -u openapi.json /tmp/openapi.json
+
       - name: Ruff lint
         run: uv run ruff check .
 

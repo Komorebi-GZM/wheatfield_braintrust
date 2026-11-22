@@ -31,11 +31,15 @@ def lesson_prep(subject, grade, topic, context):
     """极速备课：生成乡土化教案"""
     click.echo(f"正在为 {subject} {grade} 生成教案...")
     agent = QuickLessonPrepAgent()
-    result = agent.run(subject, grade, topic, context)
+    try:
+        result = agent.run(subject, grade, topic, context)
+    except Exception:
+        click.echo("服务处理失败，请检查大模型配置后重试", err=True)
+        raise click.exceptions.Exit(1) from None
     click.echo("\n" + "=" * 50)
     click.echo("生成的教案：")
     click.echo("=" * 50)
-    click.echo(result)
+    click.echo(result.data.text)
 
 
 @cli.command()
@@ -43,16 +47,22 @@ def lesson_prep(subject, grade, topic, context):
 def wisdom_transfer(image):
     """智慧传承：识别并结构化手写教案"""
     if not os.path.exists(image):
-        click.echo(f"错误：文件 {image} 不存在")
-        return
+        click.echo("错误：指定的图片文件不存在", err=True)
+        raise click.exceptions.Exit(1)
 
     click.echo(f"正在处理 {image} ...")
     agent = WisdomTransferAgent()
-    result = agent.run(image)
+    try:
+        result = agent.run(image)
+    except Exception:
+        click.echo("服务处理失败，请检查大模型配置后重试", err=True)
+        raise click.exceptions.Exit(1) from None
     click.echo("\n" + "=" * 50)
     click.echo("处理结果：")
     click.echo("=" * 50)
-    click.echo(result)
+    click.echo(result.data.text)
+    if result.status == "needs_review":
+        click.echo("待校订：请人工核对识别结果；内容尚未确认或入库。")
 
 
 @cli.command()
@@ -60,9 +70,16 @@ def wisdom_transfer(image):
 def route(input):
     """意图路由：识别用户意图"""
     agent = RouterAgent()
-    result = agent.run({"user_input": input})
-    click.echo(f"\n识别结果：{result.get('intent')}")
-    click.echo(f"描述：{result.get('info', {}).get('description', '')}")
+    try:
+        result = agent.run({"user_input": input})
+    except Exception:
+        click.echo("服务处理失败，请检查大模型配置后重试", err=True)
+        raise click.exceptions.Exit(1) from None
+    if result.status == "failed":
+        click.echo("请求参数无效，请提供非空输入", err=True)
+        raise click.exceptions.Exit(1)
+    click.echo(f"\n识别结果：{result.data.intent}")
+    click.echo(f"描述：{result.data.description}")
 
 
 @cli.command()

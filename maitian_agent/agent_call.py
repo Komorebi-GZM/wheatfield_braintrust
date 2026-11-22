@@ -21,6 +21,6 @@ def invoke_agent[T](
     try:
         return fn(*args, **kwargs)
     except Exception:
-        log.exception("前端调用 Agent 失败")
+        log.error("前端调用 Agent 失败（内部异常已脱敏）")
         error_handler(GENERIC_AGENT_ERROR)
         return None

@@ -112,11 +112,21 @@ def render_wisdom_transfer():
                         payload = response.json()
                         if response.is_error:
                             detail = payload.get("detail")
-                            st.error(detail if isinstance(detail, str) else "上传失败，请检查图片")
+                            if isinstance(detail, dict):
+                                st.error(detail.get("message", "服务处理失败，请稍后重试"))
+                            else:
+                                st.error(
+                                    detail
+                                    if isinstance(detail, str)
+                                    else "服务处理失败，请稍后重试"
+                                )
                         else:
-                            st.success("处理完成！")
+                            if payload.get("status") == "needs_review":
+                                st.warning("待校订：请人工核对识别结果；内容尚未确认或入库。")
+                            else:
+                                st.success("处理完成！")
                             st.markdown("### 识别结果")
-                            st.markdown(payload["result"])
+                            st.markdown(payload.get("result", ""))
                     except (httpx.HTTPError, ValueError, KeyError):
                         st.error("服务暂不可用，请稍后重试")
 

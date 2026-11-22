@@ -11,6 +11,7 @@ from typing import Any
 
 from langchain_core.language_models import BaseChatModel
 
+from maitian_agent.agents.results import AgentResult
 from maitian_agent.llm import get_chat_model
 
 logger = logging.getLogger(__name__)
@@ -53,7 +54,7 @@ class BaseAgent(ABC):
         """构建Agent链"""
 
     @abstractmethod
-    def run(self, *args: Any, **kwargs: Any) -> Any:
+    def run(self, *args: Any, **kwargs: Any) -> AgentResult[Any]:
         """执行Agent"""
 
     def _validate_input(self, input_data: dict[str, Any], required_keys: list) -> None:
@@ -68,5 +69,5 @@ class BaseAgent(ABC):
 
     def _handle_error(self, error: Exception) -> dict[str, Any]:
         """处理错误"""
-        logger.error(f"{self.name}执行错误: {error!s}")
-        return {"success": False, "error": str(error), "agent": self.name}
+        logger.error("%s执行错误（内部异常已脱敏）", self.name)
+        return {"success": False, "error": "服务处理失败，请稍后重试", "agent": self.name}

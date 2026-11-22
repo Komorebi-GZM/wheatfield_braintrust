@@ -16,6 +16,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
+from maitian_agent.agents.results import AgentResult, WisdomData, WisdomInput
 from maitian_agent.tools.ocr import EasyOCRProcessor
 
 if TYPE_CHECKING:
@@ -87,7 +88,7 @@ class WisdomTransferAgent(BaseAgent):
         except Exception as e:
             raise RuntimeError(f"OCR识别失败: {e!s}") from e
 
-    def run(self, image_path: str, **kwargs) -> str:
+    def run(self, image_path: str | WisdomInput, **kwargs) -> AgentResult[WisdomData]:
         """执行手写教案识别与结构化
 
         Args:
@@ -96,14 +97,24 @@ class WisdomTransferAgent(BaseAgent):
         Returns:
             结构化处理后的教案内容
         """
+        image_path = image_path.image_path if isinstance(image_path, WisdomInput) else image_path
         ocr_text = self.recognize_handwriting(image_path)
         if not ocr_text:
-            return "未能识别出文字，请确保图片清晰"
+            return AgentResult(
+                status="needs_review",
+                data=WisdomData(text="", review_reasons=["OCR_NO_TEXT"]),
+            )
 
         chain = self.build_chain()
         structured_result = chain.invoke({"ocr_text": ocr_text})
 
-        return f"### OCR识别结果\n{ocr_text}\n\n### 结构化结果\n{structured_result}"
+        return AgentResult(
+            status="needs_review",
+            data=WisdomData(
+                text=f"### OCR识别结果\n{ocr_text}\n\n### 结构化结果\n{structured_result}",
+                review_reasons=["OCR_REQUIRES_REVIEW"],
+            ),
+        )
 
     def run_batch(self, image_paths: list[str], **kwargs) -> list[dict[str, Any]]:
         """批量处理多张手写教案
@@ -130,7 +141,7 @@ class WisdomTransferAgent(BaseAgent):
                 results.append(
                     {
                         "image_path": image_path,
-                        "result": result,
+                        "result": result.data.text if result.data else "",
                         "success": True,
                     }
                 )
