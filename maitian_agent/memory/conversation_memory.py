@@ -8,15 +8,13 @@ import os
 from datetime import datetime
 from typing import Any
 
-from langchain.memory import ConversationBufferWindowMemory
-from langchain_core.chat_history import InMemoryChatMessageHistory
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage
 
 
 class ConversationMemory:
     """对话记忆管理器
 
-    短期记忆：ConversationBufferWindowMemory，保留最近N轮对话
+    短期记忆：JSON 文件保存完整历史，读取时仅返回最近 N 个完整对话轮次。
     """
 
     def __init__(
@@ -31,18 +29,8 @@ class ConversationMemory:
         self.session_id = session_id
         self.persist_directory = persist_directory
 
-        if memory_type == "buffer":
-            self.memory = ConversationBufferWindowMemory(
-                k=conversation_window,
-                chat_memory=InMemoryChatMessageHistory(messages=self._load_chat_history()),
-                return_messages=True,
-            )
-        else:
-            self.memory = ConversationBufferWindowMemory(
-                k=conversation_window, return_messages=True
-            )
-
         os.makedirs(persist_directory, exist_ok=True)
+        self._messages = self._load_chat_history() if memory_type == "buffer" else []
 
     def _load_chat_history(self):
         """加载聊天历史"""
@@ -88,9 +76,9 @@ class ConversationMemory:
         ai_message = output_data.get("response", "")
 
         if human_message:
-            self.memory.chat_memory.add_user_message(human_message)
+            self._messages.append(HumanMessage(content=human_message))
         if ai_message:
-            self.memory.chat_memory.add_ai_message(ai_message)
+            self._messages.append(AIMessage(content=ai_message))
 
         self._persist_history()
 
@@ -98,17 +86,25 @@ class ConversationMemory:
         """持久化聊天历史"""
         history_file = os.path.join(self.persist_directory, f"chat_history_{self.session_id}.json")
 
-        messages = self._objects_to_dict(self.memory.chat_memory.messages)
+        messages = self._objects_to_dict(self._messages)
         with open(history_file, "w", encoding="utf-8") as f:
             json.dump(messages, f, ensure_ascii=False, indent=2)
 
     def load_memory_variables(self) -> dict[str, Any]:
         """加载记忆变量"""
-        return self.memory.load_memory_variables({})
+        turns = [
+            self._messages[index : index + 2]
+            for index in range(0, len(self._messages) - 1, 2)
+            if isinstance(self._messages[index], HumanMessage)
+            and isinstance(self._messages[index + 1], AIMessage)
+        ]
+        count = max(0, self.conversation_window)
+        recent_messages = [message for turn in turns[-count:] for message in turn] if count else []
+        return {"history": recent_messages}
 
     def clear(self) -> None:
         """清除记忆"""
-        self.memory.clear()
+        self._messages.clear()
         self._persist_history()
 
     def get_conversation_history(self) -> list[dict[str, str]]:
@@ -117,7 +113,7 @@ class ConversationMemory:
         Returns:
             对话历史列表
         """
-        messages = self.memory.chat_memory.messages
+        messages = self._messages
         return [
             {"type": msg.type, "content": msg.content, "timestamp": datetime.now().isoformat()}
             for msg in messages

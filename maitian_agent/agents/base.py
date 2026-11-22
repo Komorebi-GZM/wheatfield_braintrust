@@ -10,7 +10,6 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from langchain_core.language_models import BaseChatModel
-from langchain_core.memory import BaseMemory
 
 from maitian_agent.llm import get_chat_model
 
@@ -27,7 +26,7 @@ class BaseAgent(ABC):
     def __init__(
         self,
         llm: BaseChatModel | None = None,
-        memory: BaseMemory | None = None,
+        memory: Any = None,
         name: str = "BaseAgent",
         description: str = "基础Agent",
     ):

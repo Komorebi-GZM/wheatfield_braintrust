@@ -58,23 +58,75 @@ def test_memory_loads_json_and_respects_window(tmp_path):
     assert len(memory.get_conversation_history()) == 4
 
 
+def test_memory_window_contains_only_recent_complete_turns(tmp_path):
+    (tmp_path / "chat_history_default.json").write_text(
+        json.dumps(
+            [
+                {"type": "human", "content": "旧问题"},
+                {"type": "ai", "content": "旧回答"},
+                {"type": "human", "content": "新问题"},
+                {"type": "ai", "content": "新回答"},
+                {"type": "human", "content": "未完成问题"},
+            ]
+        ),
+        encoding="utf-8",
+    )
+    memory = ConversationMemory(conversation_window=1, persist_directory=str(tmp_path))
+
+    assert [
+        (message.type, message.content) for message in memory.load_memory_variables()["history"]
+    ] == [
+        ("human", "新问题"),
+        ("ai", "新回答"),
+    ]
+
+
+def test_memory_sessions_are_isolated(tmp_path):
+    first = ConversationMemory(session_id="teacher-a", persist_directory=str(tmp_path))
+    second = ConversationMemory(session_id="teacher-b", persist_directory=str(tmp_path))
+    first.save_context({"human_input": "A 的问题"}, {"response": "A 的回答"})
+    second.save_context({"human_input": "B 的问题"}, {"response": "B 的回答"})
+
+    assert [message.content for message in first.load_memory_variables()["history"]] == [
+        "A 的问题",
+        "A 的回答",
+    ]
+    assert [message.content for message in second.load_memory_variables()["history"]] == [
+        "B 的问题",
+        "B 的回答",
+    ]
+
+
 def test_bge_maps_passage_to_embed_instruction(monkeypatch):
     monkeypatch.setitem(sys.modules, "sentence_transformers", ModuleType("sentence_transformers"))
-    module = ModuleType("langchain_community.embeddings")
+    module = ModuleType("langchain_huggingface")
     calls = []
 
-    class StrictBGE:
-        def __init__(
-            self, *, model_name, model_kwargs, encode_kwargs, query_instruction, embed_instruction
-        ):
-            calls.append((query_instruction, embed_instruction))
+    class StrictHuggingFaceEmbeddings:
+        def __init__(self, *, model_name, model_kwargs, encode_kwargs, query_encode_kwargs):
+            calls.append((model_name, model_kwargs, encode_kwargs, query_encode_kwargs))
 
-    module.HuggingFaceBgeEmbeddings = StrictBGE
-    monkeypatch.setitem(sys.modules, "langchain_community.embeddings", module)
+        def embed_query(self, text):
+            return [text, calls[0][3]["prompt"]]
+
+        def embed_documents(self, texts):
+            return [[text, calls[0][2]["prompt"]] for text in texts]
+
+    module.HuggingFaceEmbeddings = StrictHuggingFaceEmbeddings
+    monkeypatch.setitem(sys.modules, "langchain_huggingface", module)
     embedding = BGEEmbeddings(query_instruction="查询", passage_instruction="文档")
-    assert isinstance(embedding.embeddings, StrictBGE)
+    assert isinstance(embedding.embeddings, StrictHuggingFaceEmbeddings)
     assert embedding.embeddings is embedding.embeddings
-    assert calls == [("查询", "文档")]
+    assert embedding.embed_query("question") == ["question", "查询"]
+    assert embedding.embed_documents(["passage"]) == [["passage", "文档"]]
+    assert calls == [
+        (
+            "BAAI/bge-small-zh-v1.5",
+            {"device": "cpu"},
+            {"normalize_embeddings": True, "prompt": "文档"},
+            {"normalize_embeddings": True, "prompt": "查询"},
+        )
+    ]
 
 
 class SlowFakeChatModel(FakeListChatModel):
