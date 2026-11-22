@@ -10,10 +10,66 @@
 
 from __future__ import annotations
 
+from contextvars import ContextVar
+
 from langchain_core.language_models import BaseChatModel
+from langchain_core.outputs import ChatResult
 from pydantic import SecretStr
 
 from maitian_agent.config.settings import get_settings
+
+
+class InvocationState:
+    def __init__(self):
+        self.model: str | None = None
+
+
+invoked_model: ContextVar[InvocationState | None] = ContextVar("invoked_model", default=None)
+
+
+class _TrackedChatModel(BaseChatModel):
+    wrapped: BaseChatModel
+
+    @property
+    def _llm_type(self) -> str:
+        return self.wrapped._llm_type
+
+    @property
+    def _identifying_params(self) -> dict:
+        return self.wrapped._identifying_params
+
+    def _mark_invoked(self) -> None:
+        identifier = (
+            getattr(self.wrapped, "model", None)
+            or getattr(self.wrapped, "model_name", None)
+            or self.wrapped.get_name()
+        )
+        state = invoked_model.get()
+        if state is not None:
+            state.model = str(identifier)
+
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs) -> ChatResult:
+        self._mark_invoked()
+        return self.wrapped._generate(messages, stop=stop, run_manager=run_manager, **kwargs)
+
+    async def _agenerate(self, messages, stop=None, run_manager=None, **kwargs) -> ChatResult:
+        self._mark_invoked()
+        return await self.wrapped._agenerate(messages, stop=stop, run_manager=run_manager, **kwargs)
+
+    def _stream(self, messages, stop=None, run_manager=None, **kwargs):
+        self._mark_invoked()
+        yield from self.wrapped._stream(messages, stop=stop, run_manager=run_manager, **kwargs)
+
+    async def _astream(self, messages, stop=None, run_manager=None, **kwargs):
+        self._mark_invoked()
+        async for chunk in self.wrapped._astream(
+            messages, stop=stop, run_manager=run_manager, **kwargs
+        ):
+            yield chunk
+
+
+def track_model_invocation(model: BaseChatModel) -> BaseChatModel:
+    return _TrackedChatModel(wrapped=model)
 
 
 class LLMNotConfiguredError(RuntimeError):

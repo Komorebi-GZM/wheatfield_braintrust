@@ -265,19 +265,19 @@ async def test_health_responsive_during_slow_generation(monkeypatch, tmp_path, e
             "/api/quiz",
             {"subject": "语文", "grade": "三年级", "topic": "春天"},
             "classroom_companion",
-            "generate_quiz",
+            "run",
         ),
         (
             "/api/material",
             {"subject": "语文", "grade": "三年级", "topic": "春天"},
             "material",
-            "recommend_materials",
+            "run",
         ),
         (
             "/api/meeting-notes",
             {"transcript": "教研记录"},
             "meeting_notes",
-            "process_meeting_notes",
+            "run",
         ),
         ("/api/route", {"user_input": "帮我备课"}, "router", "run"),
     ],
@@ -343,4 +343,6 @@ def test_quick_lesson_prep_raises_instead_of_returning_error():
 
     agent = QuickLessonPrepAgent(llm=Boom(responses=["unused"]))
     with pytest.raises(RuntimeError, match="SECRET_TRACE_xyz"):
-        agent.run(subject="语文", grade="三年级", topic="春天", rural_context="")
+        from maitian_agent.agents.results import LessonPrepInput
+
+        agent.run(LessonPrepInput(subject="语文", grade="三年级", topic="春天", rural_context=""))

@@ -6,13 +6,12 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
+from maitian_agent.agents.results import AgentResult, QuizInput, TextData
 
 
 class ClassroomCompanionAgent(BaseAgent):
@@ -129,15 +128,15 @@ class ClassroomCompanionAgent(BaseAgent):
         )
         return result
 
-    def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:
+    def run(self, input_model: QuizInput) -> AgentResult[TextData]:
         """执行伴教功能"""
-        action = input_data.get("action", "quiz")
+        action = input_model.action
 
         if action == "quiz":
-            result = self.generate_quiz(**input_data)
+            result = self.generate_quiz(**input_model.model_dump(exclude={"action"}))
         elif action == "retrieve":
-            result = self.retrieve_classic_questions(**input_data)
-        else:
-            return {"success": False, "error": f"未知操作: {action}"}
+            result = self.retrieve_classic_questions(
+                **input_model.model_dump(exclude={"action", "question_count", "question_types"})
+            )
 
-        return self._format_output(result)
+        return AgentResult(status="success", data=TextData(text=result))

@@ -13,6 +13,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
+from maitian_agent.agents.results import AgentResult, LessonPrepInput, TextData
 
 
 class QuickLessonPrepAgent(BaseAgent):
@@ -54,7 +55,7 @@ class QuickLessonPrepAgent(BaseAgent):
             self._chain = self.lesson_plan_template | self.llm | StrOutputParser()
         return self._chain
 
-    def run(self, subject: str, grade: str, topic: str, rural_context: str = "", **kwargs) -> str:
+    def run(self, input_model: LessonPrepInput) -> AgentResult[TextData]:
         """执行备课流程
 
         Args:
@@ -69,13 +70,18 @@ class QuickLessonPrepAgent(BaseAgent):
         chain = self.build_chain()
         result = chain.invoke(
             {
-                "subject": subject,
-                "grade": grade,
-                "topic": topic,
-                "rural_context": rural_context or "结合乡村实际教学",
+                "subject": input_model.subject,
+                "grade": input_model.grade,
+                "topic": input_model.topic,
+                "rural_context": input_model.rural_context or "结合乡村实际教学",
             }
         )
-        return result
+        return AgentResult(status="success", data=TextData(text=result))
+
+    def _run_legacy(self, subject, grade, topic, rural_context="") -> AgentResult[TextData]:
+        return self.run(
+            LessonPrepInput(subject=subject, grade=grade, topic=topic, rural_context=rural_context)
+        )
 
     def run_with_voice(self, audio_path: str, **kwargs) -> str:
         """通过语音输入执行备课（待集成Whisper）

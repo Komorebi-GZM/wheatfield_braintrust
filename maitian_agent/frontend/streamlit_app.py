@@ -14,6 +14,12 @@ from maitian_agent.agents.classroom_companion import ClassroomCompanionAgent
 from maitian_agent.agents.material_agent import MaterialAgent
 from maitian_agent.agents.meeting_notes import MeetingNotesAgent
 from maitian_agent.agents.quick_lesson_prep import QuickLessonPrepAgent
+from maitian_agent.agents.results import (
+    LessonPrepInput,
+    MaterialInput,
+    MeetingNotesInput,
+    QuizInput,
+)
 from maitian_agent.agents.router import RouterAgent
 from maitian_agent.config.settings import get_settings
 
@@ -38,6 +44,14 @@ def init_agents():
 
     if "router_agent" not in st.session_state:
         st.session_state.router_agent = RouterAgent()
+
+
+def _agent_text(agent, input_data):
+    """Unwrap the existing Agent.run output for in-process Streamlit flows."""
+    result = agent.run(input_data)
+    if result.status == "failed" or result.data is None:
+        raise RuntimeError("服务处理失败")
+    return result.data.text
 
 
 def render_home():
@@ -88,16 +102,15 @@ def render_quick_lesson_prep():
                 agent = st.session_state.quick_lesson_prep_agent
                 result = invoke_agent(
                     agent.run,
+                    LessonPrepInput(
+                        subject=subject, grade=grade, topic=topic, rural_context=rural_context
+                    ),
                     error_handler=st.error,
-                    subject=subject,
-                    grade=grade,
-                    topic=topic,
-                    rural_context=rural_context,
                 )
                 if result is not None:
                     st.success("教案生成完成！")
                     st.markdown("### 生成的教案")
-                    st.markdown(result)
+                    st.markdown(result.data.text)
 
     st.markdown("---")
     st.markdown("#### 备课助手功能说明")
@@ -140,11 +153,21 @@ def render_wisdom_transfer():
                         payload = response.json()
                         if response.is_error:
                             detail = payload.get("detail")
-                            st.error(detail if isinstance(detail, str) else "上传失败，请检查图片")
+                            if isinstance(detail, dict):
+                                st.error(detail.get("message", "服务处理失败，请稍后重试"))
+                            else:
+                                st.error(
+                                    detail
+                                    if isinstance(detail, str)
+                                    else "服务处理失败，请稍后重试"
+                                )
                         else:
-                            st.success("处理完成！")
+                            if payload.get("status") == "needs_review":
+                                st.warning("待校订：请人工核对识别结果；内容尚未确认或入库。")
+                            else:
+                                st.success("处理完成！")
                             st.markdown("### 识别结果")
-                            st.markdown(payload["result"])
+                            st.markdown(payload.get("result", ""))
                     except (httpx.HTTPError, ValueError, KeyError):
                         st.error("服务暂不可用，请稍后重试")
 
@@ -188,14 +211,17 @@ def render_classroom_companion():
                 with st.spinner("正在生成练习题..."):
                     agent = st.session_state.classroom_companion_agent
                     result = invoke_agent(
-                        agent.generate_quiz,
+                        _agent_text,
+                        agent,
+                        QuizInput(
+                            subject=subject,
+                            grade=grade,
+                            topic=topic,
+                            knowledge_points=knowledge_points,
+                            question_count=question_count,
+                            question_types="、".join(question_types),
+                        ),
                         error_handler=st.error,
-                        subject=subject,
-                        grade=grade,
-                        topic=topic,
-                        knowledge_points=knowledge_points,
-                        question_count=question_count,
-                        question_types="、".join(question_types),
                     )
                     if result is not None:
                         st.success("练习题生成完成！")
@@ -210,12 +236,16 @@ def render_classroom_companion():
                 with st.spinner("正在检索经典题..."):
                     agent = st.session_state.classroom_companion_agent
                     result = invoke_agent(
-                        agent.retrieve_classic_questions,
+                        _agent_text,
+                        agent,
+                        QuizInput(
+                            action="retrieve",
+                            subject=subject,
+                            grade=grade,
+                            topic=topic,
+                            knowledge_points=knowledge_points,
+                        ),
                         error_handler=st.error,
-                        subject=subject,
-                        grade=grade,
-                        topic=topic,
-                        knowledge_points=knowledge_points,
                     )
                     if result is not None:
                         st.success("检索完成！")
@@ -247,13 +277,16 @@ def render_material_recommend():
             with st.spinner("正在推荐素材..."):
                 agent = st.session_state.material_agent
                 result = invoke_agent(
-                    agent.recommend_materials,
+                    _agent_text,
+                    agent,
+                    MaterialInput(
+                        subject=subject,
+                        grade=grade,
+                        topic=topic,
+                        knowledge_points=knowledge_points,
+                        rural_context=rural_context,
+                    ),
                     error_handler=st.error,
-                    subject=subject,
-                    grade=grade,
-                    topic=topic,
-                    knowledge_points=knowledge_points,
-                    rural_context=rural_context,
                 )
                 if result is not None:
                     st.success("素材推荐完成！")
@@ -292,8 +325,9 @@ def render_meeting_notes():
                 with st.spinner("正在处理，请稍候..."):
                     agent = st.session_state.meeting_notes_agent
                     result = invoke_agent(
-                        agent.process_meeting_notes,
-                        meeting_transcript,
+                        _agent_text,
+                        agent,
+                        MeetingNotesInput(transcript=meeting_transcript),
                         error_handler=st.error,
                     )
                     if result is not None:

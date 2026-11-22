@@ -74,7 +74,11 @@ def test_production_agent_uses_injected_fake_model():
 
     fake = FakeListChatModel(responses=["这是生成的教案内容"])
     agent = QuickLessonPrepAgent(llm=fake)
-    output = agent.run(subject="语文", grade="三年级", topic="春天", rural_context="乡村")
+    from maitian_agent.agents.results import LessonPrepInput
+
+    output = agent.run(
+        LessonPrepInput(subject="语文", grade="三年级", topic="春天", rural_context="乡村")
+    )
     assert "这是生成的教案内容" in output
 
 

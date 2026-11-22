@@ -3,6 +3,8 @@
 from starlette.responses import JSONResponse
 from starlette.types import ASGIApp, Receive, Scope, Send
 
+from maitian_agent.openapi import application_version
+
 try:
     from starlette.routing import get_route_path
 except ImportError:
@@ -28,19 +30,37 @@ class UploadLimitMiddleware:
         self.settings = settings
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send):
+        route_path = get_route_path(scope) if scope["type"] == "http" else ""
         if (
             scope["type"] != "http"
             or scope["method"] != "POST"
-            or get_route_path(scope) != "/api/wisdom-transfer"
+            or route_path not in {"/api/wisdom-transfer", "/api/v1/wisdom-transfer"}
         ):
             await self.app(scope, receive, send)
             return
 
         limit = self.settings.max_upload_mb * 1024 * 1024 + MULTIPART_ALLOWANCE_BYTES
-        response = JSONResponse(
-            {"detail": "上传内容过大，请上传大小限制以内的图片"},
-            status_code=413,
-        )
+        legacy = route_path == "/api/wisdom-transfer"
+
+        def too_large():
+            if legacy:
+                return JSONResponse(
+                    {"detail": "上传内容过大，请上传大小限制以内的图片"}, status_code=413
+                )
+            return JSONResponse(
+                {
+                    "status": "failed",
+                    "data": None,
+                    "error": {
+                        "code": "UPLOAD_TOO_LARGE",
+                        "message": "上传内容过大，请上传大小限制以内的图片",
+                    },
+                    "meta": {"model": None, "duration_ms": 0, "version": application_version()},
+                },
+                status_code=413,
+            )
+
+        response = too_large()
         for name, value in scope.get("headers", []):
             if name.lower() == b"content-length":
                 try:

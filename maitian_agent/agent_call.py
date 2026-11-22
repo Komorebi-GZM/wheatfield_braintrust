@@ -5,6 +5,8 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable
 
+from maitian_agent.llm import LLMNotConfiguredError
+
 logger = logging.getLogger(__name__)
 
 GENERIC_AGENT_ERROR = "服务处理失败，请稍后重试"
@@ -20,7 +22,11 @@ def invoke_agent[T](
     """调用 Agent；失败时记日志并通过 error_handler 展示通用中文错误。"""
     try:
         return fn(*args, **kwargs)
+    except LLMNotConfiguredError:
+        log.error("前端调用 Agent 缺少大模型配置")
+        error_handler("请配置大模型后重试")
+        return None
     except Exception:
-        log.exception("前端调用 Agent 失败")
+        log.error("前端调用 Agent 失败（内部异常已脱敏）")
         error_handler(GENERIC_AGENT_ERROR)
         return None

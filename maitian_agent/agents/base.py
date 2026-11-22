@@ -10,8 +10,10 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 from langchain_core.language_models import BaseChatModel
+from pydantic import BaseModel
 
-from maitian_agent.llm import get_chat_model
+from maitian_agent.agents.results import AgentResult
+from maitian_agent.llm import get_chat_model, track_model_invocation
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +44,7 @@ class BaseAgent(ABC):
         """懒加载对话模型：注入优先，否则首次使用时从工厂获取。"""
         if self._llm is None:
             self._llm = get_chat_model()
-        return self._llm
+        return track_model_invocation(self._llm)
 
     @llm.setter
     def llm(self, value: BaseChatModel | None) -> None:
@@ -53,8 +55,8 @@ class BaseAgent(ABC):
         """构建Agent链"""
 
     @abstractmethod
-    def run(self, *args: Any, **kwargs: Any) -> Any:
-        """执行Agent"""
+    def run(self, input_model: BaseModel) -> AgentResult[Any]:
+        """Execute an agent using its endpoint-specific named input model."""
 
     def _validate_input(self, input_data: dict[str, Any], required_keys: list) -> None:
         """验证输入数据"""
@@ -68,5 +70,5 @@ class BaseAgent(ABC):
 
     def _handle_error(self, error: Exception) -> dict[str, Any]:
         """处理错误"""
-        logger.error(f"{self.name}执行错误: {error!s}")
-        return {"success": False, "error": str(error), "agent": self.name}
+        logger.error("%s执行错误（内部异常已脱敏）", self.name)
+        return {"success": False, "error": "服务处理失败，请稍后重试", "agent": self.name}

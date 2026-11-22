@@ -12,6 +12,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
+from maitian_agent.agents.results import AgentResult, MaterialInput, TextData
 
 
 class MaterialAgent(BaseAgent):
@@ -102,7 +103,7 @@ class MaterialAgent(BaseAgent):
         # TODO: 集成素材库检索
         raise NotImplementedError("素材库检索功能待开发")
 
-    def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:
+    def run(self, input_model: MaterialInput) -> AgentResult[TextData]:
         """执行素材推荐"""
-        result = self.recommend_materials(**input_data)
-        return self._format_output(result)
+        result = self.recommend_materials(**input_model.model_dump())
+        return AgentResult(status="success", data=TextData(text=result))

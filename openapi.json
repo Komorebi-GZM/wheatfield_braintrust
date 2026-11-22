@@ -1,0 +1,1705 @@
+{
+  "components": {
+    "schemas": {
+      "Body_legacyWisdomTransfer": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_legacyWisdomTransfer",
+        "type": "object"
+      },
+      "Body_wisdomTransfer": {
+        "properties": {
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          }
+        },
+        "required": [
+          "file"
+        ],
+        "title": "Body_wisdomTransfer",
+        "type": "object"
+      },
+      "ErrorData": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message"
+        ],
+        "title": "ErrorData",
+        "type": "object"
+      },
+      "FailedEnvelope": {
+        "description": "For failed, data is null and error is required.",
+        "properties": {
+          "data": {
+            "title": "Data",
+            "type": "null"
+          },
+          "error": {
+            "$ref": "#/components/schemas/ErrorData"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "status": {
+            "const": "failed",
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "meta"
+        ],
+        "title": "FailedEnvelope",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "agents": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Agents",
+            "type": "array"
+          },
+          "llm_configured": {
+            "title": "Llm Configured",
+            "type": "boolean"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "agents",
+          "llm_configured"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "LegacyRouteResponse": {
+        "properties": {
+          "agent": {
+            "title": "Agent",
+            "type": "string"
+          },
+          "info": {
+            "$ref": "#/components/schemas/RouteData"
+          },
+          "intent": {
+            "enum": [
+              "quick_lesson_prep",
+              "wisdom_transfer",
+              "classroom_companion",
+              "material_recommend",
+              "meeting_notes",
+              "general_chat"
+            ],
+            "title": "Intent",
+            "type": "string"
+          },
+          "success": {
+            "const": true,
+            "title": "Success",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "success",
+          "intent",
+          "agent",
+          "info"
+        ],
+        "title": "LegacyRouteResponse",
+        "type": "object"
+      },
+      "LegacyTextResponse": {
+        "properties": {
+          "result": {
+            "title": "Result",
+            "type": "string"
+          },
+          "success": {
+            "const": true,
+            "title": "Success",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "success",
+          "result"
+        ],
+        "title": "LegacyTextResponse",
+        "type": "object"
+      },
+      "LegacyWisdomResponse": {
+        "properties": {
+          "result": {
+            "title": "Result",
+            "type": "string"
+          },
+          "status": {
+            "const": "needs_review",
+            "title": "Status",
+            "type": "string"
+          },
+          "success": {
+            "const": true,
+            "title": "Success",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "success",
+          "result",
+          "status"
+        ],
+        "title": "LegacyWisdomResponse",
+        "type": "object"
+      },
+      "LessonPrepRequest": {
+        "properties": {
+          "grade": {
+            "title": "Grade",
+            "type": "string"
+          },
+          "rural_context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "",
+            "title": "Rural Context"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "topic": {
+            "title": "Topic",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject",
+          "grade",
+          "topic"
+        ],
+        "title": "LessonPrepRequest",
+        "type": "object"
+      },
+      "MaterialRequest": {
+        "properties": {
+          "grade": {
+            "title": "Grade",
+            "type": "string"
+          },
+          "knowledge_points": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "",
+            "title": "Knowledge Points"
+          },
+          "rural_context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "",
+            "title": "Rural Context"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "topic": {
+            "title": "Topic",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject",
+          "grade",
+          "topic"
+        ],
+        "title": "MaterialRequest",
+        "type": "object"
+      },
+      "MeetingNotesRequest": {
+        "properties": {
+          "transcript": {
+            "title": "Transcript",
+            "type": "string"
+          }
+        },
+        "required": [
+          "transcript"
+        ],
+        "title": "MeetingNotesRequest",
+        "type": "object"
+      },
+      "Meta": {
+        "properties": {
+          "duration_ms": {
+            "minimum": 0,
+            "title": "Duration Ms",
+            "type": "integer"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
+          },
+          "version": {
+            "minLength": 1,
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "model",
+          "duration_ms",
+          "version"
+        ],
+        "title": "Meta",
+        "type": "object"
+      },
+      "QuizRequest": {
+        "properties": {
+          "grade": {
+            "title": "Grade",
+            "type": "string"
+          },
+          "knowledge_points": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "",
+            "title": "Knowledge Points"
+          },
+          "question_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": 5,
+            "title": "Question Count"
+          },
+          "question_types": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "default": "选择题、填空题",
+            "title": "Question Types"
+          },
+          "subject": {
+            "title": "Subject",
+            "type": "string"
+          },
+          "topic": {
+            "title": "Topic",
+            "type": "string"
+          }
+        },
+        "required": [
+          "subject",
+          "grade",
+          "topic"
+        ],
+        "title": "QuizRequest",
+        "type": "object"
+      },
+      "RootResponse": {
+        "properties": {
+          "message": {
+            "title": "Message",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "message",
+          "status"
+        ],
+        "title": "RootResponse",
+        "type": "object"
+      },
+      "RouteData": {
+        "properties": {
+          "available_intents": {
+            "items": {
+              "enum": [
+                "quick_lesson_prep",
+                "wisdom_transfer",
+                "classroom_companion",
+                "material_recommend",
+                "meeting_notes",
+                "general_chat"
+              ],
+              "type": "string"
+            },
+            "title": "Available Intents",
+            "type": "array"
+          },
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "intent": {
+            "enum": [
+              "quick_lesson_prep",
+              "wisdom_transfer",
+              "classroom_companion",
+              "material_recommend",
+              "meeting_notes",
+              "general_chat"
+            ],
+            "title": "Intent",
+            "type": "string"
+          }
+        },
+        "required": [
+          "intent",
+          "description",
+          "available_intents"
+        ],
+        "title": "RouteData",
+        "type": "object"
+      },
+      "RouteDataSuccessEnvelope": {
+        "description": "Success or needs_review requires concrete data and error=null.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/RouteData"
+          },
+          "error": {
+            "title": "Error",
+            "type": "null"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "needs_review"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "meta"
+        ],
+        "title": "RouteDataSuccessEnvelope",
+        "type": "object"
+      },
+      "RouteRequest": {
+        "properties": {
+          "user_input": {
+            "title": "User Input",
+            "type": "string"
+          }
+        },
+        "required": [
+          "user_input"
+        ],
+        "title": "RouteRequest",
+        "type": "object"
+      },
+      "TextData": {
+        "properties": {
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text"
+        ],
+        "title": "TextData",
+        "type": "object"
+      },
+      "TextDataSuccessEnvelope": {
+        "description": "Success or needs_review requires concrete data and error=null.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/TextData"
+          },
+          "error": {
+            "title": "Error",
+            "type": "null"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "needs_review"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "meta"
+        ],
+        "title": "TextDataSuccessEnvelope",
+        "type": "object"
+      },
+      "WisdomData": {
+        "properties": {
+          "review_reasons": {
+            "items": {
+              "enum": [
+                "OCR_REQUIRES_REVIEW",
+                "OCR_NO_TEXT"
+              ],
+              "type": "string"
+            },
+            "title": "Review Reasons",
+            "type": "array"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "review_reasons"
+        ],
+        "title": "WisdomData",
+        "type": "object"
+      },
+      "WisdomDataSuccessEnvelope": {
+        "description": "Success or needs_review requires concrete data and error=null.",
+        "properties": {
+          "data": {
+            "$ref": "#/components/schemas/WisdomData"
+          },
+          "error": {
+            "title": "Error",
+            "type": "null"
+          },
+          "meta": {
+            "$ref": "#/components/schemas/Meta"
+          },
+          "status": {
+            "enum": [
+              "success",
+              "needs_review"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "data",
+          "error",
+          "meta"
+        ],
+        "title": "WisdomDataSuccessEnvelope",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "麦田智囊 API",
+    "version": "1.0.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RootResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Root"
+      }
+    },
+    "/api/lesson-prep": {
+      "post": {
+        "deprecated": true,
+        "operationId": "legacyLessonPrep",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonPrepRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyTextResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          }
+        },
+        "summary": "Legacy Lessonprep"
+      }
+    },
+    "/api/material": {
+      "post": {
+        "deprecated": true,
+        "operationId": "legacyRecommendMaterial",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaterialRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyTextResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          }
+        },
+        "summary": "Legacy Recommendmaterial"
+      }
+    },
+    "/api/meeting-notes": {
+      "post": {
+        "deprecated": true,
+        "operationId": "legacyProcessMeetingNotes",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeetingNotesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyTextResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          }
+        },
+        "summary": "Legacy Processmeetingnotes"
+      }
+    },
+    "/api/quiz": {
+      "post": {
+        "deprecated": true,
+        "operationId": "legacyGenerateQuiz",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyTextResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          }
+        },
+        "summary": "Legacy Generatequiz"
+      }
+    },
+    "/api/route": {
+      "post": {
+        "deprecated": true,
+        "operationId": "legacyRouteIntent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RouteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyRouteResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          }
+        },
+        "summary": "Legacy Routeintent"
+      }
+    },
+    "/api/v1/lesson-prep": {
+      "post": {
+        "operationId": "lessonPrep",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LessonPrepRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDataSuccessEnvelope"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          }
+        },
+        "summary": "Lessonprep"
+      }
+    },
+    "/api/v1/material": {
+      "post": {
+        "operationId": "recommendMaterial",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MaterialRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDataSuccessEnvelope"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          }
+        },
+        "summary": "Recommendmaterial"
+      }
+    },
+    "/api/v1/meeting-notes": {
+      "post": {
+        "operationId": "processMeetingNotes",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MeetingNotesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDataSuccessEnvelope"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          }
+        },
+        "summary": "Processmeetingnotes"
+      }
+    },
+    "/api/v1/quiz": {
+      "post": {
+        "operationId": "generateQuiz",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QuizRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TextDataSuccessEnvelope"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          }
+        },
+        "summary": "Generatequiz"
+      }
+    },
+    "/api/v1/route": {
+      "post": {
+        "operationId": "routeIntent",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RouteRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RouteDataSuccessEnvelope"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          }
+        },
+        "summary": "Routeintent"
+      }
+    },
+    "/api/v1/wisdom-transfer": {
+      "post": {
+        "operationId": "wisdomTransfer",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_wisdomTransfer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WisdomDataSuccessEnvelope"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FailedEnvelope"
+                }
+              }
+            },
+            "description": "统一失败信封"
+          }
+        },
+        "summary": "V1 Wisdom Transfer"
+      }
+    },
+    "/api/wisdom-transfer": {
+      "post": {
+        "deprecated": true,
+        "operationId": "legacyWisdomTransfer",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_legacyWisdomTransfer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LegacyWisdomResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "上传失败"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "上传失败"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "detail": {}
+                  },
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Legacy error"
+          }
+        },
+        "summary": "Legacy Wisdom Transfer"
+      }
+    },
+    "/health": {
+      "get": {
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health Check"
+      }
+    }
+  }
+}

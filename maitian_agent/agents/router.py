@@ -13,6 +13,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
+from maitian_agent.agents.results import AgentResult, RouteData, RouteInput
 
 
 class RouterAgent(BaseAgent):
@@ -77,19 +78,12 @@ class RouterAgent(BaseAgent):
         Returns:
             识别的意图名称
         """
-        try:
-            intent_list = "\n".join([f"- {k}: {v}" for k, v in self.INTENTS.items()])
-
-            router_chain = self.build_chain("router")
-            intent = router_chain.invoke(
-                {"intent_list": intent_list, "user_input": user_input}
-            ).strip()
-
-            validated_intent = self._validate_intent(user_input, intent)
-            return validated_intent
-
-        except Exception:
-            return "general_chat"
+        if not user_input.strip():
+            raise ValueError("用户输入不能为空")
+        intent_list = "\n".join([f"- {k}: {v}" for k, v in self.INTENTS.items()])
+        router_chain = self.build_chain("router")
+        intent = router_chain.invoke({"intent_list": intent_list, "user_input": user_input}).strip()
+        return self._validate_intent(user_input, intent)
 
     def _validate_intent(self, user_input: str, intent: str) -> str:
         """验证意图识别结果
@@ -104,22 +98,18 @@ class RouterAgent(BaseAgent):
         if intent not in self.INTENTS:
             return "general_chat"
 
-        try:
-            validation_chain = self.build_chain("validation")
-            result = validation_chain.invoke(
-                {
-                    "user_input": user_input,
-                    "intent": intent,
-                    "intent_description": self.INTENTS.get(intent, ""),
-                }
-            ).strip()
+        validation_chain = self.build_chain("validation")
+        result = validation_chain.invoke(
+            {
+                "user_input": user_input,
+                "intent": intent,
+                "intent_description": self.INTENTS.get(intent, ""),
+            }
+        ).strip()
 
-            if "错误" in result or "不正确" in result:
-                return "general_chat"
-
-            return intent
-        except Exception:
-            return intent
+        if "错误" in result or "不正确" in result:
+            return "general_chat"
+        return intent
 
     def get_intent_info(self, intent: str) -> dict[str, Any]:
         """获取意图信息"""
@@ -129,13 +119,23 @@ class RouterAgent(BaseAgent):
             "available_intents": list(self.INTENTS.keys()),
         }
 
-    def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:
+    def run(self, input_model: RouteInput) -> AgentResult[RouteData]:
         """执行路由"""
-        user_input = input_data.get("user_input", "")
-        if not user_input:
-            return {"success": False, "error": "缺少用户输入"}
+        user_input = input_model.user_input
+        if not user_input.strip():
+            return AgentResult(
+                status="failed",
+                data=None,
+                error={"code": "VALIDATION_ERROR", "message": "请求参数无效，请检查后重试"},
+            )
 
         intent = self.route(user_input)
         intent_info = self.get_intent_info(intent)
-
-        return {"success": True, "intent": intent, "agent": self.name, "info": intent_info}
+        return AgentResult(
+            status="success",
+            data=RouteData(
+                intent=intent,
+                description=intent_info["description"],
+                available_intents=intent_info["available_intents"],
+            ),
+        )

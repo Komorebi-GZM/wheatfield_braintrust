@@ -6,13 +6,12 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from langchain_core.language_models import BaseChatModel
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 
 from maitian_agent.agents.base import BaseAgent
+from maitian_agent.agents.results import AgentResult, MeetingNotesInput, TextData
 
 
 class MeetingNotesAgent(BaseAgent):
@@ -90,14 +89,7 @@ class MeetingNotesAgent(BaseAgent):
         result = chain.invoke({"meeting_transcript": meeting_transcript})
         return result
 
-    def run(self, input_data: dict[str, Any], **kwargs) -> dict[str, Any]:
+    def run(self, input_model: MeetingNotesInput) -> AgentResult[TextData]:
         """执行教研纪要生成"""
-        if "audio_path" in input_data:
-            transcript = self.transcribe_audio(input_data["audio_path"])
-        elif "transcript" in input_data:
-            transcript = input_data["transcript"]
-        else:
-            return {"success": False, "error": "缺少音频文件或转写文本"}
-
-        result = self.process_meeting_notes(transcript)
-        return self._format_output(result)
+        result = self.process_meeting_notes(input_model.transcript)
+        return AgentResult(status="success", data=TextData(text=result))
