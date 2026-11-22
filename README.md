@@ -59,10 +59,10 @@ cp .env.example .env
 ```bash
 # 在两个终端分别启动 Web 界面与 API
 # 启动Web界面
-uv run streamlit run maitian_agent/frontend/streamlit_app.py
+uv run streamlit run maitian_agent/frontend/streamlit_app.py --server.address 127.0.0.1
 
 # 启动API服务
-uv run uvicorn maitian_agent.api.routes:app --host 0.0.0.0 --port 8000
+uv run uvicorn maitian_agent.api.routes:app --host 127.0.0.1 --port 8000
 ```
 
 ### Docker 一键启动
@@ -133,10 +133,6 @@ maitian_agent/
 
 - Python 3.12+
 - OpenAI API Key 或兼容API
-
-## 文档
-
-详细技术文档请参考 `开发文档/` 目录。
 
 ## License
 
