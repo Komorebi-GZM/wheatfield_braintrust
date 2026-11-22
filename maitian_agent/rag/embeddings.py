@@ -2,7 +2,7 @@
 嵌入模型管理（厂商无关，懒加载）
 
 - ``local``：默认 ``BAAI/bge-small-zh-v1.5``，使用 sentence-transformers。
-  sentence-transformers / HuggingFaceBgeEmbeddings 必须在函数内部懒加载，
+  sentence-transformers / HuggingFaceEmbeddings 必须在函数内部懒加载，
   缺失时抛出清晰错误，提示安装可选 extra：``uv sync --extra rag`` 或
   ``pip install 'maitian-agent[rag]'``。
 - ``openai_compatible``：使用 OpenAI 兼容嵌入，凭证未配置时回退到 LLM_*。
@@ -32,7 +32,7 @@ class EmbeddingNotConfiguredError(RuntimeError):
 
 
 class BGEEmbeddings(Embeddings):
-    """BGE 本地嵌入模型封装（HuggingFaceBgeEmbeddings 懒加载）。"""
+    """BGE 本地嵌入模型封装（HuggingFaceEmbeddings 懒加载）。"""
 
     def __init__(
         self,
@@ -53,14 +53,16 @@ class BGEEmbeddings(Embeddings):
         if self._embeddings is None:
             try:
                 import sentence_transformers  # type: ignore[import-not-found]  # noqa: F401
-                from langchain_community.embeddings import HuggingFaceBgeEmbeddings
+                from langchain_huggingface import HuggingFaceEmbeddings
 
-                self._embeddings = HuggingFaceBgeEmbeddings(
+                self._embeddings = HuggingFaceEmbeddings(
                     model_name=self.model_name,
                     model_kwargs={"device": "cpu"},
-                    encode_kwargs=self.encode_kwargs,
-                    query_instruction=self.query_instruction,
-                    embed_instruction=self.passage_instruction,
+                    encode_kwargs={**self.encode_kwargs, "prompt": self.passage_instruction},
+                    query_encode_kwargs={
+                        **self.encode_kwargs,
+                        "prompt": self.query_instruction,
+                    },
                 )
             except ImportError as exc:  # 未安装可选 extra
                 raise ImportError(

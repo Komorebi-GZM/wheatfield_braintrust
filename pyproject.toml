@@ -19,11 +19,10 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "streamlit>=1.37",
     "openai>=1.0.0",
-    "langchain>=0.2.0,<1.0",
-    "langchain-core>=0.2.0,<1.0",
-    "langchain-openai>=0.1.0,<1.0",
-    "langchain-community>=0.2.0,<1.0",
-    "langchain-chroma>=0.1.0,<1.0",
+    "langchain>=1.0.0,<2.0.0",
+    "langchain-core>=1.0.0,<2.0.0",
+    "langchain-openai>=1.0.0,<2.0.0",
+    "langchain-chroma>=1.0.0,<2.0.0",
     "chromadb>=0.4.0",
     "pillow>=13.0.0",
 ]
@@ -33,7 +32,7 @@ maitian-agent = "maitian_agent.cli:cli"
 
 [project.optional-dependencies]
 ocr-easyocr = ["easyocr>=1.7.0"]
-rag = ["sentence-transformers>=2.2.0"]
+rag = ["langchain-huggingface>=1.0.0,<2.0.0", "sentence-transformers>=5.2.0"]
 
 [dependency-groups]
 dev = [
