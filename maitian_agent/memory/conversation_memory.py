@@ -92,12 +92,16 @@ class ConversationMemory:
 
     def load_memory_variables(self) -> dict[str, Any]:
         """加载记忆变量"""
-        turns = [
-            self._messages[index : index + 2]
-            for index in range(0, len(self._messages) - 1, 2)
-            if isinstance(self._messages[index], HumanMessage)
-            and isinstance(self._messages[index + 1], AIMessage)
-        ]
+        turns = []
+        index = 0
+        while index < len(self._messages):
+            current = self._messages[index]
+            following = self._messages[index + 1] if index + 1 < len(self._messages) else None
+            if isinstance(current, HumanMessage) and isinstance(following, AIMessage):
+                turns.append([current, following])
+                index += 2
+                continue
+            index += 1
         count = max(0, self.conversation_window)
         recent_messages = [message for turn in turns[-count:] for message in turn] if count else []
         return {"history": recent_messages}

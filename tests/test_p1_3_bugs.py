@@ -81,6 +81,64 @@ def test_memory_window_contains_only_recent_complete_turns(tmp_path):
     ]
 
 
+def test_memory_skips_orphan_messages_and_keeps_latest_complete_turns(tmp_path):
+    (tmp_path / "chat_history_default.json").write_text(
+        json.dumps(
+            [
+                {"type": "human", "content": "q0"},
+                {"type": "ai", "content": "a0"},
+                {"type": "human", "content": "orphan"},
+                {"type": "human", "content": "q1"},
+                {"type": "ai", "content": "a1"},
+                {"type": "ai", "content": "orphan ai"},
+                {"type": "human", "content": "q2"},
+                {"type": "ai", "content": "a2"},
+            ]
+        ),
+        encoding="utf-8",
+    )
+    memory = ConversationMemory(conversation_window=2, persist_directory=str(tmp_path))
+
+    assert [(m.type, m.content) for m in memory.load_memory_variables()["history"]] == [
+        ("human", "q1"),
+        ("ai", "a1"),
+        ("human", "q2"),
+        ("ai", "a2"),
+    ]
+
+
+def test_memory_unfinished_turn_does_not_hide_complete_turns_after_reload(tmp_path):
+    memory = ConversationMemory(conversation_window=1, persist_directory=str(tmp_path))
+    memory.save_context({"human_input": "unfinished"}, {"response": ""})
+    memory.save_context({"human_input": "q1"}, {"response": "a1"})
+
+    expected = [("human", "q1"), ("ai", "a1")]
+    assert [(m.type, m.content) for m in memory.load_memory_variables()["history"]] == expected
+
+    restored = ConversationMemory(conversation_window=1, persist_directory=str(tmp_path))
+    assert [(m.type, m.content) for m in restored.load_memory_variables()["history"]] == expected
+    restored.save_context({"human_input": "q2"}, {"response": "a2"})
+    assert [(m.type, m.content) for m in restored.load_memory_variables()["history"]] == [
+        ("human", "q2"),
+        ("ai", "a2"),
+    ]
+
+
+def test_memory_clear_empties_history_after_reload(tmp_path):
+    memory = ConversationMemory(conversation_window=1, persist_directory=str(tmp_path))
+    memory.save_context({"human_input": "q"}, {"response": "a"})
+
+    memory.clear()
+
+    assert memory.load_memory_variables()["history"] == []
+    assert (
+        ConversationMemory(
+            conversation_window=1, persist_directory=str(tmp_path)
+        ).load_memory_variables()["history"]
+        == []
+    )
+
+
 def test_memory_sessions_are_isolated(tmp_path):
     first = ConversationMemory(session_id="teacher-a", persist_directory=str(tmp_path))
     second = ConversationMemory(session_id="teacher-b", persist_directory=str(tmp_path))
