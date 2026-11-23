@@ -250,6 +250,8 @@ $PY -m pytest tests -q -p no:cacheprovider --basetemp=.pytest_tmp
 
 ## 9. 下一轮实验安排（本次不执行）
 
+> 训练侧的需求、边界、配置与本机核验见 **`training_plan_v4.md`**（含"当前 ckpt-26 已是最佳、同配置重跑只复现"的判定）。本节只描述实验因子。
+
 **阶段 A：只在固定验证集（5 页）上做参数对比，不碰测试集。**
 
 1. 因子一 —— 生成上限：`max_new_tokens` 1024 vs 2048（其余完全不变），逐页记录
