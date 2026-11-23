@@ -19,6 +19,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from ocr.paths import image_id  # noqa: E402
 from ocr.postprocess import extract_formulas, normalize_output  # noqa: E402
 from scripts.evaluate import _heading_levels, cer, plain_text  # noqa: E402
 
@@ -48,12 +49,12 @@ def main():
     for line in open(REF, encoding="utf-8"):
         if line.strip():
             it = json.loads(line)
-            ref[os.path.basename(it["image"])] = it["markdown"]
+            ref[image_id(it["image"])] = it["markdown"]
 
     out = {"page": None, "arms": {}}
     for key, label, path in ARMS:
         rec = read_one(path)
-        name = os.path.basename(rec["image"])
+        name = image_id(rec["image"])
         ref_md = ref[name]
         ref_n, _ = normalize_output(ref_md)
         hyp_n, _ = normalize_output(rec["markdown"])

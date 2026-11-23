@@ -22,6 +22,7 @@ from typing import List, Dict, Tuple
 import sys
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from ocr.paths import image_id  # noqa: E402
 from ocr.postprocess import extract_formulas, normalize_output, validate_structure  # noqa: E402
 
 
@@ -58,7 +59,7 @@ def plain_text(markdown: str) -> str:
     t = re.sub(r"^\s{0,3}#{1,6}\s*", "", t, flags=re.MULTILINE)  # heading marks
     t = re.sub(r"^\s*(?:[-*+]|\d+\.)\s+", "", t, flags=re.MULTILINE)  # list marks
     t = re.sub(r"\|", " ", t)                                # table pipes
-    t = re.sub(r"^\s*:?-{3,}.*$", "", t, flags=re.MULTILINE)  # table sep
+    t = re.sub(r"^\s*\|?\s*:?-{3,}.*$", "", t, flags=re.MULTILINE)  # table sep (with optional leading pipe)
     t = re.sub(r"\s+", "", t)
     return t
 
@@ -111,14 +112,25 @@ def structure_metrics(ref_md: str, hyp_md: str) -> Dict:
 # Drive
 # --------------------------------------------------------------------------- #
 def _read(path: str) -> Dict[str, str]:
-    d = {}
+    """Read a jsonl manifest keyed by portable page id (basename).
+
+    Historical predictions in this repo store absolute Windows paths while the
+    reference manifest may be relative.  Comparing the full strings would report
+    every page as missing, so both sides are keyed by the same ``image_id``.
+    """
+    d: Dict[str, str] = {}
     with open(path, "r", encoding="utf-8") as f:
-        for line in f:
+        for lineno, line in enumerate(f, 1):
             line = line.strip()
             if not line:
                 continue
             it = json.loads(line)
-            d[str(it["image"])] = it["markdown"]
+            if "image" not in it or "markdown" not in it:
+                raise ValueError(f"{path}:{lineno}: record must contain image and markdown")
+            key = image_id(it["image"])
+            if key in d:
+                raise ValueError(f"{path}:{lineno}: duplicate image id {key!r}")
+            d[key] = it["markdown"]
     return d
 
 
@@ -173,7 +185,7 @@ def main():
                          "ref_normalization": ref_norm_info})
         # save error page
         if c > 0.15 or (fm["exact_match_rate"] is not None and fm["exact_match_rate"] < 0.8):
-            with open(os.path.join(args.out, f"err_{os.path.basename(img)}.md"), "w", encoding="utf-8") as ef:
+            with open(os.path.join(args.out, f"err_{image_id(img)}.md"), "w", encoding="utf-8") as ef:
                 ef.write("# REF\n" + ref_norm + "\n\n# HYP\n" + hyp_norm)
 
     def avg(xs):

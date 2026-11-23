@@ -27,6 +27,8 @@ from typing import Dict, List
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from ocr.paths import image_id  # noqa: E402
+
 
 def read_pred(path: str) -> Dict[str, Dict]:
     out = {}
@@ -36,7 +38,7 @@ def read_pred(path: str) -> Dict[str, Dict]:
             if not line:
                 continue
             it = json.loads(line)
-            out[os.path.basename(it["image"])] = it
+            out[image_id(it["image"])] = it
     return out
 
 
@@ -85,7 +87,7 @@ def page_row(name: str, rec: Dict, metric: Dict) -> Dict:
 def arm_summary(pred: Dict[str, Dict], metrics: Dict) -> Dict:
     rows = []
     for p in metrics["per_page"]:
-        name = os.path.basename(p["image"])
+        name = image_id(p["image"])
         rows.append(page_row(name, pred[name], p))
     scored = [r for r in rows if not r["excluded"]]
     return {

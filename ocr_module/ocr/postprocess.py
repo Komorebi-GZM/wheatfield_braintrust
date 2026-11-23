@@ -172,6 +172,7 @@ def otsl_to_markdown(otsl: str) -> str:
     rows: List[List[str]] = []
     cur: List[str] = []
     buf = ""
+    cell_open = False
     i = 0
     while i < len(text):
         matched = None
@@ -180,15 +181,32 @@ def otsl_to_markdown(otsl: str) -> str:
                 matched = tok
                 break
         if matched:
+            # A cell token starts a cell; the text that follows belongs to it.
+            # Do not append an empty cell merely because the token is the first
+            # thing in the stream (the previous implementation did, shifting
+            # every row one column to the right).
+            if buf.strip() and not cell_open:
+                cell_open = True
             if matched == "<nl>":
-                cur.append(buf.strip()); rows.append(cur); cur = []; buf = ""
+                if cell_open:
+                    cur.append(buf.strip())
+                if cur:
+                    rows.append(cur)
+                cur = []
+                buf = ""
+                cell_open = False
             else:
-                cur.append(buf.strip()); buf = ""
+                if cell_open:
+                    cur.append(buf.strip())
+                buf = ""
+                cell_open = True
             i += len(matched)
         else:
             buf += text[i]; i += 1
-    if buf.strip() or cur:
-        cur.append(buf.strip()); rows.append(cur)
+    if cell_open:
+        cur.append(buf.strip())
+    if cur:
+        rows.append(cur)
     if not rows:
         return otsl
     ncol = max(len(r) for r in rows)

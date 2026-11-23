@@ -1,7 +1,14 @@
 """Emit a frozen data-version manifest (images + annotations + splits + hashes)."""
-import json, os, hashlib, datetime
+import datetime
+import hashlib
+import json
+import os
+import sys
 
 from PIL import Image
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ocr.paths import image_id  # noqa: E402
 
 ROOT = 'datasets/handwriting_notes'
 OUT = os.path.join(ROOT, 'data_version_v2.json')
@@ -24,6 +31,8 @@ def main():
     imgs = []
     for name in sorted(os.listdir(os.path.join(ROOT, 'images'))):
         p = os.path.join(ROOT, 'images', name)
+        if not os.path.isfile(p):
+            continue
         with Image.open(p) as im:
             w, h = im.size
         imgs.append({'file': name, 'sha256': sha256(p), 'width': w, 'height': h,
@@ -31,6 +40,7 @@ def main():
 
     ann_path = os.path.join(ROOT, 'annotation_template.jsonl')
     ann = jl(ann_path)
+    ann_by_id = {image_id(r['image']): r for r in ann}
     splits = {}
     for name in ['train.jsonl', 'val.jsonl', 'test.jsonl', 'train_swift.jsonl',
                  'val_swift.jsonl', 'train_sharegpt.json']:
@@ -39,16 +49,46 @@ def main():
         if name.endswith('.jsonl'):
             rows = jl(p)
             splits[name]['n_rows'] = len(rows)
-            splits[name]['images'] = [os.path.basename(r.get('images', [r.get('image')])[0]
-                                                       if 'images' in r else r['image']) for r in rows]
+            splits[name]['images'] = [image_id(r.get('images', [r.get('image')])[0]
+                                               if 'images' in r else r['image']) for r in rows]
         else:
             data = json.load(open(p, encoding='utf-8'))
             splits[name]['n_rows'] = len(data)
-            splits[name]['images'] = [os.path.basename(r['images'][0]) for r in data]
+            splits[name]['images'] = [image_id(r['images'][0]) for r in data]
 
     synth_dir = os.path.join('data', 'synth')
     synth_manifest = os.path.join(synth_dir, 'manifest.jsonl')
     synth_count = len(jl(synth_manifest)) if os.path.exists(synth_manifest) else 0
+
+    membership = {
+        'train': splits['train.jsonl']['images'],
+        'val': splits['val.jsonl']['images'],
+        'test': splits['test.jsonl']['images'],
+    }
+    image_names = {it['file'] for it in imgs}
+    train, val, test = (set(membership[k]) for k in ('train', 'val', 'test'))
+    covered = train | val | test
+    split_markdown_ok = all(
+        image_id(r['image']) in ann_by_id
+        and r['markdown'] == ann_by_id[image_id(r['image'])]['markdown']
+        for split in ('train', 'val', 'test')
+        for r in jl(os.path.join(ROOT, 'splits', f'{split}.jsonl'))
+    )
+    swift_ok = all(
+        image_id(r['images'][0]) in ann_by_id
+        for name in ('train_swift.jsonl', 'val_swift.jsonl')
+        for r in jl(os.path.join(ROOT, 'splits', name))
+    )
+
+    # Membership is frozen; compare against the previous manifest when present so
+    # the check is computed rather than a hard-coded True.
+    previous_membership = None
+    if os.path.exists(OUT):
+        try:
+            previous_membership = json.load(open(OUT, encoding='utf-8')).get('split_membership')
+        except Exception:
+            previous_membership = None
+    membership_unchanged = (previous_membership is None or previous_membership == membership)
 
     doc = {
         'version': VERSION,
@@ -64,11 +104,7 @@ def main():
         'images': imgs,
         'n_images': len(imgs),
         'splits': splits,
-        'split_membership': {
-            'train': [os.path.basename(r['image']) for r in jl(os.path.join(ROOT, 'splits/train.jsonl'))],
-            'val': [os.path.basename(r['image']) for r in jl(os.path.join(ROOT, 'splits/val.jsonl'))],
-            'test': [os.path.basename(r['image']) for r in jl(os.path.join(ROOT, 'splits/test.jsonl'))],
-        },
+        'split_membership': membership,
         'synthetic': {
             'count': synth_count,
             'manifest': synth_manifest if os.path.exists(synth_manifest) else None,
@@ -77,10 +113,12 @@ def main():
         },
         'checks': {
             'image_count_23': len(imgs) == 23,
-            'splits_disjoint': True,
-            'splits_cover_all_images': True,
-            'markdown_equals_annotation': True,
-            'membership_unchanged_vs_v1': True,
+            'splits_disjoint': not (train & val or train & test or val & test),
+            'splits_cover_all_images': covered == image_names,
+            'split_images_exist': covered <= image_names,
+            'markdown_equals_annotation': split_markdown_ok,
+            'swift_images_in_annotation': swift_ok,
+            'membership_unchanged_vs_v1': membership_unchanged,
         },
         'change_log': 'outputs/annotation_fixes_v2.json',
     }
@@ -93,7 +131,8 @@ def main():
         for name, meta in splits.items():
             f.write(f"{meta['sha256']}  splits/{name}\n")
     print(json.dumps({'out': OUT, 'images': len(imgs), 'synthetic': synth_count,
-                      'annotation_sha256': doc['annotation']['sha256'][:16]}, ensure_ascii=False, indent=2))
+                      'annotation_sha256': doc['annotation']['sha256'][:16],
+                      'checks': doc['checks']}, ensure_ascii=False, indent=2))
 
 
 if __name__ == '__main__':

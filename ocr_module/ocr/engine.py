@@ -27,6 +27,7 @@ import subprocess
 import time
 from typing import Dict, List, Optional, Tuple
 
+from .paths import resolve_image_path
 from .postprocess import normalize_output, postprocess, strip_outer_fence
 from .prompts import INSTRUCTION, build_messages
 from .schema import make_result
@@ -171,8 +172,23 @@ class OCREngine:
     def _apply_pixel_budget(self):
         """Set the pixel budget through the image processor (training parity)."""
         ip = self._processor.image_processor
-        size = dict(ip.size)
-        ip.size = {"shortest_edge": size["shortest_edge"], "longest_edge": self.max_pixels}
+        size = getattr(ip, "size", None)
+        if isinstance(size, dict):
+            size = dict(size)
+            size["longest_edge"] = self.max_pixels
+            if "shortest_edge" not in size:
+                if "height" in size and "width" in size:
+                    size["shortest_edge"] = min(size["height"], size["width"])
+                else:
+                    # Qwen-family image processors use a shortest-edge floor.
+                    # Keep an explicit fallback instead of KeyError-ing on a
+                    # processor whose size dict only carries longest_edge.
+                    size["shortest_edge"] = 56
+            ip.size = size
+        elif isinstance(size, (list, tuple)) and len(size) == 2:
+            ip.size = {"shortest_edge": min(size), "longest_edge": self.max_pixels}
+        else:
+            ip.size = {"shortest_edge": 56, "longest_edge": self.max_pixels}
 
     def _load(self):
         if self._model is not None:
@@ -238,7 +254,16 @@ class OCREngine:
 
         cfg = json.load(open(os.path.join(adapter_dir, "adapter_config.json"), encoding="utf-8"))
         weights_path = os.path.join(adapter_dir, "adapter_model.safetensors")
-        disk = load_file(weights_path)
+        if os.path.isfile(weights_path):
+            disk = load_file(weights_path)
+        else:
+            bin_path = os.path.join(adapter_dir, "adapter_model.bin")
+            if not os.path.isfile(bin_path):
+                raise FileNotFoundError(
+                    f"adapter weights not found in {adapter_dir}: "
+                    "expected adapter_model.safetensors or adapter_model.bin")
+            weights_path = bin_path
+            disk = torch.load(bin_path, map_location="cpu")
 
         # -- check 1+2: normalised key match and value equality --------------
         live_sd = self._model.state_dict()
@@ -368,6 +393,7 @@ class OCREngine:
         self._load()
         import torch
 
+        image_path = resolve_image_path(image_path)
         started = time.perf_counter()
         if torch.cuda.is_available():
             torch.cuda.reset_peak_memory_stats()
@@ -376,8 +402,13 @@ class OCREngine:
         inputs, meta = self._prepare(image_path)
         prompt_text = self._processor.tokenizer.decode(inputs["input_ids"][0].tolist(),
                                                        skip_special_tokens=False)
-        gc_eos = self._model.generation_config.eos_token_id
-        eos_id = int(gc_eos[0] if isinstance(gc_eos, (list, tuple)) else gc_eos)
+        gc = getattr(self._model, "generation_config", None)
+        gc_eos = getattr(gc, "eos_token_id", None) if gc is not None else None
+        if gc_eos is None:
+            gc_eos = self._processor.tokenizer.eos_token_id
+        if isinstance(gc_eos, (list, tuple)):
+            gc_eos = gc_eos[0] if gc_eos else None
+        eos_id = int(gc_eos) if gc_eos is not None else None
 
         with torch.no_grad():
             out = self._model.generate(
@@ -391,10 +422,11 @@ class OCREngine:
             )
         gen = out.sequences[:, inputs["input_ids"].shape[1]:]
         gen_ids = gen[0].tolist()
-        raw_text = self._processor.tokenizer.decode(gen, skip_special_tokens=True)[0]
+        decoded = self._processor.tokenizer.decode(gen[0], skip_special_tokens=True)
+        raw_text = decoded[0] if isinstance(decoded, list) else decoded
         mem_after = gpu_memory_used_mib()
 
-        stopped_on_eos = bool(gen_ids) and gen_ids[-1] == eos_id
+        stopped_on_eos = bool(gen_ids) and eos_id is not None and gen_ids[-1] == eos_id
         hit_cap = len(gen_ids) >= self.max_new_tokens
         finish_reason = "eos" if stopped_on_eos else ("length" if hit_cap else "other")
 
@@ -402,7 +434,7 @@ class OCREngine:
         pp = postprocess(markdown)
         rep = detect_repetition(markdown)
 
-        model_tag = f"{os.path.basename(self.base_model)}" + (
+        model_tag = f"{os.path.basename(os.path.normpath(self.base_model))}" + (
             f"+{os.path.basename(os.path.normpath(self.adapter_dir))}" if self.adapter_dir else ""
         )
         self.last_run = {
@@ -499,11 +531,16 @@ _default_engine: Optional[OCREngine] = None
 
 
 def recognize_page(image_path: str, adapter_dir: Optional[str] = None, **kwargs):
-    """One-shot helper using a module-level default engine."""
+    """One-shot helper using a module-level default engine.
+
+    The default engine is reused only when no configuration override is given;
+    otherwise a temporary engine is built so a later call cannot silently inherit
+    an earlier call's ``max_new_tokens`` / ``max_pixels`` / system-prompt choice.
+    """
     global _default_engine
-    if _default_engine is None or adapter_dir is not None:
+    if _default_engine is None or adapter_dir is not None or kwargs:
         eng = OCREngine(adapter_dir=adapter_dir, **kwargs)
-        if adapter_dir is None:
+        if adapter_dir is None and not kwargs:
             _default_engine = eng
         return eng.recognize_page(image_path)
     return _default_engine.recognize_page(image_path)

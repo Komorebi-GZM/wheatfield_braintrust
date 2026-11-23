@@ -99,6 +99,8 @@ def _load_font(path: str | None, size: int) -> ImageFont.FreeTypeFont:
         "/System/Library/Fonts/PingFang.ttc",
         "/System/Library/Fonts/Supplemental/Songti.ttc",
         "/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSerifCJK-Regular.ttc",
+        "/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
         "C:/Windows/Fonts/msyh.ttc",
     ]
     for c in candidates:
@@ -111,7 +113,12 @@ def _load_font(path: str | None, size: int) -> ImageFont.FreeTypeFont:
 
 
 def _render_formula(latex: str, width: int) -> Image.Image:
-    """Render a LaTeX formula to a small image (white bg) or text fallback."""
+    """Render a LaTeX formula to a small image (white bg) or text fallback.
+
+    matplotlib/mathtext gives the most realistic result, but the generator must
+    still work without it (the CLI advertises that fallback).  The fallback draws
+    the raw LaTeX source, which is deliberately weaker supervision, not a crash.
+    """
     if _HAS_MPL:
         try:
             fig = plt.figure(figsize=(6, 0.8), dpi=200)
@@ -121,11 +128,23 @@ def _render_formula(latex: str, width: int) -> Image.Image:
             fig.savefig(buf, format="png", transparent=False, facecolor="white")
             plt.close(fig)
             buf.seek(0)
-            im = Image.open(buf).convert("RGB")
-            return im
-        except Exception as exc:
-            raise RuntimeError(f"Cannot render formula: {latex}") from exc
-    raise RuntimeError("matplotlib is required to render formulas faithfully")
+            return Image.open(buf).convert("RGB")
+        except Exception:
+            # Fall through to the text renderer below rather than aborting a
+            # whole synthetic-data run on one unsupported mathtext expression.
+            try:
+                plt.close(fig)
+            except Exception:
+                pass
+
+    font = _load_font(None, 22)
+    probe = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+    bbox = probe.textbbox((0, 0), latex, font=font)
+    text_w = max(1, bbox[2] - bbox[0])
+    text_h = max(1, bbox[3] - bbox[1])
+    im = Image.new("RGB", (min(max(width, 1), text_w + 16), text_h + 12), (255, 255, 255))
+    ImageDraw.Draw(im).text((8, 4), latex, fill=(20, 20, 20), font=font)
+    return im
 
 
 def _paper_bg(w: int, h: int, rng: random.Random) -> Image.Image:
@@ -209,7 +228,7 @@ def main():
             mf.write(json.dumps({"image": rel, "markdown": md, "label_version": 2}, ensure_ascii=False) + "\n")
     print(f"[build_synth] wrote {args.count} pages -> {args.out} (manifest: {manifest_path})")
     if not _HAS_MPL:
-        print("[build_synth] matplotlib 不可用：公式以纯文本近似渲染；建议安装 matplotlib 以提高逼真度")
+        print("[build_synth] matplotlib 不可用：公式已回退为纯文本渲染；建议安装 matplotlib 以提高逼真度")
 
 
 if __name__ == "__main__":

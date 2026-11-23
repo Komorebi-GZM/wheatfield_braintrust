@@ -1,6 +1,6 @@
 """Output schema for the OCR engine result."""
 
-from typing import TypedDict, List
+from typing import List, NotRequired, TypedDict
 
 
 class OCRResult(TypedDict):
@@ -10,6 +10,7 @@ class OCRResult(TypedDict):
     tables: int            # 检测到的表格数量
     formulas: int          # 检测到的公式数量
     model: str             # 模型标识（基座 + adapter 版本）
+    raw_output: NotRequired[str]  # 模型原始输出（未做 wrapper/公式定界符归一化）
 
 
 OUTPUT_SCHEMA = {
@@ -21,6 +22,7 @@ OUTPUT_SCHEMA = {
         "tables": {"type": "integer", "minimum": 0},
         "formulas": {"type": "integer", "minimum": 0},
         "model": {"type": "string"},
+        "raw_output": {"type": "string"},
     },
     "required": ["markdown", "structure_ok", "latex_issues", "tables", "formulas", "model"],
     "additionalProperties": False,

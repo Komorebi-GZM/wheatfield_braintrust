@@ -21,8 +21,13 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import random
+import re
+from pathlib import Path
 from typing import List, Dict
+
+import sys
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ocr.paths import image_id  # noqa: E402
 
 USER_INSTRUCTION = "<image>\n请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。"
 
@@ -39,12 +44,43 @@ def _read_jsonl(path: str) -> List[Dict]:
     return out
 
 
+def _resolve_image(p: str, base: str) -> str:
+    """Resolve an annotation path against cwd and its owning base directory."""
+    p = str(p)
+    direct = Path(p)
+    if direct.is_file():
+        return str(direct.resolve())
+    if re.match(r"^[A-Za-z]:[\\/]", p):
+        # Historical Windows manifest on a POSIX checkout: locate by basename.
+        name = image_id(p)
+        for cand in (Path(base) / "images" / name, Path(base) / name,
+                     Path.cwd() / "datasets" / "handwriting_notes" / "images" / name):
+            if cand.is_file():
+                return str(cand.resolve())
+    for cand in (Path(base) / p, Path.cwd() / p):
+        if cand.is_file():
+            return str(cand.resolve())
+    # Keep an absolute path so the later isfile() check reports the real target.
+    return str((Path(base) / p).resolve())
+
+
+def _portable(p: str) -> str:
+    """Prefer a cwd-relative POSIX path; keep absolute for files outside cwd."""
+    rel = os.path.relpath(p, os.getcwd())
+    if rel == os.pardir or rel.startswith(os.pardir + os.sep):
+        return p
+    return Path(rel).as_posix()
+
+
 def _rebase(items: List[Dict], base: str) -> None:
-    """Make image paths absolute relative to their owning base dir (in place)."""
+    """Make image paths portable and resolvable (in place).
+
+    Older exports embedded absolute Windows paths.  New exports are relative to
+    the directory the command is run from (normally ``ocr_module/``), so a fresh
+    checkout works on Linux/macOS/Windows without rewriting the JSON by hand.
+    """
     for it in items:
-        p = str(it["image"])
-        if not os.path.isabs(p):
-            it["image"] = os.path.abspath(os.path.join(base, p))
+        it["image"] = _portable(_resolve_image(str(it["image"]), base))
 
 
 def _to_swift(item: Dict) -> Dict:

@@ -26,6 +26,7 @@ import sys
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from ocr.paths import image_id  # noqa: E402
 from ocr.postprocess import normalize_output  # noqa: E402
 from scripts.evaluate import cer, levenshtein, plain_text  # noqa: E402
 
@@ -41,7 +42,7 @@ def text_with_math(md: str) -> str:
     t = re.sub(r"^\s{0,3}#{1,6}\s*", "", t, flags=re.MULTILINE)
     t = re.sub(r"^\s*(?:[-*+]|\d+\.)\s+", "", t, flags=re.MULTILINE)
     t = re.sub(r"\|", " ", t)
-    t = re.sub(r"^\s*:?-{3,}.*$", "", t, flags=re.MULTILINE)
+    t = re.sub(r"^\s*\|?\s*:?-{3,}.*$", "", t, flags=re.MULTILINE)
     t = re.sub(r"\s+", "", t)
     return t
 
@@ -58,14 +59,14 @@ def main():
     for line in open(args.ref, encoding="utf-8"):
         if line.strip():
             it = json.loads(line)
-            ref[os.path.basename(it["image"])] = it["markdown"]
+            ref[image_id(it["image"])] = it["markdown"]
 
     def load(p):
         d = {}
         for line in open(p, encoding="utf-8"):
             if line.strip():
                 it = json.loads(line)
-                d[os.path.basename(it["image"])] = it["markdown"]
+                d[image_id(it["image"])] = it["markdown"]
         return d
 
     arms = {"base": load(args.base_pred), "finetuned": load(args.ft_pred)}
@@ -109,7 +110,7 @@ def main():
             "per_page": rows,
         }
 
-    os.makedirs(os.path.dirname(args.out), exist_ok=True)
+    os.makedirs(os.path.dirname(os.path.abspath(args.out)), exist_ok=True)
     with open(args.out, "w", encoding="utf-8") as f:
         json.dump(out, f, ensure_ascii=False, indent=2)
 
@@ -123,9 +124,9 @@ def main():
     f_ = {x["page"]: x for x in out["arms"]["finetuned"]["per_page"]}
     for img in b:
         if "excluded" in b[img]:
-            print(f"  {os.path.basename(img):32s} excluded")
+            print(f"  {image_id(img):32s} excluded")
             continue
-        print(f"  {os.path.basename(img):32s} no_math {b[img]['cer_no_math']:.4f}->{f_[img]['cer_no_math']:.4f}"
+        print(f"  {image_id(img):32s} no_math {b[img]['cer_no_math']:.4f}->{f_[img]['cer_no_math']:.4f}"
               f"   with_math {b[img]['cer_with_math']:.4f}->{f_[img]['cer_with_math']:.4f}"
               f"   hyp_chars(with_math) {b[img]['hyp_chars_with_math']}->{f_[img]['hyp_chars_with_math']}")
     print("WROTE", args.out)

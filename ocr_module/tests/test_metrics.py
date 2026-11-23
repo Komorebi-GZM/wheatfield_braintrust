@@ -29,6 +29,8 @@ def test_plain_text_strips_markup():
     t = plain_text(md)
     assert "标题" in t and "要点一" in t
     assert "$$" not in t and "#" not in t
+    # A table separator row must not leak its dashes into the CER text.
+    assert "---" not in t
 
 
 def test_extract_and_norm_formula():
