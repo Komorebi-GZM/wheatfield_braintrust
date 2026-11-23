@@ -23,6 +23,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ocr.engine import OCREngine  # noqa: E402
+from ocr.paths import image_id  # noqa: E402
 
 CKPT = 'outputs/qlora-v1/v2-20261115-114258/checkpoint-4'
 
@@ -31,7 +32,7 @@ def summarise(arm, page, r, ref_tokens):
     g, im, rep, pp = r['generation'], r['image'], r['repetition'], r['postprocess']
     return {
         'arm': arm,
-        'page': os.path.basename(page),
+        'page': image_id(page),
         'image': page,
         'ref_supervised_tokens': ref_tokens,
         'grid': im['image_grid_thw'],
@@ -85,9 +86,9 @@ def main():
     def run_arm(arm):
         for row in rows:
             page = row['image']
-            ref_tok = sup.get(os.path.basename(page), {}).get('supervised_tokens')
+            ref_tok = sup.get(image_id(page), {}).get('supervised_tokens')
             result = engine.recognize_page(page)
-            rec = {'case': f'{args.split}_{arm}_{Path(page).stem}', 'arm': arm,
+            rec = {'case': f'{args.split}_{arm}_{Path(image_id(page)).stem}', 'arm': arm,
                    'image': page, 'markdown': result['markdown'],
                    'raw_output': result.get('raw_output'), 'run': engine.last_run}
             p = out_dir / f'{rec["case"]}.json'

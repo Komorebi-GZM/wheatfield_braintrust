@@ -1,5 +1,8 @@
 """Inventory predictions + training artifacts into a single JSON report."""
-import json, os, hashlib, datetime
+import json, os, sys, hashlib, datetime
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ocr.paths import image_id  # noqa: E402
 
 RUN = 'outputs/qlora-v1/v2-20261115-114258'
 TEST = 'datasets/handwriting_notes/splits/test.jsonl'
@@ -26,9 +29,9 @@ def sha(p):
 
 def main():
     test = jl(TEST)
-    test_set = {os.path.basename(r['image']) for r in test}
-    ref_len = {os.path.basename(r['image']): len(r['markdown']) for r in test}
-    ref_sq = {os.path.basename(r['image']): r['markdown'].count('□') for r in test}
+    test_set = {image_id(r['image']) for r in test}
+    ref_len = {image_id(r['image']): len(r['markdown']) for r in test}
+    ref_sq = {image_id(r['image']): r['markdown'].count('□') for r in test}
 
     preds = {}
     store = {}
@@ -37,7 +40,7 @@ def main():
         if rows is None:
             preds[p] = {'exists': False}
             continue
-        imgs = [os.path.basename(r['image']) for r in rows]
+        imgs = [image_id(r['image']) for r in rows]
         store[p] = {i: r['markdown'] for i, r in zip(imgs, rows)}
         preds[p] = {
             'exists': True,
@@ -117,14 +120,14 @@ def main():
         'generated_at': datetime.datetime.now().isoformat(timespec='seconds'),
         'checked_by': '脚本扫描 + 人工核对（未运行模型）',
         'test_manifest': {'file': TEST, 'n_pages': len(test),
-                          'pages': [os.path.basename(r['image']) for r in test]},
+                          'pages': [image_id(r['image']) for r in test]},
         'predictions': preds,
         'baseline_4096_vs_512': cmp,
         'training': {
             'run_dir': RUN,
             'exists': os.path.exists(RUN),
             'checkpoints': ckpts,
-            'best_checkpoint_recorded': os.path.basename((tail or summary).get('best_model_checkpoint', '')),
+            'best_checkpoint_recorded': image_id((tail or summary).get('best_model_checkpoint', '')),
             'last_checkpoint_alias_present': os.path.exists(os.path.join(RUN, 'last-checkpoint')),
             'train_args': train_args,
             'log': {

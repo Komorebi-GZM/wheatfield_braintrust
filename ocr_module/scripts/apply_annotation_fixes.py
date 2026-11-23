@@ -5,12 +5,15 @@ so a stale/hand-edited file can never be silently half-patched.
 """
 import json, os, sys, hashlib, datetime
 
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from ocr.paths import image_id  # noqa: E402
+
 SRC = 'datasets/handwriting_notes/annotation_template.jsonl'
 BAK = 'datasets/handwriting_notes/annotation_template.v1.bak.jsonl'
 LOG = 'outputs/annotation_fixes_v2.json'
 
 PATCHES = [
-    # (page basename, old, new, reason)
+    # (page image id, old, new, reason)
     ('IMG_20261104_200854.jpg',
      '主要参数：初始阻值 $R_0$、灵敏度系数 $K$、有效标距；机械滞回、疲劳寿命、绝缘电阻。',
      '主要参数：初始阻值 $R_0$、灵敏度系数 $K$、标称标距；机械滞回、疲劳寿命、绝缘电阻。',
@@ -73,7 +76,7 @@ def sha(path):
 
 def main():
     rows = [json.loads(l) for l in open(SRC, encoding='utf-8') if l.strip()]
-    by = {os.path.basename(r['image']): r for r in rows}
+    by = {image_id(r['image']): r for r in rows}
     if not os.path.exists(BAK):
         with open(BAK, 'w', encoding='utf-8', newline='\n') as f:
             for r in rows:
