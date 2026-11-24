@@ -1,0 +1,201 @@
+{
+  "case": "val_ft_IMG_20261104_235955",
+  "arm": "ft",
+  "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235955.jpg",
+  "markdown": "```markdown\n# 山东大学\n\n## 基础课：\n- $S_{PC} \\rightarrow S_{PC}$ 或 $S_{PC} \\rightarrow S_{PC}$ 或 $S_{PC} \\rightarrow S_{PC}$ 或 $S_{PC} \\rightarrow S_{PC}$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n\n## 基础课：\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n\n## 基础课：\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n\n## 基础课：\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n\n## 基础课：\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n\n## 基础课：\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n\n## 基础课：\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n\n## 基础课：\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n\n## 基础课：\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n\n## 基础课：\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n- $A_{X} \\leftarrow (A_{X}^{(0)})$\n\n## 基础课：\n- \\(A_{X} \\leftarrow (A_{X",
+  "raw_output": "```markdown\n# 山东大学\n\n## 基础课：\n- \\(S_{PC} \\rightarrow S_{PC}\\) 或 \\(S_{PC} \\rightarrow S_{PC}\\) 或 \\(S_{PC} \\rightarrow S_{PC}\\) 或 \\(S_{PC} \\rightarrow S_{PC}\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n\n## 基础课：\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n\n## 基础课：\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n\n## 基础课：\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n\n## 基础课：\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n\n## 基础课：\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n\n## 基础课：\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n\n## 基础课：\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n\n## 基础课：\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n\n## 基础课：\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n- \\(A_{X} \\leftarrow (A_{X}^{(0)})\\)\n\n## 基础课：\n- \\(A_{X} \\leftarrow (A_{X",
+  "run": {
+    "protocol_version": "v2",
+    "engine": "ocr.engine/OCREngine",
+    "base_model": "SeerRay-Lab/Xiaomi-OCR-0",
+    "load_in_4bit": true,
+    "adapter": {
+      "adapter_dir": "outputs/qlora-v1/v2-20261115-114258/checkpoint-4",
+      "adapter_config_sha256": "4119d0c886f69f8e15575535eade792e3d3cc520912e61d7c484543c3e111430",
+      "adapter_weights_sha256": "8121f7abfdaf2b997e2e3e0eb66d2f644a4e40fac5439dd38f869c19055fbcbb",
+      "r": 8,
+      "lora_alpha": 32.0,
+      "lora_dropout": 0.05,
+      "target_modules": "^(model\\.language_model(?=\\.).*\\.(in_proj_qkv|gate_proj|k_proj|down_proj|out_proj|in_proj_a|q_proj|v_proj|in_proj_z|in_proj_b|up_proj|o_proj))$",
+      "base_model_name_or_path": "C:\\Users\\48769\\.cache\\huggingface\\hub\\models--SeerRay-Lab--Xiaomi-OCR-0\\snapshots\\bbd8cf8d21f256b3644b44cb860f3a7cecb93c30",
+      "n_tensors_on_disk": 372,
+      "n_lora_tensors_live": 372,
+      "n_matched": 372,
+      "missing_in_model": 0,
+      "missing_examples": [],
+      "extra_in_model": 0,
+      "value_mismatched": 0,
+      "value_mismatch_examples": [],
+      "max_abs_diff": 0.0,
+      "peft_loader_missing_keys": 474,
+      "peft_loader_missing_lora_keys": 0,
+      "peft_loader_missing_note": "missing_keys 里绝大多数是未提供的 4bit 基座权重，只把 lora_ 前缀的缺失视为失败",
+      "peft_loader_unexpected_keys": 0,
+      "n_lora_modules": 372,
+      "lora_modules_outside_language_model": 0,
+      "lora_B_nonzero": 186,
+      "lora_B_all_zero": 0,
+      "lora_params_disk": 5411328,
+      "lora_params_live": 5411328,
+      "trainable_params": 0,
+      "model_training_mode": false,
+      "inference_uses_no_grad": true,
+      "weights_verified": true
+    },
+    "image_path": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235955.jpg",
+    "prompt": {
+      "system_prompt_used": false,
+      "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+      "prompt_sha256": "557b0658a32f16024d414d155f18ce41997f5e2d0f4c19e10564d4da470c9354",
+      "prompt_tokens": 1008,
+      "n_image_pad_tokens": 972
+    },
+    "image": {
+      "sha256": "373f55638b7b77e665de451c88a359f51f949b328b1c1a8ede675dd3e15e601a",
+      "original_size_wh": [
+        4096,
+        3072
+      ],
+      "max_pixels": 1024000,
+      "patch_size": 16,
+      "merge_size": 2,
+      "image_grid_thw": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "processed_size_wh": [
+        1152,
+        864
+      ]
+    },
+    "generation": {
+      "max_new_tokens": 1024,
+      "do_sample": false,
+      "generated_tokens": 1024,
+      "eos_token_id": 248046,
+      "last_token_id": 55,
+      "stopped_on_eos": false,
+      "hit_length_cap": true,
+      "finish_reason": "length"
+    },
+    "repetition": {
+      "line_run": {
+        "max_consecutive": 7,
+        "threshold": 5,
+        "flagged": true,
+        "sample": "- $A_{X} \\leftarrow (A_{X}^{(0)})$"
+      },
+      "unit_run": {
+        "max_consecutive": 7,
+        "threshold": 5,
+        "flagged": true,
+        "sample": "$\n- $A_{X} \\leftarrow (A_{X}^{(0)})"
+      },
+      "template_line_run": {
+        "max_consecutive": 7,
+        "threshold": 5,
+        "flagged": true,
+        "sample": "- $A_{X} \\leftarrow (A_{X}^{(#)})$",
+        "raw_sample": "- $A_{X} \\leftarrow (A_{X}^{(0)})$",
+        "rule": "连续 >=5 行仅数字不同（数字替换为 # 后相同），表格行不参与"
+      },
+      "ngram": {
+        "n": 10,
+        "top_count": 45,
+        "coverage": 0.2494,
+        "thresholds": [
+          20,
+          0.25
+        ],
+        "flagged": false,
+        "sample": "A_{X} \\lef"
+      },
+      "detected": true
+    },
+    "postprocess": {
+      "raw_chars": 1900,
+      "wrapper_stripped": null,
+      "display_math_converted": 0,
+      "inline_math_converted": 48,
+      "normalized_chars": 1804,
+      "markdown_chars": 1804,
+      "changed": true
+    },
+    "perf": {
+      "elapsed_seconds": 110.295,
+      "peak_cuda_allocated_bytes": 1058178048,
+      "peak_cuda_reserved_bytes": 1103101952,
+      "gpu_memory_used_before_mib": [
+        2570,
+        8188
+      ],
+      "gpu_memory_used_after_mib": [
+        2657,
+        8188
+      ],
+      "gpu_memory_note": "nvidia-smi memory.used 为整卡占用（含其它进程），Windows WDDM 下不等于本进程独占显存"
+    },
+    "structure_ok": true,
+    "latex_issues": [
+      "公式#0 括号/结构不平衡: 'S_{PC} \\\\rightarrow S_{PC}'",
+      "公式#1 括号/结构不平衡: 'S_{PC} \\\\rightarrow S_{PC}'",
+      "公式#2 括号/结构不平衡: 'S_{PC} \\\\rightarrow S_{PC}'",
+      "公式#3 括号/结构不平衡: 'S_{PC} \\\\rightarrow S_{PC}'",
+      "公式#4 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#5 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#6 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#7 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#8 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#9 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#10 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#11 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#12 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#13 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#14 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#15 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#16 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#17 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#18 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#19 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#20 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#21 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#22 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#23 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#24 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#25 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#26 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#27 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#28 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#29 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#30 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#31 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#32 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#33 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#34 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#35 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#36 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#37 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#38 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#39 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#40 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#41 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#42 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#43 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#44 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#45 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#46 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'",
+      "公式#47 括号/结构不平衡: 'A_{X} \\\\leftarrow (A_{X}^{(0)})'"
+    ],
+    "stats": {
+      "headings": 12,
+      "list_items": 46,
+      "tables": 0,
+      "formulas": 48
+    }
+  }
+}

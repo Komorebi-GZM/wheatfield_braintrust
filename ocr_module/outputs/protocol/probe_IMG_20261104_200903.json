@@ -1,0 +1,131 @@
+{
+  "page": "IMG_20261104_200903.jpg",
+  "page_sha256": "4f11d80204e40c4d727a84507dcfca4672f29f1423a2db2c956bc8a0ea52d7ff",
+  "model_dir": "C:\\Users\\48769\\.cache\\huggingface\\hub\\models--SeerRay-Lab--Xiaomi-OCR-0\\snapshots\\bbd8cf8d21f256b3644b44cb860f3a7cecb93c30",
+  "max_pixels": 1024000,
+  "original_size_wh": [
+    4096,
+    3072
+  ],
+  "tokens": {
+    "image_pad": 248056,
+    "im_end": 248046,
+    "endoftext": 248044,
+    "vision_start": 248053,
+    "eos_token": "<|im_end|>",
+    "pad_token": "<|endoftext|>"
+  },
+  "A_swift_train": {
+    "n_tokens": 1012,
+    "grid": [
+      [
+        1,
+        54,
+        72
+      ]
+    ],
+    "n_image_pad": 972,
+    "tail_ids": [
+      248069,
+      271,
+      97252,
+      96022,
+      248046,
+      198
+    ],
+    "tail_text_compact": "<|im_start|>user\n<|vision_start|><|vision_end|>\n请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n占位<|im_end|>\n",
+    "head_text_compact": "<|im_start|>user\n<|vision_start|><|vision_end|>\n请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。<|im_end|>\n<|im_start|>assistant"
+  },
+  "B_repo_inference": {
+    "n_tokens": 1252,
+    "grid": [
+      [
+        1,
+        54,
+        72
+      ]
+    ],
+    "n_image_pad": 972,
+    "tail_ids": [
+      74455,
+      198,
+      248068,
+      271,
+      248069,
+      271
+    ],
+    "tail_text_compact": "示：简述]` 占位。<|im_end|>\n<|im_start|>user\n<|vision_start|><|vision_end|>请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+    "head_text_compact": "<|im_start|>system\n你是一名专业的手写课程笔记 OCR 与结构化助手。\n请把用户提供的**手写笔记图片**转写为**结构化 Markdown**，并严格遵守：\n\n1. 只输出 Markdown 正文，不要任何解释性前后缀、"
+  },
+  "C_aligned": {
+    "n_tokens": 1008,
+    "grid": [
+      [
+        1,
+        54,
+        72
+      ]
+    ],
+    "n_image_pad": 972,
+    "tail_ids": [
+      74455,
+      198,
+      248068,
+      271,
+      248069,
+      271
+    ],
+    "tail_text_compact": "<|im_start|>user\n<|vision_start|><|vision_end|>\n请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+    "head_text_compact": "<|im_start|>user\n<|vision_start|><|vision_end|>\n请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。<|im_end|>\n<|im_start|>assistant"
+  },
+  "assistant_prefix_check": {
+    "C_ends_with_A_header": true,
+    "C_tail_text": "\n<|im_start|>assistant\n<think>\n\n</think>\n\n",
+    "answer_starts_right_after_prompt": [
+      97252,
+      96022
+    ]
+  },
+  "stop_token_check": {
+    "A_tail4_ids": [
+      97252,
+      96022,
+      248046,
+      198
+    ],
+    "A_tail4_text": "占位<|im_end|>\n",
+    "A_second_last_is_im_end": true,
+    "A_last_is_newline": true,
+    "im_end_equals_eos_token_id": true,
+    "note": "监督序列以 <|im_end|>\\n 结束；生成时以 im_end(248046) 为 EOS 提前终止，尾随换行不参与生成"
+  },
+  "thinking_check": {
+    "assistant_header_text": "<|im_start|>assistant\n<think>\n\n</think>\n\n",
+    "assistant_header_ids": [
+      248045,
+      74455,
+      198,
+      248068,
+      271,
+      248069,
+      271
+    ],
+    "A_same_header": true,
+    "header_contains_empty_think": true,
+    "note": "空 <think>\\n\\n</think> 块由 qwen3_5 模板生成，训练与推理两侧一致即视为非思考模式"
+  },
+  "diff": {
+    "A_vs_B_first": 1,
+    "A_vs_B_len_delta": 240,
+    "A_prefix_vs_C_first": -1,
+    "A_prefix_vs_C_len_delta": -4,
+    "A_next_tokens_after_prompt": [
+      97252,
+      96022,
+      248046,
+      198
+    ],
+    "A_next_tokens_text": "占位<|im_end|>\n",
+    "prompt_identical": true
+  }
+}

@@ -1,0 +1,181 @@
+{
+  "protocol_version": "v2",
+  "frozen_at": "2026-11-15",
+  "purpose": "基座与 checkpoint-4 使用完全一致、可复现的推理流程；本文件为唯一权威配置，任何字段改动都必须换新的实验目录/输出文件",
+  "data": {
+    "annotation_template": "datasets/handwriting_notes/annotation_template.jsonl",
+    "annotation_sha256": "34f262c270b2bf955a9d039b7d80f355c13e20bd87b8e7709c97201d19d17732",
+    "annotation_sha256_source": "datasets/handwriting_notes/data_version_v2.json",
+    "splits": {
+      "train": "datasets/handwriting_notes/splits/train.jsonl",
+      "val": "datasets/handwriting_notes/splits/val.jsonl",
+      "test": "datasets/handwriting_notes/splits/test.jsonl"
+    },
+    "split_membership": {"train": 13, "val": 5, "test": 5},
+    "frozen": true
+  },
+  "base_model": {
+    "id": "SeerRay-Lab/Xiaomi-OCR-0",
+    "local_snapshot": "C:\\Users\\48769\\.cache\\huggingface\\hub\\models--SeerRay-Lab--Xiaomi-OCR-0\\snapshots\\bbd8cf8d21f256b3644b44cb860f3a7cecb93c30",
+    "model_type": "qwen3_5",
+    "arch": "Qwen3_5ForConditionalGeneration",
+    "loader": "AutoModelForImageTextToText",
+    "quantization": {
+      "method": "bitsandbytes",
+      "load_in_4bit": true,
+      "bnb_4bit_quant_type": "nf4",
+      "bnb_4bit_use_double_quant": true,
+      "bnb_4bit_compute_dtype": "bfloat16"
+    }
+  },
+  "adapter": {
+    "dir": "outputs/qlora-v1/v2-20261115-114258/checkpoint-4",
+    "weights_sha256": "8121f7abfdaf2b997e2e3e0eb66d2f644a4e40fac5439dd38f869c19055fbcbb",
+    "config_sha256": "4119d0c886f69f8e15575535eade792e3d3cc520912e61d7c484543c3e111430",
+    "r": 8,
+    "lora_alpha": 32.0,
+    "lora_dropout": 0.05,
+    "target_regex": "^(model\\.language_model(?=\\.).*\\.(in_proj_qkv|gate_proj|k_proj|down_proj|out_proj|in_proj_a|q_proj|v_proj|in_proj_z|in_proj_b|up_proj|o_proj))$",
+    "is_trainable": false,
+    "verification": {
+      "evidence": "outputs/protocol/adapter_check.json",
+      "n_tensors_on_disk": 372,
+      "n_matched_by_normalised_key": 372,
+      "missing_in_model": 0,
+      "extra_in_model": 0,
+      "max_abs_diff": 0.0,
+      "peft_loader_missing_lora_keys": 0,
+      "peft_loader_unexpected_keys": 0,
+      "n_lora_modules": 372,
+      "lora_modules_outside_language_model": 0,
+      "lora_B_all_zero": 0,
+      "lora_params_disk": 5411328,
+      "lora_params_live": 5411328,
+      "trainable_params": 0,
+      "model_training_mode": false,
+      "weights_verified": true
+    }
+  },
+  "prompt": {
+    "system_prompt_used": false,
+    "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+    "messages": "[{\"role\":\"user\",\"content\":[{\"type\":\"image\",\"url\":<path>},{\"type\":\"text\",\"text\":\"\\n\" + instruction}]}]",
+    "add_generation_prompt": true,
+    "evidence": "outputs/protocol/probe_IMG_20261104_200903.json",
+    "alignment_proof": {
+      "A_swift_training_rendering_tokens": 1012,
+      "C_inference_rendering_tokens": 1008,
+      "prompt_identical": true,
+      "first_token_diff_vs_C": -1,
+      "length_delta_vs_A": -4,
+      "length_delta_explained_by": "A 比 C 多 4 个 token：答案首字 + <|im_end|> + 换行（即监督答案本身）",
+      "assistant_header": "<|im_start|>assistant\\n<think>\\n\\n</think>\\n\\n",
+      "assistant_header_identical": true,
+      "old_repo_prompt_first_diff_index": 1,
+      "old_repo_prompt_extra_tokens": 240,
+      "old_repo_prompt_verdict": "旧推理流程带 SYSTEM_PROMPT，从第 1 个 token 起就与训练不一致且多 240 token，已废弃"
+    }
+  },
+  "stop_conditions": {
+    "eos_token": "<|im_end|>",
+    "eos_token_id": 248046,
+    "im_end_equals_eos": true,
+    "supervised_tail": "答案 + <|im_end|> + \\n（训练侧）",
+    "inference_stop": "生成到 im_end(248046) 即停止；尾随换行不参与生成",
+    "pad_token_id": "processor.tokenizer.pad_token_id",
+    "normal_end_requires_eos_evidence": true,
+    "thinking": {
+      "mode": "non-thinking，模板给出空 <think>\\n\\n</think> 块",
+      "train_and_infer_identical": true
+    }
+  },
+  "image_processing": {
+    "processor": "AutoProcessor (Qwen3VLProcessor / Qwen2VLImageProcessor)",
+    "max_pixels": 1024000,
+    "knob": "processor.image_processor.size['longest_edge'] = max_pixels（shortest_edge 保持模型默认）",
+    "patch_size": 16,
+    "merge_size": 2,
+    "visual_tokens_formula": "n_patches = t*h*w ; n_visual_tokens = n_patches / (merge_size^2)",
+    "example_train_parity": {
+      "image": "IMG_20261104_200903.jpg",
+      "original_size_wh": [4096, 3072],
+      "processed_size_wh": [1152, 864],
+      "image_grid_thw": [[1, 54, 72]],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "prompt_tokens": 1008
+    },
+    "old_inference_full_res_example": {
+      "image_grid_thw": [[1, 192, 256]],
+      "n_patches": 49152,
+      "n_visual_tokens": 12288,
+      "prompt_tokens": 12324,
+      "ratio_vs_training": 12.64
+    },
+    "disk_originals_untouched": true
+  },
+  "generation": {
+    "decoding": "greedy (do_sample=false, temperature=None, top_p=None)",
+    "max_new_tokens": 1024,
+    "repetition_penalty": null,
+    "no_repeat_ngram_size": null,
+    "return_dict_in_generate": true,
+    "torch_no_grad": true
+  },
+  "cap_decision": {
+    "chosen": 1024,
+    "rule": "只用非测试页的参考长度决定，不看测试集成绩",
+    "evidence": "outputs/protocol/supervised_tokens.json",
+    "max_supervised_tokens_non_test": 611,
+    "verdict_512": "不足：最长非测试参考答案 611 token > 512，会截断正常完整页面",
+    "verdict_1024": "采用：相对 611 有约 1.6 倍余量",
+    "note": "上限是保护值，不是目标长度；命中上限不等于失败，只有出现重复/无意义发散才算退化"
+  },
+  "postprocess": {
+    "version": "v2-normalize",
+    "applied_to_both_sides": true,
+    "steps": [
+      "strip 一个整体外层包装：```fence``` 或 <md>...</md>；内部代码块保留；未闭合的包装不剥离",
+      "公式定界符统一为标注约定：\\[..\\] -> $$..$$，\\(..\\) -> $..$",
+      "raw 生成文本单独保留在 raw_output，不覆盖"
+    ],
+    "why": "基座输出 <md>...</md>，微调输出 ```markdown 围栏，而冻结标注是纯 Markdown + $/$$；不统一会让包装与公式体污染 CER 且公式指标取不到公式",
+    "idempotent": true,
+    "tests": "tests/test_postprocess_wrapper.py"
+  },
+  "repetition_rules": {
+    "detected_is": "any(rule.flagged)",
+    "rules": [
+      {"name": "line_run", "definition": "同一非空行连续出现 >= 5 次", "threshold": 5},
+      {"name": "unit_run", "definition": "某 2-40 字符单元连续重复 >= 5 次", "threshold": 5},
+      {"name": "template_line_run", "definition": "连续 >= 5 行仅数字不同（数字替换为 # 后相同），表格行不参与", "threshold": 5, "origin": "checkpoint-4 在 IMG_20261104_200903 上输出 W_{12}..W_{33} 同式递增，原始行等值规则抓不到"},
+      {"name": "ngram", "definition": "10-gram 出现次数 >= 20 且覆盖率 >= 0.25", "thresholds": [20, 0.25]}
+    ],
+    "samples_kept": true
+  },
+  "evaluation": {
+    "script": "scripts/evaluate.py",
+    "reference": "datasets/handwriting_notes/splits/test.jsonl",
+    "same_for_both_sides": true,
+    "unknown_reference_rule": "参考答案含 □ 的页面整体排除并计入 excluded，不参与均值",
+    "normalization_applied_both_sides": "v2-normalize",
+    "metrics": ["text_cer", "formula_exact_match_rate", "formula_cer", "structure(headings/list/table)"],
+    "aggregation": "页级 CER 的算术平均"
+  },
+  "runners": {
+    "full": "scripts/infer_test_baseline.py（sidecar 指纹不符即拒绝续写）",
+    "diagnosis": "scripts/diagnose_inference.py, scripts/diagnose_sample.py（仅非测试页）",
+    "adapter_check": "scripts/verify_adapter.py"
+  },
+  "environment": {
+    "python": "3.12.13",
+    "torch": "2.6.0+cu124",
+    "transformers": "5.14.1",
+    "peft": "0.20.0",
+    "ms_swift": "4.6.0",
+    "bitsandbytes": "0.50.2",
+    "gpu": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "gpu_total_mib": 8188,
+    "os_note": "Windows + WDDM：nvidia-smi memory.used 为整卡占用（含其它进程），不等于本进程独占显存"
+  }
+}

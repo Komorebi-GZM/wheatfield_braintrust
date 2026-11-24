@@ -1,0 +1,120 @@
+{
+  "case": "val_base_IMG_20261104_235946",
+  "arm": "base",
+  "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235946.jpg",
+  "markdown": "| 概览 | 目设操作数，源入 | 用位数 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | ⑩ | \n | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | \n | 小管主指 | TIP | 横轴 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | \n | 小管主指 | QTP | 横轴 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | \n | ① | MOV | 不使源内 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | \n | ② | MOV | BLF1、BLF2 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | \n | ③ | 源与反之间 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | ⑩ |",
+  "raw_output": "<md> | 概览 | 目设操作数，源入 | 用位数 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | ⑩ | \n | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | \n | 小管主指 | TIP | 横轴 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | \n | 小管主指 | QTP | 横轴 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | \n | ① | MOV | 不使源内 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | \n | ② | MOV | BLF1、BLF2 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | \n | ③ | 源与反之间 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | ⑩ | </md>",
+  "run": {
+    "protocol_version": "v2",
+    "engine": "ocr.engine/OCREngine",
+    "base_model": "SeerRay-Lab/Xiaomi-OCR-0",
+    "load_in_4bit": true,
+    "adapter": null,
+    "image_path": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235946.jpg",
+    "prompt": {
+      "system_prompt_used": false,
+      "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+      "prompt_sha256": "557b0658a32f16024d414d155f18ce41997f5e2d0f4c19e10564d4da470c9354",
+      "prompt_tokens": 1008,
+      "n_image_pad_tokens": 972
+    },
+    "image": {
+      "sha256": "6eca5c2662822f1d7e99605d74b696c0bd17288429e6e23d077242619a5e0879",
+      "original_size_wh": [
+        4096,
+        3072
+      ],
+      "max_pixels": 1024000,
+      "patch_size": 16,
+      "merge_size": 2,
+      "image_grid_thw": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "processed_size_wh": [
+        1152,
+        864
+      ]
+    },
+    "generation": {
+      "max_new_tokens": 1024,
+      "do_sample": false,
+      "generated_tokens": 347,
+      "eos_token_id": 248046,
+      "last_token_id": 248046,
+      "stopped_on_eos": true,
+      "hit_length_cap": false,
+      "finish_reason": "eos"
+    },
+    "repetition": {
+      "line_run": {
+        "max_consecutive": 1,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "| 概览 | 目设操作数，源入 | 用位数 | ① | ② | ③ | ④ | ⑤ | ⑥ | ⑦ | ⑧ | ⑨ | "
+      },
+      "unit_run": {
+        "max_consecutive": 12,
+        "threshold": 5,
+        "flagged": true,
+        "sample": " | ---"
+      },
+      "template_line_run": {
+        "max_consecutive": 0,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "",
+        "raw_sample": "",
+        "rule": "连续 >=5 行仅数字不同（数字替换为 # 后相同），表格行不参与"
+      },
+      "ngram": {
+        "n": 10,
+        "top_count": 11,
+        "coverage": 0.2558,
+        "thresholds": [
+          20,
+          0.25
+        ],
+        "flagged": false,
+        "sample": " | --- | -"
+      },
+      "detected": true
+    },
+    "postprocess": {
+      "raw_chars": 441,
+      "wrapper_stripped": "md_tag",
+      "display_math_converted": 0,
+      "inline_math_converted": 0,
+      "normalized_chars": 430,
+      "markdown_chars": 430,
+      "changed": true
+    },
+    "perf": {
+      "elapsed_seconds": 19.994,
+      "peak_cuda_allocated_bytes": 1036532736,
+      "peak_cuda_reserved_bytes": 1080033280,
+      "gpu_memory_used_before_mib": [
+        2200,
+        8188
+      ],
+      "gpu_memory_used_after_mib": [
+        2216,
+        8188
+      ],
+      "gpu_memory_note": "nvidia-smi memory.used 为整卡占用（含其它进程），Windows WDDM 下不等于本进程独占显存"
+    },
+    "structure_ok": true,
+    "latex_issues": [],
+    "stats": {
+      "headings": 0,
+      "list_items": 0,
+      "tables": 1,
+      "formulas": 0
+    }
+  }
+}

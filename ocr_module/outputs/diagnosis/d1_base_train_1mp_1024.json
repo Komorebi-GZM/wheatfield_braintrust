@@ -1,0 +1,107 @@
+{
+  "case": "d1_base_train_1mp_1024",
+  "image": "datasets/handwriting_notes/images/IMG_20261104_200903.jpg",
+  "markdown": "<md> | 4-2 | 变曲枢距磁体中由导数和磁极确定时，磁晕与极距成化 | \n | --- | --- | \n | C = C0/C0′ | C = C0/C0′ | \n | C = C0/C0′ | C = SA | \n | C = C0/C0′ + C0 | C = C0/C0′ | \n | 因此，电感式与磁式同称为C = C0/C0′及C = C0/C0′，属于非线性系统。只有根据磁极变化确定磁极 | 磁极或磁极 | \n | 推证法：根据磁极磁物点，利用一个片状磁极或磁极连接成磁极，提高磁极差，消除非线性效应 | 磁极或磁极 | \n | 43 | 磁极或磁极 | \n | 取一微C增大C，减小 | 因此斜的磁极极差，相同性质引起变化大导致变高 | \n | C = B/μB′ | C = B/μB′ | \n | 由C = SA | 近有介电导数有磁极或磁极磁极 | \n | C = C0 | C = C0 | \n | C1 = P×S0 | C2 = P×S0 | \n | C1 = P×S0 | C2 = P×S0 | \n | 五 = RH | 五 = RH | \n | jωC1 | jωC2 | \n | w2=πf | w2=πf | \n | 46 | 取一微C增大C，减小 | \n | C = B/μB′ | C = B/μB′ | \n | 由C = SA | C = SA | \n | C = C0/C0′ | C = C0/C0′ | \n | 提高磁极差后果，磁极可增加磁极，但非线性增加，问磁极正具磁极或负 | 磁极或磁极 | \n | W0 = W0[±-五极] | W2=πf | \n | W0 = B/μB′ | W0 | \n | W0 = B/μB′ - D2/30(±C0/C0′) | 而Rωm = S2/μ×C0-C2 | \n | 则kμ=±H± | |W0| | \n | 则kμ=±H± | |W0| | \n | 取ΔS0=10μm | 280μH/μm² | \n | 则ΔS0=10μm | μ0.12V/μm | \n | 则ΔU0=12V | </md>",
+  "raw_output": "<md> | 4-2 | 变曲枢距磁体中由导数和磁极确定时，磁晕与极距成化 | \n | --- | --- | \n | C = C0/C0′ | C = C0/C0′ | \n | C = C0/C0′ | C = SA | \n | C = C0/C0′ + C0 | C = C0/C0′ | \n | 因此，电感式与磁式同称为C = C0/C0′及C = C0/C0′，属于非线性系统。只有根据磁极变化确定磁极 | 磁极或磁极 | \n | 推证法：根据磁极磁物点，利用一个片状磁极或磁极连接成磁极，提高磁极差，消除非线性效应 | 磁极或磁极 | \n | 43 | 磁极或磁极 | \n | 取一微C增大C，减小 | 因此斜的磁极极差，相同性质引起变化大导致变高 | \n | C = B/μB′ | C = B/μB′ | \n | 由C = SA | 近有介电导数有磁极或磁极磁极 | \n | C = C0 | C = C0 | \n | C1 = P×S0 | C2 = P×S0 | \n | C1 = P×S0 | C2 = P×S0 | \n | 五 = RH | 五 = RH | \n | jωC1 | jωC2 | \n | w2=πf | w2=πf | \n | 46 | 取一微C增大C，减小 | \n | C = B/μB′ | C = B/μB′ | \n | 由C = SA | C = SA | \n | C = C0/C0′ | C = C0/C0′ | \n | 提高磁极差后果，磁极可增加磁极，但非线性增加，问磁极正具磁极或负 | 磁极或磁极 | \n | W0 = W0[±-五极] | W2=πf | \n | W0 = B/μB′ | W0 | \n | W0 = B/μB′ - D2/30(±C0/C0′) | 而Rωm = S2/μ×C0-C2 | \n | 则kμ=±H± | |W0| | \n | 则kμ=±H± | |W0| | \n | 取ΔS0=10μm | 280μH/μm² | \n | 则ΔS0=10μm | μ0.12V/μm | \n | 则ΔU0=12V | </md>",
+  "run": {
+    "protocol_version": "v2",
+    "engine": "ocr.engine/OCREngine",
+    "base_model": "SeerRay-Lab/Xiaomi-OCR-0",
+    "load_in_4bit": true,
+    "adapter": null,
+    "image_path": "datasets/handwriting_notes/images/IMG_20261104_200903.jpg",
+    "prompt": {
+      "system_prompt_used": false,
+      "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+      "prompt_sha256": "557b0658a32f16024d414d155f18ce41997f5e2d0f4c19e10564d4da470c9354",
+      "prompt_tokens": 1008,
+      "n_image_pad_tokens": 972
+    },
+    "image": {
+      "sha256": "4f11d80204e40c4d727a84507dcfca4672f29f1423a2db2c956bc8a0ea52d7ff",
+      "original_size_wh": [
+        4096,
+        3072
+      ],
+      "max_pixels": 1024000,
+      "patch_size": 16,
+      "merge_size": 2,
+      "image_grid_thw": [
+        [
+          1,
+          54,
+          72
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "processed_size_wh": [
+        1152,
+        864
+      ]
+    },
+    "generation": {
+      "max_new_tokens": 1024,
+      "do_sample": false,
+      "generated_tokens": 633,
+      "eos_token_id": 248046,
+      "last_token_id": 248046,
+      "stopped_on_eos": true,
+      "hit_length_cap": false,
+      "finish_reason": "eos"
+    },
+    "repetition": {
+      "line_run": {
+        "max_consecutive": 2,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "| C1 = P×S0 | C2 = P×S0 |"
+      },
+      "unit_run": {
+        "max_consecutive": 0,
+        "threshold": 5,
+        "flagged": false,
+        "sample": ""
+      },
+      "ngram": {
+        "n": 10,
+        "top_count": 9,
+        "coverage": 0.0999,
+        "thresholds": [
+          20,
+          0.25
+        ],
+        "flagged": false,
+        "sample": "C = C0/C0′"
+      },
+      "detected": false
+    },
+    "postprocess": {
+      "outer_fence_stripped": false,
+      "raw_chars": 901,
+      "markdown_chars": 901
+    },
+    "perf": {
+      "elapsed_seconds": 39.865,
+      "peak_cuda_allocated_bytes": 1037236224,
+      "peak_cuda_reserved_bytes": 1080033280,
+      "gpu_memory_used_before_mib": [
+        2702,
+        8188
+      ],
+      "gpu_memory_used_after_mib": [
+        2935,
+        8188
+      ],
+      "gpu_memory_note": "nvidia-smi memory.used 为整卡占用（含其它进程），Windows WDDM 下不等于本进程独占显存"
+    },
+    "structure_ok": true,
+    "latex_issues": [],
+    "stats": {
+      "headings": 0,
+      "list_items": 0,
+      "tables": 1,
+      "formulas": 0
+    }
+  }
+}

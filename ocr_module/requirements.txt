@@ -1,0 +1,23 @@
+# ===== OCR module dependencies =====
+# Inference / training core
+torch>=2.2
+transformers>=5.2
+accelerate>=0.33
+peft>=0.11
+
+# 4-bit QLoRA. Native Windows support and GPU memory must be verified locally.
+bitsandbytes>=0.50.2
+
+# Qwen3.5 image processor and training wrapper.
+ms-swift>=4.6
+qwen-vl-utils>=0.0.14
+
+# Data synthesis / image handling
+Pillow>=10.0
+matplotlib>=3.8
+
+# Post-processing (LaTeX validation)
+pylatexenc>=2.10
+
+# Dev
+pytest>=7.4

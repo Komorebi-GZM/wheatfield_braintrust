@@ -1,0 +1,120 @@
+{
+  "case": "val_base_IMG_20261104_235932",
+  "arm": "base",
+  "image": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235932.jpg",
+  "markdown": "| 目录 | 目录 | \n | --- | --- | \n | 01.寻址方式 | (1)之即数寻址：只用于源操作数，一般用寄存器赋值；之即数无法作为目标；有符号均可，可取范围内 | \n |  | (2)寄存器寻址：CPU内执行，无总线周期，使注RAT源操作数和目的操作数 | \n |  | (3)直接寻址(解放地址)：选择用地址即时；使地址一般在DS中，其它使用按起起前级指令 | \n |  | (4)寄存器指针寻址：使用BJ BX,SI,DI时操作数默认DS中；BP持,用SS | \n |  | 已知(CDS)=200H, DI=2000H 指令=MOV AX,[DI] | \n |  | ⇒ MOV AX,[2000H] 物理地址=16X(DS)+DI | \n |  | (5)寄存器根移址：寄存器与位移量之和；寄存器(BX,BP;SI,DI...)，位移量(8或16位=进制数) | \n |  | BX,SI,DI→DS; BP→SS; 物理地址=16X(DS)+(SI)+8(或16)位移量 | \n |  | MOV BX,DAI[SI](或MOV,BX,[DA]+SI] | \n |  | ⇒(6X(DS)+(SI)+16位偏移量(2000H) | \n |  | (6)基址变址规则：EA=(BX)or(BP)+(SI)or(DI), 物理地址=(16X(DS)+((BX)+(SI)) | \n |  | MOV BX[AL,[BX][SI] 或 MOVO AL,[BX+SI]→EA(旋转)=(BX+SI) | \n |  | ⇒14X(DS)+EA | \n |  | (7)相对基址变址，在(6)上加一个8或16偏移量 | \n |  | (8)隐含寻址：MUL BL ⇔ (AL)×(BL) |",
+  "raw_output": "<md> | 目录 | 目录 | \n | --- | --- | \n | 01.寻址方式 | (1)之即数寻址：只用于源操作数，一般用寄存器赋值；之即数无法作为目标；有符号均可，可取范围内 | \n |  | (2)寄存器寻址：CPU内执行，无总线周期，使注RAT源操作数和目的操作数 | \n |  | (3)直接寻址(解放地址)：选择用地址即时；使地址一般在DS中，其它使用按起起前级指令 | \n |  | (4)寄存器指针寻址：使用BJ BX,SI,DI时操作数默认DS中；BP持,用SS | \n |  | 已知(CDS)=200H, DI=2000H 指令=MOV AX,[DI] | \n |  | ⇒ MOV AX,[2000H] 物理地址=16X(DS)+DI | \n |  | (5)寄存器根移址：寄存器与位移量之和；寄存器(BX,BP;SI,DI...)，位移量(8或16位=进制数) | \n |  | BX,SI,DI→DS; BP→SS; 物理地址=16X(DS)+(SI)+8(或16)位移量 | \n |  | MOV BX,DAI[SI](或MOV,BX,[DA]+SI] | \n |  | ⇒(6X(DS)+(SI)+16位偏移量(2000H) | \n |  | (6)基址变址规则：EA=(BX)or(BP)+(SI)or(DI), 物理地址=(16X(DS)+((BX)+(SI)) | \n |  | MOV BX[AL,[BX][SI] 或 MOVO AL,[BX+SI]→EA(旋转)=(BX+SI) | \n |  | ⇒14X(DS)+EA | \n |  | (7)相对基址变址，在(6)上加一个8或16偏移量 | \n |  | (8)隐含寻址：MUL BL ⇔ (AL)×(BL) | </md>",
+  "run": {
+    "protocol_version": "v2",
+    "engine": "ocr.engine/OCREngine",
+    "base_model": "SeerRay-Lab/Xiaomi-OCR-0",
+    "load_in_4bit": true,
+    "adapter": null,
+    "image_path": "E:\\ocr\\wheatfield_braintrust\\ocr_module\\datasets\\handwriting_notes\\images\\IMG_20261104_235932.jpg",
+    "prompt": {
+      "system_prompt_used": false,
+      "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+      "prompt_sha256": "557b0658a32f16024d414d155f18ce41997f5e2d0f4c19e10564d4da470c9354",
+      "prompt_tokens": 1008,
+      "n_image_pad_tokens": 972
+    },
+    "image": {
+      "sha256": "04981766f2270a8c275ccd3b2c19d4b2a1b6fe4fcda741a310d1252c9b8caf04",
+      "original_size_wh": [
+        3072,
+        4096
+      ],
+      "max_pixels": 1024000,
+      "patch_size": 16,
+      "merge_size": 2,
+      "image_grid_thw": [
+        [
+          1,
+          72,
+          54
+        ]
+      ],
+      "n_patches": 3888,
+      "n_visual_tokens": 972,
+      "processed_size_wh": [
+        864,
+        1152
+      ]
+    },
+    "generation": {
+      "max_new_tokens": 1024,
+      "do_sample": false,
+      "generated_tokens": 486,
+      "eos_token_id": 248046,
+      "last_token_id": 248046,
+      "stopped_on_eos": true,
+      "hit_length_cap": false,
+      "finish_reason": "eos"
+    },
+    "repetition": {
+      "line_run": {
+        "max_consecutive": 1,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "| 目录 | 目录 |"
+      },
+      "unit_run": {
+        "max_consecutive": 0,
+        "threshold": 5,
+        "flagged": false,
+        "sample": ""
+      },
+      "template_line_run": {
+        "max_consecutive": 0,
+        "threshold": 5,
+        "flagged": false,
+        "sample": "",
+        "raw_sample": "",
+        "rule": "连续 >=5 行仅数字不同（数字替换为 # 后相同），表格行不参与"
+      },
+      "ngram": {
+        "n": 10,
+        "top_count": 14,
+        "coverage": 0.1857,
+        "thresholds": [
+          20,
+          0.25
+        ],
+        "flagged": false,
+        "sample": " | \n |  | "
+      },
+      "detected": false
+    },
+    "postprocess": {
+      "raw_chars": 765,
+      "wrapper_stripped": "md_tag",
+      "display_math_converted": 0,
+      "inline_math_converted": 0,
+      "normalized_chars": 754,
+      "markdown_chars": 754,
+      "changed": true
+    },
+    "perf": {
+      "elapsed_seconds": 28.644,
+      "peak_cuda_allocated_bytes": 1037236224,
+      "peak_cuda_reserved_bytes": 1080033280,
+      "gpu_memory_used_before_mib": [
+        2018,
+        8188
+      ],
+      "gpu_memory_used_after_mib": [
+        2200,
+        8188
+      ],
+      "gpu_memory_note": "nvidia-smi memory.used 为整卡占用（含其它进程），Windows WDDM 下不等于本进程独占显存"
+    },
+    "structure_ok": true,
+    "latex_issues": [],
+    "stats": {
+      "headings": 0,
+      "list_items": 0,
+      "tables": 1,
+      "formulas": 0
+    }
+  }
+}
