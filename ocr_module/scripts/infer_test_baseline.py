@@ -59,7 +59,9 @@ def fingerprint(args, engine_desc):
         'max_new_tokens': args.max_new_tokens,
         'use_system_prompt': args.use_system_prompt,
         'load_in_4bit': True,
-        'instruction_sha256': hashlib.sha256(INSTRUCTION.encode('utf-8')).hexdigest(),
+        'instruction': engine_desc.get('instruction', INSTRUCTION),
+        'instruction_sha256': engine_desc.get('instruction_sha256')
+        or hashlib.sha256(INSTRUCTION.encode('utf-8')).hexdigest(),
         'manifest': str(args.manifest),
         'manifest_sha256': sha256_file(args.manifest),
         'data_version_annotation_sha256': data_sha,
@@ -76,6 +78,9 @@ def main():
     ap.add_argument('--max-new-tokens', type=int, default=1024)
     ap.add_argument('--use-system-prompt', action='store_true',
                     help='Off by default: training never used a system message')
+    ap.add_argument('--instruction', default=None,
+                    help='Override the user-turn instruction (prompt-factor experiments). '
+                         'Defaults to the frozen protocol instruction in ocr/prompts.py.')
     ap.add_argument('--dry-run', action='store_true', help='Print the plan and exit')
     args = ap.parse_args()
 
@@ -87,6 +92,8 @@ def main():
 
     engine_kwargs = dict(max_pixels=args.max_pixels, max_new_tokens=args.max_new_tokens,
                          use_system_prompt=args.use_system_prompt)
+    if args.instruction:
+        engine_kwargs['instruction'] = args.instruction
     if args.adapter:
         engine_kwargs['adapter_dir'] = args.adapter
     if args.base_model:

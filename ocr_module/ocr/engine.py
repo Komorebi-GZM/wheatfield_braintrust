@@ -153,6 +153,7 @@ class OCREngine:
         max_new_tokens: int = DEFAULT_MAX_NEW_TOKENS,
         max_pixels: int = DEFAULT_MAX_PIXELS,
         use_system_prompt: bool = False,
+        instruction: Optional[str] = None,
         trust_remote_code: bool = True,
     ):
         self.base_model = base_model
@@ -162,6 +163,9 @@ class OCREngine:
         self.max_new_tokens = max_new_tokens
         self.max_pixels = max_pixels
         self.use_system_prompt = use_system_prompt
+        # Prompt-factor experiments override only this string; None keeps the
+        # frozen protocol instruction so default behaviour cannot drift.
+        self.instruction = instruction or INSTRUCTION
         self.trust_remote_code = trust_remote_code
         self._model = None
         self._processor = None
@@ -364,7 +368,8 @@ class OCREngine:
         from PIL import Image
         with Image.open(image_path) as im:
             original_size = list(im.size)
-        messages = build_messages(image_path, use_system_prompt=self.use_system_prompt)
+        messages = build_messages(image_path, use_system_prompt=self.use_system_prompt,
+                                  instruction=self.instruction)
         inputs = self._processor.apply_chat_template(
             messages, tokenize=True, add_generation_prompt=True,
             return_dict=True, return_tensors="pt"
@@ -446,7 +451,8 @@ class OCREngine:
             "image_path": image_path,
             "prompt": {
                 "system_prompt_used": self.use_system_prompt,
-                "instruction": INSTRUCTION,
+                "instruction": self.instruction,
+                "instruction_sha256": sha256_text(self.instruction),
                 "prompt_sha256": sha256_text(prompt_text),
                 "prompt_tokens": meta["prompt_tokens"],
                 "n_image_pad_tokens": meta["n_image_pad_tokens"],
@@ -522,7 +528,8 @@ class OCREngine:
             "max_pixels": self.max_pixels,
             "use_system_prompt": self.use_system_prompt,
             "load_in_4bit": self.load_in_4bit,
-            "instruction_sha256": sha256_text(INSTRUCTION),
+            "instruction": self.instruction,
+            "instruction_sha256": sha256_text(self.instruction),
         }
 
 

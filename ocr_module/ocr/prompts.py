@@ -35,14 +35,20 @@ SYSTEM_PROMPT = """你是一名专业的手写课程笔记 OCR 与结构化助�
 USER_INSTRUCTION = "<image>\n" + INSTRUCTION
 
 
-def build_messages(image_path: str, use_system_prompt: bool = False):
-    """Return chat messages that match the training rendering by default."""
+def build_messages(image_path: str, use_system_prompt: bool = False,
+                   instruction: str | None = None):
+    """Return chat messages that match the training rendering by default.
+
+    ``instruction`` overrides the user turn only; the image token and the
+    newline that ms-swift produced for ``"<image>\\n"`` are unchanged, so a
+    prompt experiment differs from the frozen protocol in exactly one string.
+    """
     msgs = []
     if use_system_prompt:
         msgs.append({"role": "system", "content": SYSTEM_PROMPT})
     msgs.append({"role": "user", "content": [
         {"type": "image", "url": image_path},
         # the newline after the image is what ms-swift produced for "<image>\n"
-        {"type": "text", "text": "\n" + INSTRUCTION},
+        {"type": "text", "text": "\n" + (instruction or INSTRUCTION)},
     ]})
     return msgs
