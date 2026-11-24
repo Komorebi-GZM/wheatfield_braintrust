@@ -257,3 +257,60 @@ powershell -NoProfile -File scripts/train_qlora_v2.ps1 -Inspect
 ---
 
 **本文件不含任何新实验结果**：上面的 CER 数字全部来自既有 `eval_report_v3.md`，训练/评测本轮均未执行。
+
+---
+
+## 12. 执行记录：2026-11-24 重训（复现性验证）
+
+owner 于 2026-11-24 12:48 下达「开跑」。本轮训练是**复现性验证**，不是新实验：配置与 11-15 那次逐项相同（见 §3.1），预期结果是"同输入同权重"。
+
+```powershell
+cd ocr_module
+powershell -File scripts/train_qlora_v2.ps1 -OutputRoot outputs/qlora-v2
+# 实际调用：swift sft ...（参数与 §3.1 完全一致），run 目录 outputs/qlora-v2/v2data-20261124-124959
+```
+
+### 12.1 结果
+
+| 项 | 本次 `v2data-20261124-124959` | 上次 `v2data-20261115-134816` |
+|---|---|---|
+| 起止 | 12:49:59 → 12:54:42 | — |
+| 步数 | 52/52 | 52/52 |
+| `train_runtime` | **147.5 s**（2m28s） | 237.98 s |
+| `train_loss`（汇总） | **0.7831** | 0.7831 |
+| eval_loss（ep1→ep4） | 1.208 / **1.189** / 1.189 / 1.191 | 1.20785 / **1.18883** / 1.18942 / 1.19147 |
+| best checkpoint | **checkpoint-26**（按 val loss） | checkpoint-26 |
+| 可训练参数 | 5,411,328 / 609.59M（0.8877%） | 同 |
+| 显存（WDDM 统计） | 峰值 8.4 GiB，均值约 5.6–6.7 GiB | 峰值 8.4 GiB |
+| 产物大小 | 249.7 MB（4 ckpt + 日志，未入库） | — |
+
+### 12.2 复现性（本轮的核心产出）
+
+`checkpoint-26/adapter_model.safetensors` 两次运行 **sha256 完全相同**：
+
+```
+a2be86a210a107e7db63c61e3bd180f0c4be7f46693fb2ffb2910ebc1f9abbb6   (21,700,560 B)
+```
+
+同一次 run 内其余 ckpt 的哈希互不相同（13：`696e251e…`、39：`d9f0c3d1…`、52：`e8e303f1…`），说明不是拷贝同一份文件，而是真的各自训练得到。结论限定为：**在该机器、该依赖版本、该 seed 下，这条训练链路可逐字节复现**；不推广为"训练是确定性的"（换 GPU/驱动/库版本/并行度都可能改变数值路径）。
+
+### 12.3 权重校验（`scripts/verify_adapter.py` → 新 ckpt-26）
+
+```
+n_tensors_on_disk 372 · n_lora_tensors_live 372 · n_matched 372
+missing_in_model 0 · extra_in_model 0 · value_mismatched 0 · max_abs_diff 0.0
+peft_loader_missing_lora_keys 0 · n_lora_modules 372
+lora_modules_outside_language_model 0 · lora_B_all_zero 0 · lora_B_nonzero 186
+lora_params disk/live 5,411,328 · weights_verified = true
+```
+
+记录文件：`outputs/qlora-v2/v2data-20261124-124959/adapter_check_ckpt26.json`（未入库）。
+
+### 12.4 本轮踩到的两条环境修正（已影响脚本可用性）
+
+1. `scripts/verify_adapter.py` 的 `--base` 默认取 `DEFAULT_BASE` = HF id `SeerRay-Lab/Xiaomi-OCR-0`；本机没有 HF 缓存、HF endpoint 也走不通，直接运行会 `LocalEntryNotFoundError`。**解决**：`--base outputs/modelscope_cache/models/SeerRay-Lab--Xiaomi-OCR-0/snapshots/master`，或设 `OCR_BASE_MODEL` 环境变量（`ocr/engine.py` 支持 `OCR_BASE_MODEL` 覆盖）。
+2. 训练启动时会向 ModelScope 复核快照清单（本次 28/29 文件），命中本地缓存，不影响结果；但离线环境下这一步需要能访问 ModelScope 或已有完整缓存。
+
+### 12.5 结论
+
+训练 + 校验链路在本机可用，且与 11-15 的结果逐字节一致。**本轮不产生任何新的效果结论**；下一步按 §9 进入阶段 A（验证集参数对比，不碰测试集），产物写入 `outputs/phaseA/`（Git 忽略）。
