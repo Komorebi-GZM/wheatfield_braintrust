@@ -1,0 +1,17 @@
+{
+ "source": "opendatalab/OmniDocBench (note subset)",
+ "license": "research use only, not for commercial use",
+ "usage": "EVAL ONLY — public benchmark, do not train on it",
+ "languages": {
+  "simplified_chinese": 70,
+  "en_ch_mixed": 47,
+  "english": 1
+ },
+ "splits": {
+  "note": {
+   "pages": 118,
+   "skipped": 0,
+   "jsonl": "omnidocbench_notes.jsonl"
+  }
+ }
+}
