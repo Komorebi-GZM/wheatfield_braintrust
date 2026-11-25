@@ -612,3 +612,30 @@ GradeLab 答题卡（HF gated，万级页）。HumynLabs 数学笔记为纯 PDF 
 
 - **GradeLab**（HF gated，审核中）：通过后执行四步——抽检 20 页质检机器标注 → 选 train 分片子集（10~20GB）局部爬取 → 转换入本分支 → 局部混训。
 - OmniDocBench（1651 页评测基准，含手写笔记类）：候选作第三方评测集，暂缓。
+
+## 20 混训计划：本地 4060（grokbot 执行，2026-11-25 用户拍板）
+
+**目标**：外部数据混训压臆造/稳格式，主域微调保领域。单卡 4060，QLoRA 全流程沿用既有脚本。
+
+**数据准备**（云端已推送 main `acc9830`，本地 git pull 后按脚本重建）：
+```bash
+git pull origin main
+# CASIA：52k 行级（HF Teklia/CASIA-HWDB2-line，~1.3GB parquet）
+./.venv/bin/python datasets/external/casia_hwdb2/convert_casia.py
+# GNHK：672 页英文笔记（HF aryaman27/goodnotes-handwritten-dataset@9042977）
+./.venv/bin/python datasets/external/gnhk/convert_gnhk.py
+# OmniDocBench 仅评测，不下载训练侧
+```
+
+**混训配比（首轮建议）**：
+- 主域 13 页 ×8 过采样（约 104 样本/epoch）——永远占梯度主导
+- CASIA train 抽 8,000 行（约 24%）
+- GNHK train 抽 80 页（约 18%）
+- 验证集固定为原 val 5 页（域内指标不掺外部数据，防虚高）
+
+**解码协议不变**：`deliver_v4`（rp1.1/min0/max1024）出生产指标；`compare_v4`（min256）对比基座。
+
+**评测三轨**：①原 val/test（域内）②OmniDocBench note 118 页（陌生字迹盲测，eval-only）③重复率/触顶页（协议稳定性）。
+判定标准：域内 CER 不回退 >0.02、盲测 CER 显著改善、重复条目保持 0% → 混训有效，可入 deliver。
+
+**产出**：新 adapter 走 ModelScope/HF（不入 git），HANDOFF 追加 §21 实验记录。
