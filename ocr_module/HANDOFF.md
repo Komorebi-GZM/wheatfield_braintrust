@@ -405,3 +405,62 @@ $PY -m pytest tests -q -p no:cacheprovider --basetemp=.pytest_tmp
 3. 行尾归一化（单独提交，已按远程决策执行）；
 4. adapter 托管（`CHECKPOINT_MANIFEST.md` 已补 SHA-256 与下载路径说明，上传待凭据）；
 5. 阶段B：新测试页 + 正式评测。
+
+---
+
+## 14. 解码侧消融：增益到底来自哪个旋钮（2026-11-25）
+
+> 目的：§13 的组合是"rp 1.1 + min 256"同时改，违反一次一因子。本节把两档拆开，回答"重复被压住"与"输出被拉长"分别是谁的功劳。
+> 设置、清单、上限、指令与 §13 完全一致；新增四臂 `rp_only`（只 rp 1.1）/ `min_only`（只 min 256），产物在 `outputs/phaseA/decode/`。
+
+### 14.1 微调臂（5 页）
+
+| 配置 | 正文宏 CER | 含公式宏 CER | 字数/参考 | 小标题 | 重复条目 | 触顶 | 判重复 | 耗时 |
+|---|---|---|---|---|---|---|---|---|
+| 冻结 | 1.248 | **0.775** | 1.64 | 139 | 26.0% | 2 | 2 | 275 s |
+| **只 rp 1.1** | 0.875 | 0.854 | **1.01** | 9 | 0% | 0 | 0 | 180 s |
+| 只 min 256 | 1.248 | **0.775** | 1.64 | 139 | 26.0% | 2 | 2 | 300 s |
+| 组合 | **0.825** | 0.800 | 1.07 | 9 | 0% | 0 | 0 | 195 s |
+
+**逐字比对（关键证据）**：
+
+- `min_only` 在**全部 5 页**与冻结**逐字节相同** → `min_new_tokens=256` 在微调臂上**完全是空操作**（该臂不加上限时没有任何一页会在 256 token 前停）。
+- `rp_only` 在 **4/5 页**与组合**逐字节相同**；唯一不同的是 000005（组合多 169 字，因为 rp 单独会在 217 token 早停，min 把它托到 323 token）。
+- 因此：**微调臂的收益几乎全部来自重复惩罚**，`min` 只在"rp 让模型早停"的那一页起了兜底作用。
+
+### 14.2 基座臂（5 页）
+
+| 配置 | 正文宏 CER | 含公式宏 CER | 字数/参考 | 触顶 | 判重复 |
+|---|---|---|---|---|---|
+| 冻结 | 15.955 | 16.139 | 1.00 | 1 | 1 |
+| **只 rp 1.1** | 2.747 | 3.133 | **0.51** | 0 | 0 |
+| 只 min 256 | 1.688 | 1.677 | 1.14 | 1 | 1 |
+| 组合 | **1.181** | 1.217 | 0.81 | 0 | 1 |
+
+**基座臂的交互完全相反**：`rp` 单独会把输出压塌（235955 只剩 **65 token / CER 8.533**，235932、000012 同样过短），`min` 单独除了把 000005 的 45-token 崩坏托到 260 token 外基本等于冻结；**只有组合可用**——即 `min` 在这里是 `rp` 的安全地板。
+
+### 14.3 结论
+
+1. **微调臂的增益归因清楚：重复惩罚是主因，`min_new_tokens` 是兜底**。`rp_only` 已经把正文宏 CER 从 1.248 降到 0.875、重复条目清零、字数比拉回 1.01；组合只在 000005 一页再改善（1.153→0.903）。
+2. **`min=256` 对微调臂能造成风险却不带来收益**：它逐字节等于冻结（4/5 页不受影响），却会在模型"正常早停"时强行续写；而它的唯一正收益是防 `rp` 早停。若采用 `rp`，建议把 `min` 视为可选项而不是默认。
+3. **基座臂不能只用 `rp`**：会塌。基座若要接入，必须 `rp + min` 一起用。
+4. **仍不改默认协议**：`rp=1.1` 的证据只覆盖 5 页、且"重复惩罚会让部分公式被压掉"（含公式 CER 0.775→0.854）没有解决。建议在冻结 v4 前先决定：是接受公式维度的小幅退让，还是继续调 `rp` 档位（如 1.05）。
+
+### 14.4 复现
+
+```powershell
+cd ocr_module
+$env:OCR_BASE_MODEL = "<本地 ModelScope 快照>"
+# 只 rp
+python scripts/infer_test_baseline.py --manifest datasets/handwriting_notes/splits/val.jsonl `
+  --output outputs/phaseA/decode/rp_only_ft/val_pred.jsonl `
+  --adapter outputs/qlora-v2/v2data-20261124-124959/checkpoint-26 `
+  --max-new-tokens 1024 --repetition-penalty 1.1
+# 只 min
+python scripts/infer_test_baseline.py --manifest datasets/handwriting_notes/splits/val.jsonl `
+  --output outputs/phaseA/decode/min_only_ft/val_pred.jsonl `
+  --adapter outputs/qlora-v2/v2data-20261124-124959/checkpoint-26 `
+  --max-new-tokens 1024 --min-new-tokens 256
+```
+
+数字复核：`E:\ocr\_analyze_ablation.py`（四配置逐页指标 + 逐字比对），临时脚本未入库。
