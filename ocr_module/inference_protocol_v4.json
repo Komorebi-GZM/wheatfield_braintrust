@@ -1,0 +1,94 @@
+{
+  "protocol_version": "v4",
+  "created_at": "2026-11-25T20:12:00",
+  "purpose": "冻结解码侧默认配置。v4 拆两套 profile：compare_v4 用于基座/微调同参对比（必须两臂同参），deliver_v4 用于微调侧生产。字段取自 2026-11-24/25 的实测运行（HANDOFF §13–§15），不是预期值。",
+  "relation_to_previous": {
+    "v2": {
+      "file": "inference_protocol_v2.json",
+      "status": "原样保留",
+      "why_kept": "该文件记录 checkpoint-4 时期的历史配置；修改会让『旧指纹 ↔ 旧内容』的对应关系断裂。"
+    },
+    "v3_delivery": {
+      "file": "inference_protocol_v3_delivery.json",
+      "status": "原样保留",
+      "difference": "v3 的 decoding 为 repetition_penalty=1.0、min_new_tokens 未设置（即不传参）。v4 把 repetition_penalty 默认改为 1.1，其余与 v3 完全一致。"
+    },
+    "how_to_reproduce_v3": "显式传 repetition_penalty=1.0（引擎仅在 != 1.0 时才把该参数交给 generate，因此 1.0 的数值路径与 v3 逐字节一致）。"
+  },
+  "profiles": {
+    "compare_v4": {
+      "use_for": "基座 vs 微调的任何对比评测",
+      "why_both_arms_same": "重复惩罚单独使用会把基座臂压塌（HANDOFF §14.2：235955 只剩 65 token、CER 8.533），因此基座必须带 min_new_tokens=256 这个安全地板；对比要求两臂同参。",
+      "max_new_tokens": 1024,
+      "max_pixels": 1024000,
+      "repetition_penalty": 1.1,
+      "min_new_tokens": 256,
+      "do_sample": false,
+      "use_system_prompt": false
+    },
+    "deliver_v4": {
+      "use_for": "微调侧生产（单臂推理）",
+      "why_no_min": "微调臂上 min_new_tokens=256 与冻结协议逐字节相同（5/5 页），却会在模型正常早停时强行续写；它唯一的正收益是防 repetition_penalty 早停。生产路径不需要这层地板。",
+      "max_new_tokens": 1024,
+      "max_pixels": 1024000,
+      "repetition_penalty": 1.1,
+      "min_new_tokens": 0,
+      "do_sample": false,
+      "use_system_prompt": false
+    }
+  },
+  "engine_defaults": {
+    "note": "ocr/engine.py 的 DEFAULT_* 常量必须与 deliver_v4 一致；tests/test_decoding_knobs.py 会读本文件比对，漂移即失败。",
+    "repetition_penalty": 1.1,
+    "min_new_tokens": 0,
+    "max_new_tokens": 1024,
+    "max_pixels": 1024000,
+    "use_system_prompt": false
+  },
+  "prompt": {
+    "system_prompt_used": false,
+    "instruction": "请转写这页手写课程笔记为结构化 Markdown（保留标题、列表、表格与公式）。",
+    "instruction_sha256": "c8316fd00d96283f479f8bd9a7626b4e3b5f1e9222ba09fe951823d8851683f6",
+    "note": "提示词因子（A/B）已试并收口：能压掉臆造模板，但以欠生成与公式丢失为代价，未采纳为默认（HANDOFF §12.4、phase_a_prompt_report_v4.md）。"
+  },
+  "evidence": {
+    "val_pages": 5,
+    "test_touched": false,
+    "finetuned_arm_macro": {
+      "frozen_v3": {"text_cer": 1.248, "text_cer_with_math": 0.775, "chars_over_ref": 1.64, "dup_bullet_share": 0.26, "cap_hits": 2, "elapsed_s": 275},
+      "deliver_v4": {"text_cer": 0.875, "text_cer_with_math": 0.854, "chars_over_ref": 1.01, "dup_bullet_share": 0.0, "cap_hits": 0, "elapsed_s": 180},
+      "compare_v4": {"text_cer": 0.825, "text_cer_with_math": 0.800, "chars_over_ref": 1.07, "dup_bullet_share": 0.0, "cap_hits": 0, "elapsed_s": 195}
+    },
+    "attribution": {
+      "min_only_vs_frozen": "5/5 页逐字节相同（微调臂上 min 是空操作）",
+      "rp_only_vs_combo": "4/5 页逐字节相同（仅 000005 差 169 字）",
+      "rp_1_05_rejected": "正文 CER 1.064、含公式 0.810、小标题 27、235946 重新被判重复（HANDOFF §15）"
+    },
+    "base_arm_reference": {
+      "frozen_v3": {"text_cer": 15.955, "note": "被 000005 的 45-token 早停崩坏拉爆"},
+      "rp_only": {"text_cer": 2.747, "note": "输出被压塌，235955 仅 65 token"},
+      "compare_v4": {"text_cer": 1.181}
+    }
+  },
+  "stop_conditions": {
+    "eos_token_id": 248046,
+    "finish_reason_values": ["eos", "length", "other"],
+    "note": "finish_reason=length 表示命中 max_new_tokens，不得当作正常结束。"
+  },
+  "postprocess": {
+    "impl": "ocr/postprocess.py::normalize_output",
+    "applied_to_both_arms": true,
+    "raw_preserved": "结果里保留 raw_output"
+  },
+  "known_limits": [
+    "证据只覆盖固定验证集 5 页；test 未参与、也未用于选参。",
+    "含公式宏 CER 从 0.775 退到 0.854（deliver_v4）：抑制重复会压掉部分公式，报告必须同时给两列。",
+    "min_new_tokens=256 会强制短页继续写；compare_v4 的该风险未在稀疏页上单独验证。",
+    "5 页样本下宏平均方差大，逐页胜负必须同报（deliver_v4 对冻结是 2 胜 3 负，但赢的幅度远大于输的幅度）。"
+  ],
+  "reproduce": {
+    "deliver_v4": "python scripts/infer_test_baseline.py --manifest datasets/handwriting_notes/splits/val.jsonl --output <out> --adapter <ckpt-26>",
+    "compare_v4": "python scripts/infer_test_baseline.py --manifest datasets/handwriting_notes/splits/val.jsonl --output <out> [--adapter <ckpt-26>] --min-new-tokens 256",
+    "v3_reproduction": "python scripts/infer_test_baseline.py --manifest datasets/handwriting_notes/splits/val.jsonl --output <out> [--adapter <ckpt-26>] --repetition-penalty 1.0"
+  }
+}

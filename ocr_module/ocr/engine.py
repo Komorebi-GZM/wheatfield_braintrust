@@ -38,6 +38,13 @@ DEFAULT_BASE = os.environ.get("OCR_BASE_MODEL", "SeerRay-Lab/Xiaomi-OCR-0")
 # so 512 cannot cover a normal full page while 1024 leaves ~1.6x headroom.
 DEFAULT_MAX_NEW_TOKENS = int(os.environ.get("OCR_MAX_NEW_TOKENS", "1024"))
 DEFAULT_MAX_PIXELS = int(os.environ.get("OCR_MAX_PIXELS", "1024000"))
+# Protocol v4 (`deliver_v4`): repetition_penalty 1.1 was the only decoding knob
+# that removed the repetition/degeneration mode on the fixed validation pages
+# (see HANDOFF §13–§15). min_new_tokens stays 0 because it was byte-identical to
+# the frozen protocol on the finetuned arm and only forces sparse pages to keep
+# writing. Pass repetition_penalty=1.0 explicitly to reproduce the v3 protocol.
+DEFAULT_REPETITION_PENALTY = float(os.environ.get("OCR_REPETITION_PENALTY", "1.1"))
+DEFAULT_MIN_NEW_TOKENS = int(os.environ.get("OCR_MIN_NEW_TOKENS", "0"))
 PROTOCOL_VERSION = "v2"
 
 # Published repetition rules (see inference_protocol_v2.json -> repetition_rules)
@@ -154,8 +161,8 @@ class OCREngine:
         max_pixels: int = DEFAULT_MAX_PIXELS,
         use_system_prompt: bool = False,
         instruction: Optional[str] = None,
-        repetition_penalty: float = 1.0,
-        min_new_tokens: int = 0,
+        repetition_penalty: float = DEFAULT_REPETITION_PENALTY,
+        min_new_tokens: int = DEFAULT_MIN_NEW_TOKENS,
         trust_remote_code: bool = True,
     ):
         self.base_model = base_model
@@ -168,9 +175,10 @@ class OCREngine:
         # Prompt-factor experiments override only this string; None keeps the
         # frozen protocol instruction so default behaviour cannot drift.
         self.instruction = instruction or INSTRUCTION
-        # Decoding-factor knobs. Both are inert by default: the frozen protocol
-        # passes neither argument to `generate`, so the numeric path is identical
-        # to the pre-existing behaviour unless a caller opts in.
+        # Decoding-factor knobs. Protocol v4 defaults to repetition_penalty=1.1
+        # (see DEFAULT_REPETITION_PENALTY) and leaves min_new_tokens unset:
+        # repetition_penalty is only forwarded to `generate` when it differs from
+        # 1.0, so passing 1.0 reproduces the frozen v3 numeric path exactly.
         self.repetition_penalty = float(repetition_penalty)
         self.min_new_tokens = int(min_new_tokens)
         self.trust_remote_code = trust_remote_code

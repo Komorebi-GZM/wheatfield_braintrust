@@ -514,3 +514,44 @@ python scripts/infer_test_baseline.py --manifest datasets/handwriting_notes/spli
 ```
 
 数字复核：`E:\ocr\_analyze_rpsweep.py`（同旋钮对比 + 逐页），临时脚本未入库。
+
+---
+
+## 16. 协议 v4 冻结（2026-11-25，远程已批准）
+
+### 16.1 两套 profile
+
+| profile | `repetition_penalty` | `min_new_tokens` | `max_new_tokens` | `max_pixels` | 用途 |
+|---|---|---|---|---|---|
+| `compare_v4` | 1.1 | **256** | 1024 | 1024000 | 基座 vs 微调的任何对比（两臂同参） |
+| `deliver_v4` | 1.1 | **0（不传）** | 1024 | 1024000 | 微调侧生产（单臂） |
+
+冻结在 `inference_protocol_v4.json`；`ocr/engine.py` 的 `DEFAULT_REPETITION_PENALTY = 1.1`、`DEFAULT_MIN_NEW_TOKENS = 0` 即 `deliver_v4`，`DEFAULT_MAX_NEW_TOKENS/MAX_PIXELS` 沿用。
+
+### 16.2 为什么是两套而不是一套
+
+- **对比必须两臂同参**：`rp` 单独会把基座臂压塌（§14.2：235955 只剩 65 token、CER 8.533），基座离不开 `min=256` 这层地板。
+- **生产不需要这层地板**：微调臂上 `min=256` 与冻结协议逐字节相同（§14.1，5/5 页），却会在模型正常早停时强行续写；它的唯一正收益是防 `rp` 早停。
+
+### 16.3 v3 仍然可复现
+
+引擎只有在 `repetition_penalty != 1.0` 时才把该参数交给 `generate`，所以 **显式传 `repetition_penalty=1.0` 的数值路径与 v3 逐字节一致**：
+
+```powershell
+python scripts/infer_test_baseline.py --manifest datasets/handwriting_notes/splits/val.jsonl `
+  --output <out> [--adapter <ckpt-26>] --repetition-penalty 1.0
+```
+
+`scripts/infer_test_baseline.py` 的两个解码参数默认改为 `None`（省略即用引擎默认），因此 CLI 不再硬编码 1.0/0 而掩盖协议版本。
+
+### 16.4 防漂移
+
+`tests/test_decoding_knobs.py` 新增两项：读 `inference_protocol_v4.json` 与 `engine.DEFAULT_*` 逐项比对（不一致即失败），以及协议里的指令文本/哈希必须等于 `ocr/prompts.py::INSTRUCTION`。当前 `pytest` → **48 passed**。
+
+### 16.5 仍未解决（写进协议 known_limits）
+
+1. 证据只覆盖固定验证集 5 页；test 未参与、也未用于选参。
+2. 含公式宏 CER 从 0.775 退到 0.854（`deliver_v4`）——抑制重复会压掉部分公式，报告必须同时给两列。
+3. `min_new_tokens=256` 会强制短页继续写，稀疏页风险未单独验证。
+4. 5 页样本下宏平均方差大，逐页胜负必须同报（`deliver_v4` 对冻结是 2 胜 3 负，但赢的幅度远大于输的幅度）。
+5. 阶段B 仍缺 8–15 页从未参与调参的独立测试页。
