@@ -555,3 +555,13 @@ python scripts/infer_test_baseline.py --manifest datasets/handwriting_notes/spli
 3. `min_new_tokens=256` 会强制短页继续写，稀疏页风险未单独验证。
 4. 5 页样本下宏平均方差大，逐页胜负必须同报（`deliver_v4` 对冻结是 2 胜 3 负，但赢的幅度远大于输的幅度）。
 5. 阶段B 仍缺 8–15 页从未参与调参的独立测试页。
+
+### 16.6 冻结后的实跑验证（2026-11-25 20:12）
+
+不带任何解码参数、直接按新默认跑 val 5 页（`outputs/phaseA/decode/v4_default_ft/`）：
+
+- 逐页 token 数 506 / 358 / 711 / 217 / 335，与 `rp_only` 完全一致；
+- **5/5 页 markdown 与 `rp_only` 逐字节相同**（`all_identical=True`）；
+- sidecar 指纹记录 `repetition_penalty=1.1`、`min_new_tokens=0`、`max_new_tokens=1024`。
+
+即"默认 = `deliver_v4`"不是文档约定，而是运行时可验证的事实；`compare_v4` 只需加 `--min-new-tokens 256`。
