@@ -1,6 +1,6 @@
 {
   "version": "v2",
-  "created_at": "2026-11-15T12:47:29",
+  "created_at": "2026-11-25T16:06:59",
   "scope": "23 张真实手写页；train/val/test = 13/5/5；合成数据仅允许进入训练集",
   "annotation": {
     "file": "datasets/handwriting_notes\\annotation_template.jsonl",
@@ -177,8 +177,8 @@
   "n_images": 23,
   "splits": {
     "train.jsonl": {
-      "sha256": "aabb1af92132e11b8c829a4613349f86b981341080c608a970a843c054be73da",
-      "bytes": 19868,
+      "sha256": "ab328004864b43a5e8462a51ce43b4790f76bfabced2059b167ea6df51bea488",
+      "bytes": 19855,
       "n_rows": 13,
       "images": [
         "IMG_20261104_200839.jpg",
@@ -197,8 +197,8 @@
       ]
     },
     "val.jsonl": {
-      "sha256": "aed108254fdfc01e8ee94c6ebb303f20acf3807a5a1a2e78f91d636316fddab4",
-      "bytes": 7254,
+      "sha256": "e142bc98a0c93d6dedf95bf2ad0029d0d768765cb2ae0239acbe7f352f696d37",
+      "bytes": 7249,
       "n_rows": 5,
       "images": [
         "IMG_20261104_235932.jpg",
@@ -209,8 +209,8 @@
       ]
     },
     "test.jsonl": {
-      "sha256": "67a5df075e8575e3d1e9005633783076a67c2ce681b0fed3025319e3f1563f0a",
-      "bytes": 5288,
+      "sha256": "540e31a7a368e28010315ec14537ec9d3ff55dbabd563527ea555ff6e34eb0c0",
+      "bytes": 5283,
       "n_rows": 5,
       "images": [
         "IMG_20261105_000020.jpg",
@@ -221,8 +221,8 @@
       ]
     },
     "train_swift.jsonl": {
-      "sha256": "86e17f9d9e184dfa42521e4c1b2b9c7705e073cf481876365ea7c751bdcee7db",
-      "bytes": 22013,
+      "sha256": "aa3a95eab50438ef728295a64865a37d03334449105dc6ffaf976c4f6f0b8cc6",
+      "bytes": 22000,
       "n_rows": 13,
       "images": [
         "IMG_20261104_200839.jpg",
@@ -241,8 +241,8 @@
       ]
     },
     "val_swift.jsonl": {
-      "sha256": "f959cbc51aa2242afa00a48d11431b4736ebb351cfe5a5ce2b4fc4a49bf050b9",
-      "bytes": 8079,
+      "sha256": "2ce8d1bf89eb6aefe223e545437ab64cadb113bb10ff9ff8dbf3b8b2e949e65c",
+      "bytes": 8074,
       "n_rows": 5,
       "images": [
         "IMG_20261104_235932.jpg",
@@ -253,8 +253,8 @@
       ]
     },
     "train_sharegpt.json": {
-      "sha256": "c7fb313c0d137322c62e158ed2d45ad569bdc2e65bad675ea4d5388806c3139c",
-      "bytes": 22874,
+      "sha256": "7efae1c99363a7bb8ba07179fabbfb091e4ef16337127940bfbefe1d486e1659",
+      "bytes": 22678,
       "n_rows": 13,
       "images": [
         "IMG_20261104_200839.jpg",
@@ -314,7 +314,9 @@
     "image_count_23": true,
     "splits_disjoint": true,
     "splits_cover_all_images": true,
+    "split_images_exist": true,
     "markdown_equals_annotation": true,
+    "swift_images_in_annotation": true,
     "membership_unchanged_vs_v1": true
   },
   "change_log": "outputs/annotation_fixes_v2.json"

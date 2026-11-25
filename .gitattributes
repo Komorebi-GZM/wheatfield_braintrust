@@ -1,0 +1,13 @@
+# Keep the frozen dataset text assets byte-identical on every platform.
+#
+# `ocr_module/datasets/handwriting_notes/data_version_v2.json` records SHA-256 of
+# these files and `scripts/data_version.py` recomputes them. Without this rule a
+# Windows checkout (core.autocrlf=true) turns LF into CRLF, every hash changes,
+# and a healthy dataset looks corrupted. eol=lf makes the stored and checked-out
+# bytes LF everywhere, so the recorded hashes are reproducible.
+ocr_module/datasets/handwriting_notes/*.jsonl text eol=lf
+ocr_module/datasets/handwriting_notes/*.json text eol=lf
+ocr_module/datasets/handwriting_notes/*.sha256 text eol=lf
+ocr_module/datasets/handwriting_notes/splits/* text eol=lf
+# keep this file itself stable too
+.gitattributes text eol=lf
