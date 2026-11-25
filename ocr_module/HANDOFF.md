@@ -565,3 +565,50 @@ python scripts/infer_test_baseline.py --manifest datasets/handwriting_notes/spli
 - sidecar 指纹记录 `repetition_penalty=1.1`、`min_new_tokens=0`、`max_new_tokens=1024`。
 
 即"默认 = `deliver_v4`"不是文档约定，而是运行时可验证的事实；`compare_v4` 只需加 `--min-new-tokens 256`。
+
+## 17 外部数据接入：CASIA-HWDB2 行级库（2026-11-25，feat/ocr-external-data 分支）
+
+**来源**：HuggingFace `Teklia/CASIA-HWDB2-line`（中科院 CASIA-HWDB2.0~2.2 的行级整理版）。
+许可：学术/研究用途免费（详见上游 CASIA 条款）；本项目非商业使用，合规。
+
+**规模**（由 raw parquet 全量解出，脚本 `datasets/external/casia_hwdb2/convert_casia.py`）：
+
+| split | 行数 | 说明 |
+|---|---|---|
+| train | 33,401 | 行级样本，`{"image", "markdown"}` 与主域 splits 同 schema |
+| validation | 8,318 | 同上 |
+| test | 10,441 | 同上 |
+| 合计 | 52,160 | 图片 1.4GB，不入 git（见 datasets/external/.gitignore） |
+
+**定位与用法红线**：
+1. 外部数据为"方块纸工整字迹"，与真实笔记（相机/扫描、版面复杂）存在域差。**只作混训**，建议占比 20~30%，主域 13 页保持 ×N 过采样主导；
+2. 不得替换/移动主域 `datasets/handwriting_notes/` 下任何文件——冻结的 data_version 与哈希链不受影响（外部数据在独立目录）；
+3. 两阶段训练可选：CASIA 先训 base → 主域微调（QLoRA 适配）；
+4. `compare_v4`/`deliver_v4` 协议不变；新增数据不改变指令与解码参数。
+
+**复现**：parquet 在 `datasets/external/casia_hwdb2/raw/`（gitignored，从 HF 重新下载），
+`./.venv/bin/python datasets/external/casia_hwdb2/convert_casia.py` 全量重建 images/ 与三个 jsonl 及 MANIFEST。
+
+**候选池**（待用户网页确认后接入，见会话记录）：GNHK（学生笔记 687 页，研究条款）、
+GradeLab 答题卡（HF gated，万级页）。HumynLabs 数学笔记为纯 PDF 无标注，弃。
+
+## 18 外部数据接入②：GNHK 学生笔记整页库（2026-11-25，feat/ocr-external-data 分支）
+
+**来源**：GoodNotes GNHK（ICDAR 2021 论文），官方页 gnhk.goodnotes.com 已下线（2026-11 实测连不上），
+改用逐字节校验镜像 HF `aryaman27/goodnotes-handwritten-dataset@9042977`。许可 **CC-BY-4.0**（商用亦合规，署名即可）。
+
+**规模**（`datasets/external/gnhk/convert_gnhk.py` 全量转换）：
+
+| split | 页数 | 说明 |
+|---|---|---|
+| train | 500 | 整页 JPG + 行级 json（text/polygon/line_idx）→ 页级 markdown（行序拼接，%math% 等标记保留） |
+| test | 172 | 同上 |
+| 合计 | 672 | 官方 687 页，镜像缺 15 页（MANIFEST 如实记录） |
+
+**定位**：全球学生手写笔记（相机拍摄、购物清单/日记/便签），英文域。与中文主域混训仅作版面/抗臆造辅助，占比 ≤20%；
+亦可用作"陌生字迹泛化"英文盲测集。images/raw 不入 git（gitignored），脚本可全量重建。
+
+## 19 待接入与排期（2026-11-25 用户拍板）
+
+- **GradeLab**（HF gated，审核中）：通过后执行四步——抽检 20 页质检机器标注 → 选 train 分片子集（10~20GB）局部爬取 → 转换入本分支 → 局部混训。
+- OmniDocBench（1651 页评测基准，含手写笔记类）：候选作第三方评测集，暂缓。

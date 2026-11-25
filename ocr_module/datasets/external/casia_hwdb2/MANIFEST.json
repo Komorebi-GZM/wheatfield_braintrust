@@ -1,0 +1,22 @@
+{
+ "source": "Teklia/CASIA-HWDB2-line",
+ "license": "research/academic (see upstream CASIA-HWDB2 terms)",
+ "note": "line-level Chinese handwriting; mixed-training only",
+ "splits": {
+  "train": {
+   "rows": 33401,
+   "skipped": 0,
+   "jsonl": "casia_train.jsonl"
+  },
+  "validation": {
+   "rows": 8318,
+   "skipped": 0,
+   "jsonl": "casia_validation.jsonl"
+  },
+  "test": {
+   "rows": 10441,
+   "skipped": 0,
+   "jsonl": "casia_test.jsonl"
+  }
+ }
+}

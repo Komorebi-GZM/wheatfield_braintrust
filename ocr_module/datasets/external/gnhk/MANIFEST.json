@@ -1,0 +1,17 @@
+{
+ "source": "GoodNotes/GNHK (ICDAR 2021), mirror aryaman27/goodnotes-handwritten-dataset@9042977",
+ "license": "CC-BY-4.0",
+ "note": "English handwriting in the wild; page-level; mixed training only",
+ "splits": {
+  "train": {
+   "pages": 500,
+   "skipped": 0,
+   "jsonl": "gnhk_train.jsonl"
+  },
+  "test": {
+   "pages": 172,
+   "skipped": 0,
+   "jsonl": "gnhk_test.jsonl"
+  }
+ }
+}

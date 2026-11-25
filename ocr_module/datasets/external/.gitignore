@@ -1,0 +1,3 @@
+# datasets/external: 脚本与 MANIFEST 入库，原始 parquet/图片不入库（体量 1.3GB+）
+casia_hwdb2/raw/
+casia_hwdb2/images/
