@@ -75,8 +75,58 @@ powershell -File scripts/train_qlora_v2.ps1 -OutputRoot outputs/qlora-v2
 
 ---
 
-## 5. 若后续要正式托管权重（需人工确认）
+## 5. 权重托管（远程侧 2026-11-24 决策：**不进 git**）
 
-1. 方案 A：为本仓库配置 Git LFS（`.gitattributes` 加 `*.safetensors filter=lfs ...`），按规则上传 21.7 MB 权重；需确认仓库 owner 对 LFS 配额与**公开可见性**的接受度。
-2. 方案 B：发布到 ModelScope / HuggingFace 的**私有或公开** adapter 仓库，在 `HANDOFF.md` 记录地址与 SHA-256。
-3. 两种方案都**未执行**：本仓库为 PUBLIC，权重与原图一旦推上去即公开，需 owner 明确同意。
+远程侧已拍板：adapter（21.7 MB）**不进 Git LFS、不进普通 Git**，改用 ModelScope / HuggingFace 托管，本文件记录 SHA-256 与下载路径。仓库仍为 PUBLIC，因此**没有**任何权重被提交或上传。
+
+### 5.1 待托管对象（唯一一份）
+
+| 项 | 值 |
+|---|---|
+| 文件 | `checkpoint-26/adapter_model.safetensors` |
+| 大小 | 21,700,560 B |
+| SHA-256 | `a2be86a210a107e7db63c61e3bd180f0c4be7f46693fb2ffb2910ebc1f9abbb6` |
+| 配套 | `adapter_config.json`（目标模块正则、r8/α32、base_model 路径） |
+| 同源证明 | 2026-11-24 重训产出的 ckpt-26 与本文件记录**逐字节相同**，见 `HANDOFF.md` §12.2 |
+
+### 5.2 建议的托管方式
+
+- 仓库名建议：`<owner>/xiaomi-ocr0-handwriting-lora`（公开或私有由 owner 定；若公开，注意 adapter 是在个人课程笔记上微调的）。
+- 只上传 `adapter_model.safetensors` + `adapter_config.json`，**不上传训练数据与图片**。
+- 上传后回填本节 §5.4 与 `HANDOFF.md` §12/§13 的链接。
+
+### 5.3 上传命令（**本机当前无凭据，未执行**）
+
+```bash
+# ModelScope（本机已装 modelscope 1.40.2）
+export MODELSCOPE_API_TOKEN=<token>
+modelscope upload <owner>/xiaomi-ocr0-handwriting-lora \
+  outputs/qlora-v2/v2data-20261124-124959/checkpoint-26/adapter_model.safetensors adapter_model.safetensors
+
+# 或 HuggingFace
+export HF_TOKEN=<token>
+hf upload <owner>/xiaomi-ocr0-handwriting-lora \
+  outputs/qlora-v2/v2data-20261124-124959/checkpoint-26/adapter_model.safetensors checkpoint-26/adapter_model.safetensors
+```
+
+校验（下载后必须一致）：
+
+```bash
+sha256sum adapter_model.safetensors
+# 期望 a2be86a210a107e7db63c61e3bd180f0c4be7f46693fb2ffb2910ebc1f9abbb6
+python scripts/verify_adapter.py --adapter <下载目录> \
+  --base outputs/modelscope_cache/models/SeerRay-Lab--Xiaomi-OCR-0/snapshots/master
+# 期望 weights_verified=true，372/372，max_abs_diff=0.0
+```
+
+### 5.4 上传回填（待填）
+
+| 项 | 值 |
+|---|---|
+| 托管地址 | _待填_ |
+| 上传时间 / 上传人 | _待填_ |
+| 下载后实测 SHA-256 | _待填_ |
+
+### 5.5 状态
+
+**未上传**。本机 `HF_TOKEN` / `MODELSCOPE_API_TOKEN` / `HUGGINGFACE_HUB_TOKEN` 均未设置；上传需要 owner 提供凭据，或由 owner 自行执行 §5.3 的命令。在此之前，拿到权重只能走 §1 的本地路径，或按 §4 重训复现（2026-11-24 已验证可逐字节复现）。
