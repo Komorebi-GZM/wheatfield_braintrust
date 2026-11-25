@@ -1,42 +1,53 @@
-# test2 —— 独立测试集（待标注）
+# test2 —— 独立测试集（一个问卷，两条命令）
 
-> 这个集合用来替代已被反复观察的旧 `test`。**标注时不要参考旧的 test/val 标注。**
-> 标注方式是**问答式**：每页生成一份填空问卷，你只回答问题，工具组装成标注。
+> 替代已被反复观察的旧 `test`。**标注时不要参考旧 test/val 的标注。**
 
-## 目录
-
-```
-test2/
-├── images/            放新页照片（已 gitignore，只留在本机）
-├── answers/
-│   ├── <同名>.form.md   问卷 —— 你在这里回答问题
-│   └── <同名>.md        组装后的标准标注（由 assemble 生成）
-├── LABELING_GUIDE.md  规则、例子、常见错误、自检清单
-└── test2_manifest.json  运行 build 后生成（每页图片/答案的 sha256）
-```
-
-## 操作
+## 两条命令
 
 ```powershell
 cd E:\ocr\wheatfield_braintrust\ocr_module
 
-# 1) 把照片放进 test2/images/  （或直接发我，我来生成问卷）
-# 2) 生成问卷
+# 1) 把页面照片放进 test2/images/ 后，生成一个问卷
 python scripts/test2_tool.py form
-# 3) 在 answers/<同名>.form.md 里回答 Q1..Q6（不需要的题写「无」）
-# 4) 组装 + 检查
-python scripts/test2_tool.py assemble
-python scripts/test2_tool.py check
-# 5) 生成评测清单
+
+# 2) 打开 test2/问卷.md，每题 Q 后面写答案（不需要的写「无」）
+#    写完跑这一条，标注 / splits / manifest 全部生成
 python scripts/test2_tool.py build --mark-reviewed
 ```
 
-`build` 写出 `datasets/handwriting_notes/splits/test2.jsonl`（`image` 用相对路径 `images/<文件名>`，可被 `resolve_image_path` 解析）与 `test2_manifest.json`。
+就这两步。`check` 只是体检（不写文件），可跳过。
 
-## 六个问题
+## 问卷长这样
 
-Q1 标题/编号 · Q2 正文（一条一行）· Q3 表格（`| a | b |`）· Q4 公式（`$...$` / `$$...$$`）· Q5 红笔批注 · Q6 插图（`> [图示：…]`）。
+```markdown
+# 第 1 页：第1页.jpg
 
-## 规模建议
+Q1 标题/编号（照抄图上编号，没有写「无」）
+1-1 传感器定义
 
-8–15 页，覆盖纯文字 / 表格 / 公式 / 潦草字迹四类版式。低于 8 页只能报个案，不能支撑"泛化"结论。
+Q2 正文（按图上顺序一条一行，看不清的字写 □）
+- 传感器是能感受被测量并按一定规律转换成可用输出信号的器件
+- 通常由敏感元件和转换元件组成
+
+Q3 表格（每行 | 单元格 | 单元格 |，没有写「无」）
+| 元件 | 作用 |
+| 敏感元件 | 直接感受被测量 |
+
+Q4 公式（行内 $...$，独立一行 $$...$$，没有写「无」）
+灵敏度 $S = \Delta y / \Delta x$
+
+Q5 红笔批注/页边注（没有写「无」）
+无
+
+Q6 插图/框图/示波器截图（写 > [图示：…]，没有写「无」）
+无
+```
+
+- 答案可以换行写，遇到下一个 `Q` 或下一页标题自动结束。
+- 六个问题：标题 / 正文 / 表格 / 公式 / 批注 / 插图。
+- 页数不限；每页六题，`build` 会一次组装成 Markdown 并写出 `splits/test2.jsonl` 与 `test2_manifest.json`。
+
+## 隐私
+
+`images/` 已 gitignore（照片只留本机）；`answers/` 与 `问卷.md` 会入库。
+若整批都不想公开，把 `answers/` 和 `问卷.md` 也加进 `.gitignore`，只保留 `test2_manifest.json` 的哈希。
