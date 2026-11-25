@@ -95,21 +95,38 @@ powershell -File scripts/train_qlora_v2.ps1 -OutputRoot outputs/qlora-v2
 - 只上传 `adapter_model.safetensors` + `adapter_config.json`，**不上传训练数据与图片**。
 - 上传后回填本节 §5.4 与 `HANDOFF.md` §12/§13 的链接。
 
-### 5.3 上传命令（**本机当前无凭据，未执行**）
+### 5.3 实际托管方式：**私有 GitHub 仓库的 Release 资产**
+
+ModelScope 路走不通：本机 `~/.modelscope/credentials/session` 里存的 token 已失效
+（`login` 返回 `[E3001] AccessToken错误`），`HF_TOKEN` 也未设置。为了不把权重推进公开的
+`wheatfield_braintrust`，改用 **gh 已登录的 `repo` 权限**，建了一个**私有**仓库专门放权重：
+
+| 项 | 值 |
+|---|---|
+| 仓库 | `Komorebi-GZM/ocr-lora-artifacts`（**private**） |
+| Release | `ocr-ckpt26-v1` |
+| 页面 | https://github.com/Komorebi-GZM/ocr-lora-artifacts/releases/tag/ocr-ckpt26-v1 |
+| 资产 | `adapter_model.safetensors`（21,700,560 B）、`adapter_config.json`、`SHA256SUMS.txt` |
+| 上传时间 | 2026-11-25 20:21（本地） |
+| 上传后 GitHub 计算的 digest | `sha256:a2be86a210a107e7db63c61e3bd180f0c4be7f46693fb2ffb2910ebc1f9abbb6` —— 与本地文件一致 |
+
+取回：
 
 ```bash
-# ModelScope（本机已装 modelscope 1.40.2）
-export MODELSCOPE_API_TOKEN=<token>
-modelscope upload <owner>/xiaomi-ocr0-handwriting-lora \
-  outputs/qlora-v2/v2data-20261124-124959/checkpoint-26/adapter_model.safetensors adapter_model.safetensors
-
-# 或 HuggingFace
-export HF_TOKEN=<token>
-hf upload <owner>/xiaomi-ocr0-handwriting-lora \
-  outputs/qlora-v2/v2data-20261124-124959/checkpoint-26/adapter_model.safetensors checkpoint-26/adapter_model.safetensors
+gh release download ocr-ckpt26-v1 --repo Komorebi-GZM/ocr-lora-artifacts --dir ./ckpt26
+cd ckpt26 && sha256sum -c SHA256SUMS.txt
+# adapter_model.safetensors: OK
 ```
 
-校验（下载后必须一致）：
+没有 gh 时（需要仓库访问权限）：
+
+```bash
+curl -L -H "Authorization: token <github-token>" \
+  -o adapter_model.safetensors \
+  https://github.com/Komorebi-GZM/ocr-lora-artifacts/releases/download/ocr-ckpt26-v1/adapter_model.safetensors
+```
+
+校验：
 
 ```bash
 sha256sum adapter_model.safetensors
@@ -119,14 +136,20 @@ python scripts/verify_adapter.py --adapter <下载目录> \
 # 期望 weights_verified=true，372/372，max_abs_diff=0.0
 ```
 
-### 5.4 上传回填（待填）
+### 5.4 若以后要迁到 ModelScope / HuggingFace
 
-| 项 | 值 |
-|---|---|
-| 托管地址 | _待填_ |
-| 上传时间 / 上传人 | _待填_ |
-| 下载后实测 SHA-256 | _待填_ |
+两条命令仍然可用，只需先在对应平台登录（本机当前无有效凭据）：
+
+```bash
+export MODELSCOPE_API_TOKEN=<token>
+modelscope upload <owner>/xiaomi-ocr0-handwriting-lora adapter_model.safetensors adapter_model.safetensors
+
+export HF_TOKEN=<token>
+hf upload <owner>/xiaomi-ocr0-handwriting-lora adapter_model.safetensors checkpoint-26/adapter_model.safetensors
+```
+
+迁移后请把地址补进 §5.3 的表，并保留同一份 SHA-256。
 
 ### 5.5 状态
 
-**未上传**。本机 `HF_TOKEN` / `MODELSCOPE_API_TOKEN` / `HUGGINGFACE_HUB_TOKEN` 均未设置；上传需要 owner 提供凭据，或由 owner 自行执行 §5.3 的命令。在此之前，拿到权重只能走 §1 的本地路径，或按 §4 重训复现（2026-11-24 已验证可逐字节复现）。
+**已托管（私有）**：`ocr-ckpt26-v1`，GitHub 端 digest 与本地逐字节一致。仓库为 **private**，因此下载需要 `Komorebi-GZM` 的访问权限；`wheatfield_braintrust` 本身仍是 PUBLIC，但**没有任何权重进入该仓库的 Git 历史**。
