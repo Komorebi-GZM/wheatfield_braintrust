@@ -9,7 +9,9 @@
 2. **不要改笔记。** 原文写错、写漏、涂改，都照原样转写；不要"顺手修正"成正确知识。
 3. **不要补、不要概括。** 只写图上看得见的内容；看不见就用 `□`，整块看不清就写 `> [无法辨认：区域描述]`。
 
-## 1. 操作步骤（三步）
+## 1. 操作步骤（问答式，推荐）
+
+每页会生成一份**填空问卷**，你只回答问题，工具把答案组装成标准标注。
 
 ```powershell
 cd E:\ocr\wheatfield_braintrust\ocr_module
@@ -17,18 +19,34 @@ cd E:\ocr\wheatfield_braintrust\ocr_module
 # ① 把新页照片放进这个文件夹（jpg/png 都行，文件名随意）
 #    datasets/handwriting_notes/test2/images/
 
-# ② 生成每页的答题文件骨架（已存在的不覆盖）
-python scripts/test2_tool.py prepare
+# ② 为每张图生成问卷（不会覆盖已存在的）
+python scripts/test2_tool.py form
 
-# ③ 在 datasets/handwriting_notes/test2/answers/ 里逐页写 <同名>.md
-#    每写完一页就 check 一次
+# ③ 在 datasets/handwriting_notes/test2/answers/ 里打开 <同名>.form.md，
+#    只在每题 "A" 后面写答案；不需要的题写「无」
+
+# ④ 把答案组装成标注
+python scripts/test2_tool.py assemble
+
+# ⑤ 检查 + 生成清单
 python scripts/test2_tool.py check
-
-# ④ 全部 OK 后生成清单（会写 splits/test2.jsonl 和 test2/test2_manifest.json）
 python scripts/test2_tool.py build --mark-reviewed
 ```
 
-`check` 会打印每页的字数、`□` 数量、公式数量与状态；有缺页/空页/TODO 就返回非零，`build` 会拒绝执行。
+问卷长这样（每题一行问题 + 一个 `A`）：
+
+| 题 | 问的是什么 | 怎么答 |
+|---|---|---|
+| Q1 | 这页的标题或编号 | 照抄图上编号（如 `1-1 传感器定义`）；没有就写「无」 |
+| Q2 | 正文写了什么 | 按图上顺序一条一行；看不清的字写 `□` |
+| Q3 | 有没有表格 | 每行写成 `| 单元格 | 单元格 |`；没有写「无」 |
+| Q4 | 有没有公式 | 行内 `$...$`，独立一行 `$$...$$`；没有写「无」 |
+| Q5 | 有没有红笔批注/页边注 | 直接写内容；没有写「无」 |
+| Q6 | 有没有插图/框图/示波器截图 | 写 `> [图示：简述]`；没有写「无」 |
+
+> 也可以不用问卷：直接写 `answers/<同名>.md`（自由格式），`check`/`build` 同样接受。
+
+`check` 会打印每页的字数、`□` 数量、公式数量与状态（是否已填问卷、是否已组装）；有缺页/空页/TODO 就返回非零，`build` 会拒绝执行。
 
 ## 2. 每页写什么（格式）
 
