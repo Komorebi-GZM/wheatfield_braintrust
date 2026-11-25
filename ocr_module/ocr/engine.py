@@ -154,6 +154,8 @@ class OCREngine:
         max_pixels: int = DEFAULT_MAX_PIXELS,
         use_system_prompt: bool = False,
         instruction: Optional[str] = None,
+        repetition_penalty: float = 1.0,
+        min_new_tokens: int = 0,
         trust_remote_code: bool = True,
     ):
         self.base_model = base_model
@@ -166,6 +168,11 @@ class OCREngine:
         # Prompt-factor experiments override only this string; None keeps the
         # frozen protocol instruction so default behaviour cannot drift.
         self.instruction = instruction or INSTRUCTION
+        # Decoding-factor knobs. Both are inert by default: the frozen protocol
+        # passes neither argument to `generate`, so the numeric path is identical
+        # to the pre-existing behaviour unless a caller opts in.
+        self.repetition_penalty = float(repetition_penalty)
+        self.min_new_tokens = int(min_new_tokens)
         self.trust_remote_code = trust_remote_code
         self._model = None
         self._processor = None
@@ -364,6 +371,27 @@ class OCREngine:
         tok = self._processor.tokenizer
         return tok.convert_tokens_to_ids("<|image_pad|>")
 
+    def _generation_kwargs(self) -> Dict:
+        """Decoding kwargs for `generate`.
+
+        The frozen protocol omits both knobs entirely, so leaving the defaults
+        alone reproduces the historical numeric path exactly; an experiment that
+        sets them gets them recorded in `last_run['generation']` as well.
+        """
+        kw: Dict = {
+            "max_new_tokens": self.max_new_tokens,
+            "do_sample": False,
+            "temperature": None,
+            "top_p": None,
+            "return_dict_in_generate": True,
+            "pad_token_id": getattr(getattr(self._processor, "tokenizer", None), "pad_token_id", None),
+        }
+        if self.repetition_penalty != 1.0:
+            kw["repetition_penalty"] = self.repetition_penalty
+        if self.min_new_tokens > 0:
+            kw["min_new_tokens"] = self.min_new_tokens
+        return kw
+
     def _prepare(self, image_path: str) -> Tuple[Dict, Dict]:
         from PIL import Image
         with Image.open(image_path) as im:
@@ -416,15 +444,7 @@ class OCREngine:
         eos_id = int(gc_eos) if gc_eos is not None else None
 
         with torch.no_grad():
-            out = self._model.generate(
-                **inputs,
-                max_new_tokens=self.max_new_tokens,
-                do_sample=False,
-                temperature=None,
-                top_p=None,
-                return_dict_in_generate=True,
-                pad_token_id=self._processor.tokenizer.pad_token_id,
-            )
+            out = self._model.generate(**inputs, **self._generation_kwargs())
         gen = out.sequences[:, inputs["input_ids"].shape[1]:]
         gen_ids = gen[0].tolist()
         decoded = self._processor.tokenizer.decode(gen[0], skip_special_tokens=True)
@@ -472,6 +492,8 @@ class OCREngine:
             },
             "generation": {
                 "max_new_tokens": self.max_new_tokens,
+                "repetition_penalty": self.repetition_penalty,
+                "min_new_tokens": self.min_new_tokens,
                 "do_sample": False,
                 "generated_tokens": len(gen_ids),
                 "eos_token_id": eos_id,
@@ -530,6 +552,8 @@ class OCREngine:
             "load_in_4bit": self.load_in_4bit,
             "instruction": self.instruction,
             "instruction_sha256": sha256_text(self.instruction),
+            "repetition_penalty": self.repetition_penalty,
+            "min_new_tokens": self.min_new_tokens,
         }
 
 

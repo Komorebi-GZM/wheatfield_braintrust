@@ -57,6 +57,8 @@ def fingerprint(args, engine_desc):
         'adapter_weights_verified': (engine_desc.get('adapter') or {}).get('weights_verified'),
         'max_pixels': args.max_pixels,
         'max_new_tokens': args.max_new_tokens,
+        'repetition_penalty': args.repetition_penalty,
+        'min_new_tokens': args.min_new_tokens,
         'use_system_prompt': args.use_system_prompt,
         'load_in_4bit': True,
         'instruction': engine_desc.get('instruction', INSTRUCTION),
@@ -81,6 +83,10 @@ def main():
     ap.add_argument('--instruction', default=None,
                     help='Override the user-turn instruction (prompt-factor experiments). '
                          'Defaults to the frozen protocol instruction in ocr/prompts.py.')
+    ap.add_argument('--repetition-penalty', type=float, default=1.0,
+                    help='Decoding knob; 1.0 (default) omits the argument entirely.')
+    ap.add_argument('--min-new-tokens', type=int, default=0,
+                    help='Decoding knob; 0 (default) omits the argument entirely.')
     ap.add_argument('--dry-run', action='store_true', help='Print the plan and exit')
     args = ap.parse_args()
 
@@ -91,7 +97,9 @@ def main():
     rows = [json.loads(line) for line in manifest.read_text(encoding='utf-8').splitlines() if line.strip()]
 
     engine_kwargs = dict(max_pixels=args.max_pixels, max_new_tokens=args.max_new_tokens,
-                         use_system_prompt=args.use_system_prompt)
+                         use_system_prompt=args.use_system_prompt,
+                         repetition_penalty=args.repetition_penalty,
+                         min_new_tokens=args.min_new_tokens)
     if args.instruction:
         engine_kwargs['instruction'] = args.instruction
     if args.adapter:
