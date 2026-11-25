@@ -175,14 +175,24 @@ def cmd_check(root: Path) -> int:
     return 0 if _report(rows) == 0 else 1
 
 
-def cmd_build(root: Path, splits_dir: Path, reviewed: bool) -> int:
+def cmd_build(root: Path, splits_dir: Path, reviewed: bool, allow_partial: bool = False) -> int:
     rows = collect(root)
     if not rows:
         print(f"[build] {root / 'images'} 里还没有照片")
         return 1
-    if _report(rows) != 0:
-        print("[build] 有页面未答完，先补 问卷.md 再跑")
-        return 1
+    missing = [r for r in rows if not r["filled"]]
+    if missing:
+        if not allow_partial:
+            _report(rows)
+            print("[build] 有页面未答完，先补 问卷.md 再跑（或加 --allow-partial 只建已答的页）")
+            return 1
+        print(f"[build] --allow-partial：跳过 {len(missing)} 个未答页 "
+              f"({', '.join(r['page'] for r in missing[:5])}{'…' if len(missing) > 5 else ''})")
+        rows = [r for r in rows if r["filled"]]
+        if not rows:
+            print("[build] 没有任何页面答完")
+            return 1
+    _report(rows)
 
     answers_dir = root / "answers"
     answers_dir.mkdir(parents=True, exist_ok=True)
@@ -224,13 +234,15 @@ def main() -> int:
     ap.add_argument("--mark-reviewed", action="store_true",
                     help="把 reviewed 置为 true（人工过完一遍再加）")
     ap.add_argument("--force", action="store_true", help="覆盖已有问卷")
+    ap.add_argument("--allow-partial", action="store_true",
+                    help="build 时跳过未答页，只用已答的页建集")
     args = ap.parse_args()
     root = Path(args.root)
     if args.action == "form":
         return cmd_form(root, args.force)
     if args.action == "check":
         return cmd_check(root)
-    return cmd_build(root, Path(args.splits_dir), args.mark_reviewed)
+    return cmd_build(root, Path(args.splits_dir), args.mark_reviewed, args.allow_partial)
 
 
 if __name__ == "__main__":
