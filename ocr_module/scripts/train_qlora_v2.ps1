@@ -4,6 +4,9 @@ param(
     [int]$Epochs = 4,
     [int]$GradAccum = 1,
     [int]$MaxSteps = -1,
+    [string]$TrainManifest = 'datasets/handwriting_notes/splits/train_swift.jsonl',
+    [string]$ValManifest = 'datasets/handwriting_notes/splits/val_swift.jsonl',
+    [string]$RunTag = '',
     [switch]$Inspect
 )
 
@@ -18,14 +21,15 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $projectRoot
 if (-not $env:MODELSCOPE_CACHE) { $env:MODELSCOPE_CACHE = Join-Path $projectRoot 'outputs/modelscope_cache' }
 $swift = Join-Path (Split-Path -Parent $projectRoot) '.venv/Scripts/swift.exe'
-$train = 'datasets/handwriting_notes/splits/train_swift.jsonl'
-$validation = 'datasets/handwriting_notes/splits/val_swift.jsonl'
+$train = $TrainManifest
+$validation = $ValManifest
 foreach ($path in @($swift, $train, $validation)) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Missing required file: $path" }
 }
 
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-$runDir = Join-Path $OutputRoot "v2data-$stamp"
+$prefix = if ($RunTag) { $RunTag } else { 'v2data' }
+$runDir = Join-Path $OutputRoot "$prefix-$stamp"
 if (-not $Inspect) {
     New-Item -ItemType Directory -Force -Path $runDir | Out-Null
     # Windows 上 ms-swift 的 update_last_checkpoint_symlink 会：
