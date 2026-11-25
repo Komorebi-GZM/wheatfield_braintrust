@@ -591,3 +591,24 @@ python scripts/infer_test_baseline.py --manifest datasets/handwriting_notes/spli
 
 **候选池**（待用户网页确认后接入，见会话记录）：GNHK（学生笔记 687 页，研究条款）、
 GradeLab 答题卡（HF gated，万级页）。HumynLabs 数学笔记为纯 PDF 无标注，弃。
+
+## 18 外部数据接入②：GNHK 学生笔记整页库（2026-11-25，feat/ocr-external-data 分支）
+
+**来源**：GoodNotes GNHK（ICDAR 2021 论文），官方页 gnhk.goodnotes.com 已下线（2026-11 实测连不上），
+改用逐字节校验镜像 HF `aryaman27/goodnotes-handwritten-dataset@9042977`。许可 **CC-BY-4.0**（商用亦合规，署名即可）。
+
+**规模**（`datasets/external/gnhk/convert_gnhk.py` 全量转换）：
+
+| split | 页数 | 说明 |
+|---|---|---|
+| train | 500 | 整页 JPG + 行级 json（text/polygon/line_idx）→ 页级 markdown（行序拼接，%math% 等标记保留） |
+| test | 172 | 同上 |
+| 合计 | 672 | 官方 687 页，镜像缺 15 页（MANIFEST 如实记录） |
+
+**定位**：全球学生手写笔记（相机拍摄、购物清单/日记/便签），英文域。与中文主域混训仅作版面/抗臆造辅助，占比 ≤20%；
+亦可用作"陌生字迹泛化"英文盲测集。images/raw 不入 git（gitignored），脚本可全量重建。
+
+## 19 待接入与排期（2026-11-25 用户拍板）
+
+- **GradeLab**（HF gated，审核中）：通过后执行四步——抽检 20 页质检机器标注 → 选 train 分片子集（10~20GB）局部爬取 → 转换入本分支 → 局部混训。
+- OmniDocBench（1651 页评测基准，含手写笔记类）：候选作第三方评测集，暂缓。
