@@ -565,3 +565,29 @@ python scripts/infer_test_baseline.py --manifest datasets/handwriting_notes/spli
 - sidecar 指纹记录 `repetition_penalty=1.1`、`min_new_tokens=0`、`max_new_tokens=1024`。
 
 即"默认 = `deliver_v4`"不是文档约定，而是运行时可验证的事实；`compare_v4` 只需加 `--min-new-tokens 256`。
+
+## 17 外部数据接入：CASIA-HWDB2 行级库（2026-11-25，feat/ocr-external-data 分支）
+
+**来源**：HuggingFace `Teklia/CASIA-HWDB2-line`（中科院 CASIA-HWDB2.0~2.2 的行级整理版）。
+许可：学术/研究用途免费（详见上游 CASIA 条款）；本项目非商业使用，合规。
+
+**规模**（由 raw parquet 全量解出，脚本 `datasets/external/casia_hwdb2/convert_casia.py`）：
+
+| split | 行数 | 说明 |
+|---|---|---|
+| train | 33,401 | 行级样本，`{"image", "markdown"}` 与主域 splits 同 schema |
+| validation | 8,318 | 同上 |
+| test | 10,441 | 同上 |
+| 合计 | 52,160 | 图片 1.4GB，不入 git（见 datasets/external/.gitignore） |
+
+**定位与用法红线**：
+1. 外部数据为"方块纸工整字迹"，与真实笔记（相机/扫描、版面复杂）存在域差。**只作混训**，建议占比 20~30%，主域 13 页保持 ×N 过采样主导；
+2. 不得替换/移动主域 `datasets/handwriting_notes/` 下任何文件——冻结的 data_version 与哈希链不受影响（外部数据在独立目录）；
+3. 两阶段训练可选：CASIA 先训 base → 主域微调（QLoRA 适配）；
+4. `compare_v4`/`deliver_v4` 协议不变；新增数据不改变指令与解码参数。
+
+**复现**：parquet 在 `datasets/external/casia_hwdb2/raw/`（gitignored，从 HF 重新下载），
+`./.venv/bin/python datasets/external/casia_hwdb2/convert_casia.py` 全量重建 images/ 与三个 jsonl 及 MANIFEST。
+
+**候选池**（待用户网页确认后接入，见会话记录）：GNHK（学生笔记 687 页，研究条款）、
+GradeLab 答题卡（HF gated，万级页）。HumynLabs 数学笔记为纯 PDF 无标注，弃。
