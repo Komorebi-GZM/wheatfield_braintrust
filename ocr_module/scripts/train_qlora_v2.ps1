@@ -4,6 +4,10 @@ param(
     [int]$Epochs = 4,
     [int]$GradAccum = 1,
     [int]$MaxSteps = -1,
+    [string]$TrainManifest = 'datasets/handwriting_notes/splits/train_swift.jsonl',
+    [string]$ValManifest = 'datasets/handwriting_notes/splits/val_swift.jsonl',
+    [string]$RunTag = '',
+    [int]$SaveSteps = 0,
     [switch]$Inspect
 )
 
@@ -18,14 +22,17 @@ $projectRoot = Split-Path -Parent $PSScriptRoot
 Set-Location -LiteralPath $projectRoot
 if (-not $env:MODELSCOPE_CACHE) { $env:MODELSCOPE_CACHE = Join-Path $projectRoot 'outputs/modelscope_cache' }
 $swift = Join-Path (Split-Path -Parent $projectRoot) '.venv/Scripts/swift.exe'
-$train = 'datasets/handwriting_notes/splits/train_swift.jsonl'
-$validation = 'datasets/handwriting_notes/splits/val_swift.jsonl'
+$train = $TrainManifest
+$validation = $ValManifest
 foreach ($path in @($swift, $train, $validation)) {
     if (-not (Test-Path -LiteralPath $path -PathType Leaf)) { throw "Missing required file: $path" }
 }
 
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-$runDir = Join-Path $OutputRoot "v2data-$stamp"
+$prefix = if ($RunTag) { $RunTag } else { 'v2data' }
+$runDir = Join-Path $OutputRoot "$prefix-$stamp"
+$saveStrategy = if ($SaveSteps -gt 0) { "steps" } else { "epoch" }
+$saveStepArg = if ($SaveSteps -gt 0) { "--save_steps $SaveSteps" } else { "" }
 if (-not $Inspect) {
     New-Item -ItemType Directory -Force -Path $runDir | Out-Null
     # Windows 上 ms-swift 的 update_last_checkpoint_symlink 会：
@@ -45,7 +52,7 @@ if (-not $Inspect) {
         "--learning_rate 1e-4 --lr_scheduler_type cosine --warmup_ratio 0.03",
         "--lora_rank 8 --lora_alpha 32 --lora_dropout 0.05 --target_modules all-linear",
         "--gradient_checkpointing true --freeze_vit true --freeze_aligner true",
-        "--eval_strategy epoch --save_strategy epoch --save_total_limit 4 --logging_steps 1",
+        "--eval_strategy epoch --save_strategy $saveStrategy $saveStepArg --save_total_limit 4 --logging_steps 1",
         "--dataloader_num_workers 0 --seed 42 --data_seed 42 --max_steps $MaxSteps --add_version false",
         "--output_dir $runDir"
     )
@@ -67,11 +74,14 @@ $arguments = @(
     '--lora_rank', '8', '--lora_alpha', '32', '--lora_dropout', '0.05',
     '--target_modules', 'all-linear',
     '--gradient_checkpointing', 'true', '--freeze_vit', 'true', '--freeze_aligner', 'true',
-    '--eval_strategy', 'epoch', '--save_strategy', 'epoch', '--save_total_limit', '4',
+    '--eval_strategy', 'epoch', '--save_strategy', $saveStrategy, '--save_total_limit', '4',
     '--logging_steps', '1', '--dataloader_num_workers', '0',
     '--seed', '42', '--data_seed', '42', '--max_steps', "$MaxSteps", '--add_version', 'false',
     '--output_dir', $runDir
 )
+if ($SaveSteps -gt 0) {
+    $arguments += @('--save_steps', "$SaveSteps")
+}
 if ($Inspect) {
     [pscustomobject]@{ Executable = $swift; Arguments = $arguments; Train = $train; Validation = $validation; RunDir = $runDir } |
         ConvertTo-Json -Depth 4

@@ -639,3 +639,85 @@ git pull origin main
 判定标准：域内 CER 不回退 >0.02、盲测 CER 显著改善、重复条目保持 0% → 混训有效，可入 deliver。
 
 **产出**：新 adapter 走 ModelScope/HF（不入 git），HANDOFF 追加 §21 实验记录。
+
+## 21 混训本地准备（2026-11-26，训练暂停等 12h 窗口）
+
+用户 2026-11-26 00:55 决定：**本地准备好即暂停**，明天给 12 h+ 连续窗口再训。本节记录"已经准备好什么"和"开跑前必须先修什么"。
+
+### 21.1 已就绪（都在本机，gitignored）
+
+| 项 | 状态 |
+|---|---|
+| CASIA 原始 parquet | `datasets/external/casia_hwdb2/raw/train.parquet`，876,003,267 B（HF 直连不通，走 `hf-mirror.com` 的 **datasets** 端点下载，`data/train.parquet`） |
+| CASIA 抽样图 | `datasets/external/casia_hwdb2/images/` **8,000 张**（201 MB，seed 42，只解压被抽到的行） |
+| GNHK 抽样图 | `datasets/external/gnhk/images/` **78 张**（78 MB；计划 80，2 张因 `cas-bridge.xethub.hf.co` DNS 解析失败未取到） |
+| 混合清单 | `outputs/mixed/train_mixed_swift.jsonl` **8,182 行**（main 104 / casia 8,000 / gnhk 78），`mix_meta.json` 记录 seed 与计数；校验 0 缺失图 |
+| 新脚本 | `scripts/extract_mixed_images.py`（按 seed 只抽需要的图）、`scripts/build_mixed_train.py`（建混合清单 + `--check`） |
+| 训练脚本参数 | `scripts/train_qlora_v2.ps1` 新增 `-TrainManifest` / `-ValManifest` / `-RunTag`，默认值不变 |
+| 中断留痕 | `outputs/qlora-mixed/mixed-v1-20261126-003716/` 只跑到 **76/800 步**，无 checkpoint，未用于任何评测 |
+
+### 21.2 两个必须在开跑前修的问题
+
+1. **配比与 §20 的"主域永远占梯度主导"矛盾。**
+   按 §20 的计数（main 13×8=104、CASIA 8,000、GNHK 80），实际占比是 **main 1.3% / CASIA 97.8% / GNHK 1.0%**——混训几乎等于只训 CASIA。
+   要满足"主域主导"，二选一：主域过采样提到 **×600**（13×600=7,800，与 CASIA 同量级），或把 CASIA 降到 **~800 行**（main 104 : casia 800 ≈ 1:8，仍然外部占多数，但域内信号不至于消失）。
+2. **吞吐只有 9.2 秒/步，§20 的全量 epoch 不可行。**
+   2026-11-24 同机同配置是 2.27 秒/步；本次实测 `train_speed = 9.23 s/it`（76 步 10m56s）。按 8,182 样本算，**一个 epoch ≈ 21 小时**，4 epoch ≈ 84 小时。
+   12 h 窗口按当前速度只能跑 **约 4,700 步**（≈ 57% 一个 epoch）；若速度能回到 2.3 s/it，同样 12 h 可跑 **约 18,700 步**（2.3 个 epoch）。
+
+### 21.3 明天开跑的顺序（建议）
+
+```powershell
+cd E:\ocr\wheatfield_braintrust\ocr_module
+
+# 0) 先量速度：12 步基准，确认是 9 s/it 还是 2 s/it（决定下面选哪条路线）
+.\scripts\train_qlora_v2.ps1 -OutputRoot outputs\speedtest -Epochs 1 -MaxSteps 12 -RunTag speed
+
+# 1) 若速度正常（≈2-3 s/it）→ 修配比后跑 2 epoch
+python scripts/build_mixed_train.py --main-repeat 600 --casia-lines 800 --gnhk-pages 78 --out outputs/mixed/train_mixed_swift.jsonl
+.\scripts\train_qlora_v2.ps1 -OutputRoot outputs\qlora-mixed -Epochs 2 `
+  -TrainManifest outputs/mixed/train_mixed_swift.jsonl `
+  -ValManifest datasets/handwriting_notes/splits/val_swift.jsonl -RunTag mixed-v2
+
+# 2) 若仍是 9 s/it → 保持 §20 计数、限步 4,000（≈10 h），只跑半个 epoch
+.\scripts\train_qlora_v2.ps1 -OutputRoot outputs\qlora-mixed -Epochs 1 -MaxSteps 4000 `
+  -TrainManifest outputs/mixed/train_mixed_swift.jsonl `
+  -ValManifest datasets/handwriting_notes/splits/val_swift.jsonl -RunTag mixed-v2-cap4k
+
+# 3) 两阶段备选：CASIA 先训 600 步 → 主域微调 52 步（总 ≈1.6 h，最快出可评测 adapter）
+```
+
+### 21.4 评测（训练完立刻做，三轨）
+
+1. 域内：val 5 页，`deliver_v4`（rp1.1 / min0 / cap1024），对比现基线（正文宏 CER **0.875**、含公式 **0.854**、重复条目 0%、180 s）；
+2. 盲测：OmniDocBench note 118 页（eval-only，需先下 118 张图）；
+3. 稳定性：触顶页数、重复条目占比、`finish_reason` 分布。
+
+判定沿用 §20：域内 CER 不回退 >0.02 且盲测改善 且 重复保持 0% → 混训有效。
+
+### 21.5 执行结果（2026-11-26，x600 首轮）
+
+训练：`outputs/qlora-mixed/mixed-x600-20261126-121254`，**14,000/14,000 步，7 h 39 m 52 s，train_loss 0.1162，1.97 s/步**；配比 main 7,800 / CASIA 8,000 / GNHK 78（49.1 / 50.4 / 0.5%）。
+
+**域内 val 5 页（deliver_v4：rp1.1 / min0 / cap1024）逐 checkpoint：**
+
+| checkpoint | 正文 CER | 含公式 CER | 判重复页 | 触顶页 |
+|---|---|---|---|---|
+| **checkpoint-12000（最佳）** | **0.8493** | **0.8478** | 0 | 0 |
+| checkpoint-8000 | 0.8713 | 0.8468 | 0 | 0 |
+| checkpoint-14000 | 0.8764 | 0.8742 | 0 | 0 |
+| checkpoint-10000 | 0.9054 | 0.8791 | 1 | 0 |
+| 域内基线（ckpt-26 + rp1.1） | 0.875 | 0.854 | 0 | 0 |
+
+- 域内**没有回退**：正文 CER 0.875 → **0.8493（−0.026）**，含公式 0.854 → 0.8478；重复与触顶均为 0，满足 §20 的"重复保持 0%"。
+- ⚠️ **必须写明的矛盾**：训练日志域内 `eval_loss = 2.20377`（域内基线为 1.19），但 CER 反而略好。混训改变了模型置信度/格式偏好，token-level loss 与 CER 在此不同向；判定以 CER 为准，且不得只引用 eval_loss。
+- 选择：**checkpoint-12000**（按正文 CER 最低，非按 eval_loss）。
+
+**盲测（轨道②）状态：** OmniDocBench 118 页图已备齐（118/118），但首次运行因 `scripts/infer_test_baseline.py` 未把清单目录传给 `resolve_image_path` 而失败（相对路径 `images/<id>.png` 被按 cwd 解析）。已修复：脚本现在对每一行调用 `resolve_image_path(row['image'], manifest=manifest)`。修复后用 6 页子集先跑，118 页全量待续。
+
+**顺带修复的工程问题：**
+1. `infer_test_baseline.py`：清单相对路径解析（如上）。
+2. 运行盲测必须显式设 `OCR_BASE_MODEL`（本地快照），否则 `DEFAULT_BASE` 走 HF id，在无 HF 缓存时 429/超时。
+3. 新增 `scripts/eval_mixed_checkpoints.py`：逐 checkpoint 跑域内 val 并汇总 CER/重复/触顶，输出 `outputs/eval-mixed/<run>/summary.json`。
+
+**下一步（盲测结果出来后再判定）**：若盲测 CER 明显低于基线 → 按 §20 判定"混训有效"，入 deliver；若无改善 → 说明增益只在域内，需要提高外部数据占比或改两阶段。
