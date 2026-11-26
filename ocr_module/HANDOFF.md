@@ -721,3 +721,63 @@ python scripts/build_mixed_train.py --main-repeat 600 --casia-lines 800 --gnhk-p
 3. 新增 `scripts/eval_mixed_checkpoints.py`：逐 checkpoint 跑域内 val 并汇总 CER/重复/触顶，输出 `outputs/eval-mixed/<run>/summary.json`。
 
 **下一步（盲测结果出来后再判定）**：若盲测 CER 明显低于基线 → 按 §20 判定"混训有效"，入 deliver；若无改善 → 说明增益只在域内，需要提高外部数据占比或改两阶段。
+
+### 21.6 盲测（轨道②）：混训 vs 基线，40 页配对
+
+OmniDocBench 118 页中按语言分层抽 40 页（中文 24 / 中英混 15 / 英文 1），两个模型**同页配对**、同协议（deliver_v4：rp1.1 / min0 / cap1024）：
+
+| 指标 | 混训 ckpt-12000 | 基线 ckpt-26 | 差值 |
+|---|---|---|---|
+| 平均正文 CER | **0.2487** | 0.3642 | **−0.1155**（相对 −32%） |
+| 中位 ΔCER | — | — | −0.0572 |
+| 平均含公式 CER | **0.2689** | 0.4003 | −0.1314 |
+| 逐页胜/负/平 | **30 / 10 / 0** | — | — |
+| 触顶页 | 0 | 0 | — |
+| 判重复页 | **0** | **4** | −4 |
+
+分语言：中文 24 页 0.2735 vs 0.3985（−0.125）；中英混 15 页 0.2014 vs 0.2682（−0.067）；英文 1 页 0.3636 vs 0.9816（−0.618）。
+
+**结论（按 §20 判定）**：域内 CER 不回退（−0.026 ✅）+ 盲测显著改善（−0.1155、30/40 页更好 ✅）+ 重复保持 0%（4 → 0 ✅）→ **混训有效，`checkpoint-12000` 可入 deliver**。
+
+**必须同时写的两条反面证据：**
+1. 10/40 页变差，个别页退化明显（`page-14cd…` 1.373 vs 0.854；`…_119.jpg` 1.221 vs 0.025）——混训不是全面胜利，逐页波动仍大；
+2. 只有 40/118 页（分层抽样），不是全量；全量 118 页应作为下一步补测。
+
+**复现**：
+```powershell
+$env:OCR_BASE_MODEL = "<本地快照>"; $env:HF_HUB_OFFLINE = "1"
+python scripts/infer_test_baseline.py --manifest outputs/eval-mixed/blind40_abs.jsonl `
+  --output outputs/eval-mixed/blind40-mixed/pred.jsonl `
+  --adapter outputs/qlora-mixed/mixed-x600-20261126-121254/checkpoint-12000
+# 基线：同一清单，去掉 --adapter，用 outputs/qlora-v2/v2data-20261124-124959/checkpoint-26
+```
+
+### 21.7 权重落点核验（Release 回读 + 下载比对）
+
+远程侧反馈"releases 数量为 0、API 确认不存在"。复查结论：**Release 是存在的，但它在私有仓库 `Komorebi-GZM/ocr-lora-artifacts`，不在公开仓库 `wheatfield_braintrust`**——后者 releases 本来就应为 0（§20 约定权重不入主仓库）；且私有仓库的 API 未认证访问会返回 404，容易被误判为"不存在"。
+
+三条实证（2026-11-26 21:00 复跑）：
+
+| 证据 | 结果 |
+|---|---|
+| `gh release list --repo Komorebi-GZM/ocr-lora-artifacts` | 2 条：`ocr-mixed-x600-ckpt12000`（Latest）、`ocr-ckpt26-v1` |
+| `gh release view ocr-mixed-x600-ckpt12000 --json …` | `isDraft=false`；3 个资产 `state=uploaded`；`adapter_model.safetensors` 21,700,560 B |
+| **下载回读**（`gh release download` 后本地哈希） | `20c55e75da39fc68cee7c88c80d381b6d5e232c30367d589792b1244d80752bc`，与本地 `checkpoint-12000/adapter_model.safetensors` **完全一致（match=True）** |
+
+GitHub 侧资产 digest：
+- `adapter_model.safetensors` → `sha256:20c55e75da39fc68cee7c88c80d381b6d5e232c30367d589792b1244d80752bc`
+- `adapter_config.json` → `sha256:dc47b2032522b0f4f354ed65b42d5ecd55f471b08372006db879ef3326bcf4f2`
+- `SHA256SUMS.txt` → `sha256:cdd4dad7174a5827a3daee5630b27574f44ee4ee5f2729a79bde657648c0e18b`
+
+Release 页：https://github.com/Komorebi-GZM/ocr-lora-artifacts/releases/tag/ocr-mixed-x600-ckpt12000
+
+复核命令（需要该私有仓库的读权限）：
+
+```powershell
+gh release view ocr-mixed-x600-ckpt12000 --repo Komorebi-GZM/ocr-lora-artifacts
+gh release download ocr-mixed-x600-ckpt12000 --repo Komorebi-GZM/ocr-lora-artifacts --dir .\ckpt12000
+Get-FileHash .\ckpt12000\adapter_model.safetensors -Algorithm SHA256
+# 期望 20C55E75DA39FC68CEE7C88C80D381B6D5E232C30367D589792B1244D80752BC
+```
+
+**检查公开仓库会看到 0 条 Release，这是符合预期的**；`CHECKPOINT_MANIFEST` 引用 digest 时请指向上面的私有 Release。
