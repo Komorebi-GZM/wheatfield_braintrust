@@ -694,3 +694,30 @@ python scripts/build_mixed_train.py --main-repeat 600 --casia-lines 800 --gnhk-p
 3. 稳定性：触顶页数、重复条目占比、`finish_reason` 分布。
 
 判定沿用 §20：域内 CER 不回退 >0.02 且盲测改善 且 重复保持 0% → 混训有效。
+
+### 21.5 执行结果（2026-11-26，x600 首轮）
+
+训练：`outputs/qlora-mixed/mixed-x600-20261126-121254`，**14,000/14,000 步，7 h 39 m 52 s，train_loss 0.1162，1.97 s/步**；配比 main 7,800 / CASIA 8,000 / GNHK 78（49.1 / 50.4 / 0.5%）。
+
+**域内 val 5 页（deliver_v4：rp1.1 / min0 / cap1024）逐 checkpoint：**
+
+| checkpoint | 正文 CER | 含公式 CER | 判重复页 | 触顶页 |
+|---|---|---|---|---|
+| **checkpoint-12000（最佳）** | **0.8493** | **0.8478** | 0 | 0 |
+| checkpoint-8000 | 0.8713 | 0.8468 | 0 | 0 |
+| checkpoint-14000 | 0.8764 | 0.8742 | 0 | 0 |
+| checkpoint-10000 | 0.9054 | 0.8791 | 1 | 0 |
+| 域内基线（ckpt-26 + rp1.1） | 0.875 | 0.854 | 0 | 0 |
+
+- 域内**没有回退**：正文 CER 0.875 → **0.8493（−0.026）**，含公式 0.854 → 0.8478；重复与触顶均为 0，满足 §20 的"重复保持 0%"。
+- ⚠️ **必须写明的矛盾**：训练日志域内 `eval_loss = 2.20377`（域内基线为 1.19），但 CER 反而略好。混训改变了模型置信度/格式偏好，token-level loss 与 CER 在此不同向；判定以 CER 为准，且不得只引用 eval_loss。
+- 选择：**checkpoint-12000**（按正文 CER 最低，非按 eval_loss）。
+
+**盲测（轨道②）状态：** OmniDocBench 118 页图已备齐（118/118），但首次运行因 `scripts/infer_test_baseline.py` 未把清单目录传给 `resolve_image_path` 而失败（相对路径 `images/<id>.png` 被按 cwd 解析）。已修复：脚本现在对每一行调用 `resolve_image_path(row['image'], manifest=manifest)`。修复后用 6 页子集先跑，118 页全量待续。
+
+**顺带修复的工程问题：**
+1. `infer_test_baseline.py`：清单相对路径解析（如上）。
+2. 运行盲测必须显式设 `OCR_BASE_MODEL`（本地快照），否则 `DEFAULT_BASE` 走 HF id，在无 HF 缓存时 429/超时。
+3. 新增 `scripts/eval_mixed_checkpoints.py`：逐 checkpoint 跑域内 val 并汇总 CER/重复/触顶，输出 `outputs/eval-mixed/<run>/summary.json`。
+
+**下一步（盲测结果出来后再判定）**：若盲测 CER 明显低于基线 → 按 §20 判定"混训有效"，入 deliver；若无改善 → 说明增益只在域内，需要提高外部数据占比或改两阶段。

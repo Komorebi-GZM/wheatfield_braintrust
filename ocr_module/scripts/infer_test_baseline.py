@@ -28,6 +28,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from ocr.engine import OCREngine, PROTOCOL_VERSION  # noqa: E402
+from ocr.paths import resolve_image_path  # noqa: E402
 from ocr.prompts import INSTRUCTION  # noqa: E402
 
 DATA_VERSION = Path('datasets/handwriting_notes/data_version_v2.json')
@@ -143,7 +144,9 @@ def main():
             raise SystemExit('Existing predictions do not belong to this manifest')
 
     for row in rows:
-        image = row['image']
+        # Resolve relative image paths against the manifest directory (e.g.
+        # `images/<id>.png` in the external benchmarks), not the process cwd.
+        image = resolve_image_path(row['image'], manifest=manifest)
         if image in completed:
             print(f'skip (already done) {Path(image).name}', flush=True)
             continue
