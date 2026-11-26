@@ -130,3 +130,34 @@ python scripts/verify_adapter.py --adapter <下载目录> \
 ### 5.5 状态
 
 **未上传**。本机 `HF_TOKEN` / `MODELSCOPE_API_TOKEN` / `HUGGINGFACE_HUB_TOKEN` 均未设置；上传需要 owner 提供凭据，或由 owner 自行执行 §5.3 的命令。在此之前，拿到权重只能走 §1 的本地路径，或按 §4 重训复现（2026-11-24 已验证可逐字节复现）。
+
+
+---
+
+# Checkpoint 交付清单（checkpoint-12000，混训 x600）【预写 · 待全量盲测确认】
+
+> 状态：**provisional**。域内 CER 与 40 页配对盲测已通过 §20 三条验收中的两条+盲测抽样项（见 HANDOFF §21.5-21.7）；
+> 全量 118 页盲测完成后，若结论一致，本节转为正式 deliver 默认。若不一致，本节保留但标注"未采用"。
+
+- 生成时间：2026-11-26
+- 训练 run：`outputs/qlora-mixed/mixed-x600-20261126-121254`（Git 忽略）
+- 交付 checkpoint：`checkpoint-12000`（14,000 步中的最佳域内点）
+- 选定依据：域内正文 CER 0.8493（基线 ckpt-26 为 0.875）、重复 0%；40 页配对盲测 -0.1155（30/40 胜）
+- 权重落点：GitHub 私有仓库 Release
+  `Komorebi-GZM/ocr-lora-artifacts` → `ocr-mixed-x600-ckpt12000`（Latest，draft=false）
+- 配比：main 7,800（49.1%）/ CASIA 8,000（50.4%）/ GNHK 78（0.5%，本轮未有效测试）
+
+## 校验值（三方一致：本地生成方 / SHA256SUMS.txt / 独立下载回读 2026-11-26）
+
+| 文件 | 字节 | SHA-256 |
+|---|---|---|
+| `adapter_model.safetensors` | 21,700,560 | `20c55e75da39fc68cee7c88c80d381b6d5e232c30367d589792b1244d80752bc` |
+| `adapter_config.json` | 1,335 | `dc47b2032522b0f4f354ed65b42d5ecd55f471b08372006db879ef3326bcf4f2` |
+
+自检：
+
+```bash
+gh release download ocr-mixed-x600-ckpt12000 -R Komorebi-GZM/ocr-lora-artifacts
+sha256sum adapter_model.safetensors adapter_config.json
+# 期望 20c55e75… / dc47b203…
+```
