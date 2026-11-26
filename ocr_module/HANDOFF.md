@@ -721,3 +721,33 @@ python scripts/build_mixed_train.py --main-repeat 600 --casia-lines 800 --gnhk-p
 3. 新增 `scripts/eval_mixed_checkpoints.py`：逐 checkpoint 跑域内 val 并汇总 CER/重复/触顶，输出 `outputs/eval-mixed/<run>/summary.json`。
 
 **下一步（盲测结果出来后再判定）**：若盲测 CER 明显低于基线 → 按 §20 判定"混训有效"，入 deliver；若无改善 → 说明增益只在域内，需要提高外部数据占比或改两阶段。
+
+### 21.6 盲测（轨道②）：混训 vs 基线，40 页配对
+
+OmniDocBench 118 页中按语言分层抽 40 页（中文 24 / 中英混 15 / 英文 1），两个模型**同页配对**、同协议（deliver_v4：rp1.1 / min0 / cap1024）：
+
+| 指标 | 混训 ckpt-12000 | 基线 ckpt-26 | 差值 |
+|---|---|---|---|
+| 平均正文 CER | **0.2487** | 0.3642 | **−0.1155**（相对 −32%） |
+| 中位 ΔCER | — | — | −0.0572 |
+| 平均含公式 CER | **0.2689** | 0.4003 | −0.1314 |
+| 逐页胜/负/平 | **30 / 10 / 0** | — | — |
+| 触顶页 | 0 | 0 | — |
+| 判重复页 | **0** | **4** | −4 |
+
+分语言：中文 24 页 0.2735 vs 0.3985（−0.125）；中英混 15 页 0.2014 vs 0.2682（−0.067）；英文 1 页 0.3636 vs 0.9816（−0.618）。
+
+**结论（按 §20 判定）**：域内 CER 不回退（−0.026 ✅）+ 盲测显著改善（−0.1155、30/40 页更好 ✅）+ 重复保持 0%（4 → 0 ✅）→ **混训有效，`checkpoint-12000` 可入 deliver**。
+
+**必须同时写的两条反面证据：**
+1. 10/40 页变差，个别页退化明显（`page-14cd…` 1.373 vs 0.854；`…_119.jpg` 1.221 vs 0.025）——混训不是全面胜利，逐页波动仍大；
+2. 只有 40/118 页（分层抽样），不是全量；全量 118 页应作为下一步补测。
+
+**复现**：
+```powershell
+$env:OCR_BASE_MODEL = "<本地快照>"; $env:HF_HUB_OFFLINE = "1"
+python scripts/infer_test_baseline.py --manifest outputs/eval-mixed/blind40_abs.jsonl `
+  --output outputs/eval-mixed/blind40-mixed/pred.jsonl `
+  --adapter outputs/qlora-mixed/mixed-x600-20261126-121254/checkpoint-12000
+# 基线：同一清单，去掉 --adapter，用 outputs/qlora-v2/v2data-20261124-124959/checkpoint-26
+```
