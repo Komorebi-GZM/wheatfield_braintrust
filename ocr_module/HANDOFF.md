@@ -751,3 +751,33 @@ python scripts/infer_test_baseline.py --manifest outputs/eval-mixed/blind40_abs.
   --adapter outputs/qlora-mixed/mixed-x600-20261126-121254/checkpoint-12000
 # 基线：同一清单，去掉 --adapter，用 outputs/qlora-v2/v2data-20261124-124959/checkpoint-26
 ```
+
+### 21.7 权重落点核验（Release 回读 + 下载比对）
+
+远程侧反馈"releases 数量为 0、API 确认不存在"。复查结论：**Release 是存在的，但它在私有仓库 `Komorebi-GZM/ocr-lora-artifacts`，不在公开仓库 `wheatfield_braintrust`**——后者 releases 本来就应为 0（§20 约定权重不入主仓库）；且私有仓库的 API 未认证访问会返回 404，容易被误判为"不存在"。
+
+三条实证（2026-11-26 21:00 复跑）：
+
+| 证据 | 结果 |
+|---|---|
+| `gh release list --repo Komorebi-GZM/ocr-lora-artifacts` | 2 条：`ocr-mixed-x600-ckpt12000`（Latest）、`ocr-ckpt26-v1` |
+| `gh release view ocr-mixed-x600-ckpt12000 --json …` | `isDraft=false`；3 个资产 `state=uploaded`；`adapter_model.safetensors` 21,700,560 B |
+| **下载回读**（`gh release download` 后本地哈希） | `20c55e75da39fc68cee7c88c80d381b6d5e232c30367d589792b1244d80752bc`，与本地 `checkpoint-12000/adapter_model.safetensors` **完全一致（match=True）** |
+
+GitHub 侧资产 digest：
+- `adapter_model.safetensors` → `sha256:20c55e75da39fc68cee7c88c80d381b6d5e232c30367d589792b1244d80752bc`
+- `adapter_config.json` → `sha256:dc47b2032522b0f4f354ed65b42d5ecd55f471b08372006db879ef3326bcf4f2`
+- `SHA256SUMS.txt` → `sha256:cdd4dad7174a5827a3daee5630b27574f44ee4ee5f2729a79bde657648c0e18b`
+
+Release 页：https://github.com/Komorebi-GZM/ocr-lora-artifacts/releases/tag/ocr-mixed-x600-ckpt12000
+
+复核命令（需要该私有仓库的读权限）：
+
+```powershell
+gh release view ocr-mixed-x600-ckpt12000 --repo Komorebi-GZM/ocr-lora-artifacts
+gh release download ocr-mixed-x600-ckpt12000 --repo Komorebi-GZM/ocr-lora-artifacts --dir .\ckpt12000
+Get-FileHash .\ckpt12000\adapter_model.safetensors -Algorithm SHA256
+# 期望 20C55E75DA39FC68CEE7C88C80D381B6D5E232C30367D589792B1244D80752BC
+```
+
+**检查公开仓库会看到 0 条 Release，这是符合预期的**；`CHECKPOINT_MANIFEST` 引用 digest 时请指向上面的私有 Release。
